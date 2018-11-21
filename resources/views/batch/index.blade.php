@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Red Olive Redirects')
+@section('title', 'Redirects Wizard')
 
 @section('content')
     <div class="container mx-auto">

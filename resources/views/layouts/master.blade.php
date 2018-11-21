@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="google" content="notranslate">
+    <meta http-equiv="Content-Language" content="en">
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -75,16 +77,6 @@
 <body class="bg-gray-lightest font-sans font-normal antialiased min-h-screen">
     <div class="flex flex-col">
         @yield('content')
-    </div>
-
-    <div class="flex flex-col px-8 py-5 my-8">
-        <div class="mx-auto max-w-lg text-sm text-grey-dark text-center">
-            <p>
-                <a href="https://www.redolive.com" title="Red Olive Website">
-                    <img width="180" src="/img/ro-logo.png" alt="Red Olive">
-                </a>
-            </p>
-        </div>
     </div>
 
     <script src="{{ mix('js/app.js') }}"></script>
