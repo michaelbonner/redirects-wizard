@@ -23,5 +23,5 @@ if (mix.inProduction()) {
   mix.version();
 }
 if(!mix.inProduction()) {
-  mix.browserSync('redirects.test');
+  mix.browserSync('redirects-wizard.test');
 }

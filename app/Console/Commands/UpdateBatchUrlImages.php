@@ -14,7 +14,7 @@ class UpdateBatchUrlImages extends Command
      *
      * @var string
      */
-    protected $signature = 'ro:updatebatchurlimages {--force}';
+    protected $signature = 'update:batchurlimages {--force}';
 
     /**
      * The console command description.

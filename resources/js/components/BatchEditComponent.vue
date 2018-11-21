@@ -114,6 +114,7 @@
                 </div>
                 <div class="flex flex-wrap my-2">
                     <url-component 
+                        v-if="validUrl && submittedDevUrl"
                         v-for="url in urls" 
                         :key="url.id"
                         :id="url.id"
@@ -133,7 +134,7 @@
         </div>
         <add-urls-component
             :batch_id="batch_id"
-            v-if="updatedDevUrl"
+            v-if="validUrl && submittedDevUrl"
         >
             Add Url
         </add-urls-component>
@@ -167,6 +168,9 @@
     export default {
         mounted() {
             this.updatedDevUrl = this.dev_url;
+            if(this.dev_url){
+                this.submittedDevUrl = true;
+            }
         },
         data: function() {
             return {
@@ -179,7 +183,8 @@
                 doRecheckUnaddressed: false,
                 submittingRecheckAll: false,
                 submittingRecheckUnaddressed: false,
-                showArchiveLink: false
+                showArchiveLink: false,
+                submittedDevUrl: false,
             }
         },
         props: [
@@ -225,6 +230,13 @@
                 this.$emit('doRecheckUnaddressed');
             },
             updateDevUrl: function () {
+                if(!this.updatedDevUrl){
+                    this.error = {
+                        'message': 'Dev URL cannot be empty',
+                    }
+                    return false;
+                }
+
                 this.submitting = true;
                 this.error = {};
                 this.success = '';
@@ -233,6 +245,7 @@
                 })
                     .then((data) => {
                         this.submitting = false;
+                        this.submittedDevUrl = true;
                         this.success = 'Sucessfully updated Dev URL';
                     })
                     .catch((error) => {
