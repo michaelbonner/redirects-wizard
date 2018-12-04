@@ -39,4 +39,9 @@ class Batch extends Model
     {
         return $this->devUrlParts ? $this->devUrlParts['host'] : null;
     }
+    
+    public function getHostWithoutWwwAttribute()
+    {
+        return str_after($this->host, 'www.');
+    }
 }

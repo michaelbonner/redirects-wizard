@@ -19,7 +19,7 @@ class BatchController extends Controller
             'batches' => Batch::where('dev_url', '!=', '')
                 ->whereNotNull('dev_url')
                 ->get()
-                ->sortBy('host'),
+                ->sortBy('hostWithoutWww'),
             'title' => 'Redirect Batches',
         ]);
     }
