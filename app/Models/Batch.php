@@ -29,4 +29,14 @@ class Batch extends Model
             return !$url->addressed;
         });
     }
+
+    public function getDevUrlPartsAttribute()
+    {
+        return parse_url($this->dev_url);
+    }
+
+    public function getHostAttribute()
+    {
+        return $this->devUrlParts ? $this->devUrlParts['host'] : null;
+    }
 }

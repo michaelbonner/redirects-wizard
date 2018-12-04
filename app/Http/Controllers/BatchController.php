@@ -16,7 +16,10 @@ class BatchController extends Controller
     public function index()
     {
         return view('batch.index', [
-            'batches' => Batch::all()->sortBy('dev_url'),
+            'batches' => Batch::where('dev_url', '!=', '')
+                ->whereNotNull('dev_url')
+                ->get()
+                ->sortBy('host'),
             'title' => 'Redirect Batches',
         ]);
     }

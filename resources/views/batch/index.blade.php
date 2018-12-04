@@ -28,6 +28,7 @@
                                 count_remaining_urls="{{ $batch->remainingToAddressUrls->count() }}" 
                                 batch_id="{{ $batch->id}}" 
                                 dev_url="{{ $batch->dev_url }}"
+                                date_created="{{ $batch->created_at->format('F d, Y') }}"
                             >
                                 <p>
                                     <a href="{{ $batch->dev_url }}">
