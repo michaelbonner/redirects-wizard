@@ -135,5 +135,7 @@ class UpdateBatchUrlImages extends Command
         });
         
         $bar->finish();
+
+        $this->line('');
     }
 }
