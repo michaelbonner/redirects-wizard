@@ -21,9 +21,7 @@
                 :urls="{{ $urls }}"
                 batch_id="{{ $batch->id}}" 
                 dev_url="{{ $batch->dev_url }}"
-            >
-                {{ $batch->dev_url }}
-            </batch-edit-component>
+            ></batch-edit-component>
         </div>
     </div>
 @endsection

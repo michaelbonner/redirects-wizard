@@ -29,12 +29,34 @@
                                 batch_id="{{ $batch->id}}" 
                                 dev_url="{{ $batch->dev_url }}"
                                 date_created="{{ $batch->created_at->format('F d, Y') }}"
+                                class="w-full md:w-1/3 px-4 my-8"
                             >
-                                <p>
-                                    <a href="{{ $batch->dev_url }}">
-                                        {{ $batch->dev_url }} ({{ $batch->urls->count() }} URLs)
+                                <div class="rounded overflow-hidden shadow-lg bg-white">
+                                    <a href="/batch/{{ $batch->id }}">
+                                        <img src="/batch-dev-url-screenshot/{{ $batch->id }}.jpg" alt="{{ $batch->dev_url }} screenshot" class="w-full" style="min-height: 200px;max-height: 300px;">
                                     </a>
-                                </p>
+                                    <div class="px-6 py-4">
+                                        <div class="font-bold text-lg mb-2 break-words">
+                                            <a href="/batch/{{ $batch->id }}" class="text-blue no-underline">
+                                                {{ $batch->dev_url }}
+                                            </a>
+                                        </div>
+                                        <p class="text-grey-darker text-sm mb-2">
+                                            Created: {{ $batch->created_at->format('F m, Y') }}
+                                        </p>
+                                        <p class="text-grey-darker text-sm">
+                                            Loading url counts...
+                                        </p>
+                                    </div>
+                                    <div class="px-6 py-4">
+                                        <a href="/batch/{{ $batch->id }}" class="no-underline text-xs font-semibold rounded px-4 py-1 leading-normal bg-white border border-blue text-blue hover:bg-blue hover:text-white">
+                                            View/Edit Redirects
+                                        </a>
+                                        <a target="_blank" href="{{ $batch->dev_url }}" class="no-underline text-xs font-semibold rounded px-4 py-1 leading-normal bg-white border border-green text-green hover:bg-green hover:text-white ml-2">
+                                            Visit Site <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                    </div>
+                                </div>
                             </batch-component>
                         @endif
                     @endforeach
