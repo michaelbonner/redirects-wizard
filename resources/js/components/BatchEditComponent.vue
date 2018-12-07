@@ -19,6 +19,24 @@
                 <i class="fas fa-eye-slash"></i>
                 Show Addressed URLs
             </button>
+            
+			<button 
+                class="no-underline text-sm font-semibold rounded px-4 py-1 leading-normal text-blue mx-1"
+                @click.prevent="togglePending( true )"
+                v-if="!hidePending"
+            >
+                <i class="fas fa-eye-slash"></i>
+                Hide Pending URLs
+            </button>
+			<button 
+                class="no-underline text-sm font-semibold rounded px-4 py-1 leading-normal bg-blue border border-blue-dark text-white hover:bg-blue-dark mx-1" 
+                @click.prevent="togglePending( false )" 
+                v-else
+            >
+                <i class="fas fa-eye-slash"></i>
+                Show Pending URLs
+            </button>
+
             <button 
                 class="no-underline text-sm font-semibold rounded px-4 py-1 leading-normal text-blue mx-1" 
                 @click.prevent="recheckUnaddressed()"
@@ -124,6 +142,7 @@
                         :redirect_to="url.redirect_to"
                         :addressed="url.addressed"
                         :hideSuccessful="hideSuccessful"
+                        :hidePending="hidePending"
                         :doRecheck="doRecheck"
                         :doRecheckUnaddressed="doRecheckUnaddressed"
                     >
@@ -175,6 +194,7 @@
         data: function() {
             return {
                 hideSuccessful: false,
+                hidePending: false,
                 submitting: false,
                 updatedDevUrl: '',
                 error: {},
@@ -217,6 +237,15 @@
 				} else {
                     this.hideSuccessful = false;
                     this.$emit('hideSuccessful');
+				}
+            },
+			togglePending: function( toggle ){
+                if( toggle ){
+                    this.hidePending = true;
+                    this.$emit('hidePending');
+				} else {
+                    this.hidePending = false;
+                    this.$emit('hidePending');
 				}
             },
             recheckAll: function(){

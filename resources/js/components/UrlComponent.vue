@@ -124,6 +124,7 @@
             'redirect_to',
             'addressed',
             'hideSuccessful',
+            'hidePending',
             'doRecheck',
             'doRecheckUnaddressed'
         ],
@@ -134,6 +135,9 @@
         },
         watch: {
 			hideSuccessful: function(){
+                this.showOrHide();
+			},
+			hidePending: function(){
                 this.showOrHide();
 			},
 			doRecheck: function(){
@@ -174,11 +178,20 @@
                 });
             },
             showOrHide: function() {
-                if(!this.hideSuccessful){
+                if(
+                    !this.hideSuccessful &&
+                    !this.hidePending
+                ) {
                     this.visible = true;
                     return;
                 }
+                
                 if( this.hideSuccessful && this.addressed ){
+                    this.visible = false;
+                    return;
+                }
+                
+                if( this.hidePending && this.updatedRedirectTo ){
                     this.visible = false;
                     return;
                 }
