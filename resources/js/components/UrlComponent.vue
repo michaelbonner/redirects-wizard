@@ -188,6 +188,15 @@
             updateRedirectTo: _.debounce(function() {
                 this.submitting = true;
                 this.resetMessages();
+                if(
+                    this.updatedRedirectTo == this.url ||
+                    `${this.getBaseUrlFromString(this.url)}${this.updatedRedirectTo}` == this.url ||
+                    `${this.getBaseUrlFromString(this.url)}/${this.updatedRedirectTo}` == this.url
+                ){
+                    this.error = {'message': 'Redirect URL cannot be the same as the url to redirect'};
+                    this.submitting = false;
+                    return true;
+                }
                 axios.patch(`/api/url/${this.id}`, {
                     redirect_to: this.updatedRedirectTo,
                 })
@@ -210,6 +219,10 @@
                 this.success = '';
                 this.message = '';
                 this.redirectPath = [];
+            },
+            getBaseUrlFromString: function(string) {
+                const urlParts = string.split('/');
+                return `${urlParts[0]}//${urlParts[2]}`;
             }
         }
     }
