@@ -246,10 +246,10 @@
                 if(!this.updatedRedirectTo && !this.addressed){
                     axios.get(`/api/url/${this.id}/details`)
                         .then((result) => {
-                            if(!this.updatedRedirectTo){
+                            if(this.interval){
                                 this.updatedRedirectTo = result.data.redirect_to;
                             }
-                            if(!this.getDevRedirectUrl){
+                            if(this.interval){
                                 this.getDevRedirectUrl = result.data.devRedirectUrl;
                             }
                         });
@@ -258,6 +258,7 @@
             clearInterval: function(){
                 if(this.interval){
                     clearInterval(this.interval);
+                    this.interval = false;
                 }
             }
         }
