@@ -246,8 +246,12 @@
                 if(!this.updatedRedirectTo && !this.addressed){
                     axios.get(`/api/url/${this.id}/details`)
                         .then((result) => {
-                            this.updatedRedirectTo = result.data.redirect_to;
-                            this.getDevRedirectUrl = result.data.devRedirectUrl;
+                            if(!this.updatedRedirectTo){
+                                this.updatedRedirectTo = result.data.redirect_to;
+                            }
+                            if(!this.getDevRedirectUrl){
+                                this.getDevRedirectUrl = result.data.devRedirectUrl;
+                            }
                         });
                 }
             },
