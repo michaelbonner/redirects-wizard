@@ -101,6 +101,9 @@
         mounted() {
             this.updatedRedirectTo = this.redirect_to;
             this.getDevRedirectUrl = this.devRedirectUrl;
+            setInterval(() => {
+                this.updateSelf();
+            }, 5000)
         },
         data: function() {
             return  {
@@ -236,6 +239,15 @@
             getBaseUrlFromString: function(string) {
                 const urlParts = string.split('/');
                 return `${urlParts[0]}//${urlParts[2]}`;
+            },
+            updateSelf: function(){
+                if(!this.updatedRedirectTo){
+                    axios.get(`/api/url/${this.id}/details`)
+                        .then((result) => {
+                            this.updatedRedirectTo = result.data.redirect_to;
+                            this.getDevRedirectUrl = result.data.devRedirectUrl;
+                        });
+                }
             }
         }
     }

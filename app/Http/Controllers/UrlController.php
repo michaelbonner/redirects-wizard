@@ -50,6 +50,11 @@ class UrlController extends Controller
         $url = $url->checkAddressed();
         return $url;
     }
+    
+    public function details(Url $url)
+    {
+        return $url;
+    }
 
     /**
      * Show the form for editing the specified resource.
