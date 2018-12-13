@@ -29,6 +29,7 @@
                             <input 
                                 class="bg-grey-lighter appearance-none border-2 border-grey-lighter rounded w-full py-2 px-4 text-grey-darker leading-tight focus:outline-none focus:bg-white focus:border-green text-xs"
                                 v-bind:disabled="submitting"
+                                @focus="clearInterval"
                                 v-model="updatedRedirectTo"
                                 placeholder="/"
                             >
@@ -101,7 +102,7 @@
         mounted() {
             this.updatedRedirectTo = this.redirect_to;
             this.getDevRedirectUrl = this.devRedirectUrl;
-            setInterval(() => {
+            this.interval = setInterval(() => {
                 this.updateSelf();
             }, 5000)
         },
@@ -117,6 +118,7 @@
                 success: '',
                 getDevRedirectUrl: '',
                 testingUrl: false,
+                interval: false,
             }
         },
         props: [
@@ -241,12 +243,17 @@
                 return `${urlParts[0]}//${urlParts[2]}`;
             },
             updateSelf: function(){
-                if(!this.updatedRedirectTo){
+                if(!this.updatedRedirectTo && !this.addressed){
                     axios.get(`/api/url/${this.id}/details`)
                         .then((result) => {
                             this.updatedRedirectTo = result.data.redirect_to;
                             this.getDevRedirectUrl = result.data.devRedirectUrl;
                         });
+                }
+            },
+            clearInterval: function(){
+                if(this.interval){
+                    clearInterval(this.interval);
                 }
             }
         }
