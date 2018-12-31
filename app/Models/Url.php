@@ -104,7 +104,9 @@ class Url extends Model
             '? [R=301,NC,L]';
 
         $rule = str_replace($this->batch->devUrlWithTrailingSlash, '/', $rule);
-        $rule = str_replace($this->batch->devUrl, '', $rule);
+        $rule = str_replace($this->batch->dev_url, '', $rule);
+        $rule = str_replace('%20', "\ ", $rule);
+        $rule = str_replace(' ? ', " /? ", $rule);
 
         return $rule;
     }
