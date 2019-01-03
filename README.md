@@ -24,3 +24,11 @@ I like using [Laravel Valet](https://laravel.com/docs/5.7/valet). You should che
 1. Once you've entered where each URL will go, click the "View Rewrites" button.
 1. Copy and paste the rewrite rules into your vhost config or .htaccess file.
 1. Click the "Recheck Unaddressed" button to see if your redirects were successful.
+
+## Screenshots
+
+Index Page
+![Alt text](/github/screenshot-index.png?raw=true "Optional Title")
+
+Show Page
+![Alt text](/github/screenshot-show.png?raw=true "Optional Title")
