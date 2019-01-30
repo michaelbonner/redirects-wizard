@@ -102,12 +102,12 @@
         mounted() {
             this.updatedRedirectTo = this.redirect_to;
             this.getDevRedirectUrl = this.devRedirectUrl;
-            if(!this.updatedRedirectTo && !this.addressed){
-                this.updatable = true;
-            }
-            setTimeout(() => {
-                this.updateSelf();
-            }, 10000);
+            // if(!this.updatedRedirectTo && !this.addressed){
+            //     this.updatable = true;
+            // }
+            // setTimeout(() => {
+            //     this.updateSelf();
+            // }, 10000);
 
         },
         data: function() {
@@ -122,7 +122,7 @@
                 success: '',
                 getDevRedirectUrl: '',
                 testingUrl: false,
-                updatable: true,
+                updatable: false,
             }
         },
         props: [
