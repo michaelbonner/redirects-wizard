@@ -107,7 +107,7 @@
             }
             setTimeout(() => {
                 this.updateSelf();
-            }, 5000);
+            }, 10000);
 
         },
         data: function() {
@@ -259,7 +259,7 @@
                                 this.getDevRedirectUrl = result.data.devRedirectUrl;
                                 setTimeout(() => {
                                     this.updateSelf();
-                                }, 5000);
+                                }, 10000);
                             }
                         });
                 }
