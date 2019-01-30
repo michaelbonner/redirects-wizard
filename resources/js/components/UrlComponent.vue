@@ -6,7 +6,7 @@
         <div class="text-center sm:text-left p-4">
             <div class="mb-4">
                 <p 
-                    class="text-l leading-tight mb-2"
+                    class="text-l leading-tight mb-2 break-words"
                 >
                     <span v-if="isAddressed" class="fa fa-check-square text-blue"></span>
                     <a 

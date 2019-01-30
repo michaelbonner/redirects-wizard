@@ -71,14 +71,14 @@
             </a>
 		</div>
         <div class="sm:flex sm:items-center px-6 py-4">
-            <div class="sm:text-left sm:flex-grow">
+            <div class="sm:text-left sm:flex-grow w-full">
                 <div class="mb-6">
                     <div>
                         <label class="block font-bold mb-1 md:mb-0 pr-4" for="inline-full-name">
                             Dev URL
                         </label>
                     </div>
-                    <div class="md:flex mb-6">
+                    <div class="md:flex mb-6 w-full">
                         <div class="flex-auto">
                             <input 
                                 class="bg-grey-lighter appearance-none border-2 border-grey-lighter rounded w-full py-2 px-4 text-grey-darker leading-tight focus:outline-none focus:bg-white focus:border-green"
