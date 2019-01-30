@@ -29,7 +29,7 @@
                             <input 
                                 class="bg-grey-lighter appearance-none border-2 border-grey-lighter rounded w-full py-2 px-4 text-grey-darker leading-tight focus:outline-none focus:bg-white focus:border-green text-xs"
                                 v-bind:disabled="submitting"
-                                @focus="clearInterval"
+                                @focus="clearUpdatble"
                                 v-model="updatedRedirectTo"
                                 placeholder="/"
                             >
@@ -102,9 +102,13 @@
         mounted() {
             this.updatedRedirectTo = this.redirect_to;
             this.getDevRedirectUrl = this.devRedirectUrl;
-            this.interval = setInterval(() => {
+            if(!this.updatedRedirectTo && !this.addressed){
+                this.updatable = true;
+            }
+            setTimeout(() => {
                 this.updateSelf();
-            }, 5000)
+            }, 5000);
+
         },
         data: function() {
             return  {
@@ -118,7 +122,7 @@
                 success: '',
                 getDevRedirectUrl: '',
                 testingUrl: false,
-                interval: false,
+                updatable: true,
             }
         },
         props: [
@@ -243,23 +247,25 @@
                 return `${urlParts[0]}//${urlParts[2]}`;
             },
             updateSelf: function(){
-                if(!this.updatedRedirectTo && !this.addressed){
+                if(
+                    this.updatable &&
+                    !this.updatedRedirectTo &&
+                    !this.addressed
+                ){
                     axios.get(`/api/url/${this.id}/details`)
                         .then((result) => {
-                            if(this.interval){
+                            if(this.updatable){
                                 this.updatedRedirectTo = result.data.redirect_to;
-                            }
-                            if(this.interval){
                                 this.getDevRedirectUrl = result.data.devRedirectUrl;
+                                setTimeout(() => {
+                                    this.updateSelf();
+                                }, 5000);
                             }
                         });
                 }
             },
-            clearInterval: function(){
-                if(this.interval){
-                    clearInterval(this.interval);
-                    this.interval = false;
-                }
+            clearUpdatble: function(){
+                this.updatable = false;
             }
         }
     }
