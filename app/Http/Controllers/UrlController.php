@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Url;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\Cache;
 
 class UrlController extends Controller
 {
@@ -54,9 +53,7 @@ class UrlController extends Controller
     
     public function details($url)
     {
-        return Cache::remember('url-' . $url, 120, function () use ($url) {
-            return Url::find($url);
-        });
+        return Url::find($url);
     }
 
     /**
@@ -79,7 +76,6 @@ class UrlController extends Controller
      */
     public function update(Request $request, Url $url)
     {
-        Cache::forget('url-' . $url->id);
         $url->update(
             $request->all()
         );
@@ -94,7 +90,6 @@ class UrlController extends Controller
      */
     public function destroy(Url $url)
     {
-        Cache::forget('url-' . $url->id);
         $url->delete();
         return ['success' => true];
     }
