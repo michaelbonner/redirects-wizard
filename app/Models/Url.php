@@ -50,6 +50,9 @@ class Url extends Model
         $dev = parse_url($this->batch->dev_url);
         $returnString = $dev['scheme'] . '://' . $dev['host'];
         $returnString .= $current['path'] ?? '';
+        if (!empty($current['query'])) {
+            $returnString .= '?' . $current['query'];
+        }
         return $returnString;
     }
 
