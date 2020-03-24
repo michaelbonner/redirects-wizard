@@ -11,10 +11,12 @@
 |
 */
 
-Route::get('/', 'BatchController@index');
-Route::get('/batch/create', 'BatchController@store');
-Route::get('/batch/{batch}', 'BatchController@edit');
+Route::get('/', 'BatchController@index')->middleware('auth');
+Route::get('/batch/create', 'BatchController@store')->middleware('auth');
+Route::get('/batch/{batch}', 'BatchController@edit')->middleware('auth');
 Route::get(
     '/batch-dev-url-screenshot/{batch}.jpg',
     'BatchDevUrlScreenshotController@show'
-);
+)->middleware('auth');
+
+Auth::routes();
