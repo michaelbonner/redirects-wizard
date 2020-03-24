@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container mx-auto">
-    <h1 class="block mt-8 mb-2 px-4 text-gray-800">
+    <h1 class="block mt-8 mb-2 px-4 text-gray-800 text-4xl font-bold">
         Redirect Batches
     </h1>
     <div>

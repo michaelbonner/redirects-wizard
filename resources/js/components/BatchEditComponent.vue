@@ -92,7 +92,7 @@
                                 rows="10"
                                 v-bind:disabled="submitting"
                                 v-model="updatedDevUrl"
-                                placeholder="https://www.redolive.com"
+                                placeholder="https://www.bootpackdigital.com"
                             />
                         </div>
                         <div class="flex-initial pl-4 pt-1">
