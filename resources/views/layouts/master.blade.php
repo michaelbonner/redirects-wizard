@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,7 +15,8 @@
 
     <!-- Styles -->
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+        integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
     <style>
         body {
             background-color: #ecf2f7;
@@ -34,32 +36,53 @@
             -ms-animation-duration: 2000ms;
             -ms-animation-iteration-count: infinite;
             -ms-animation-timing-function: ease-in-out;
-            
+
             animation-name: spin;
             animation-duration: 2000ms;
             animation-iteration-count: infinite;
             animation-timing-function: ease-in-out;
         }
+
         @-ms-keyframes spin {
-            from { -ms-transform: rotate(0deg); }
-            to { -ms-transform: rotate(360deg); }
+            from {
+                -ms-transform: rotate(0deg);
+            }
+
+            to {
+                -ms-transform: rotate(360deg);
+            }
         }
+
         @-moz-keyframes spin {
-            from { -moz-transform: rotate(0deg); }
-            to { -moz-transform: rotate(360deg); }
+            from {
+                -moz-transform: rotate(0deg);
+            }
+
+            to {
+                -moz-transform: rotate(360deg);
+            }
         }
+
         @-webkit-keyframes spin {
-            from { -webkit-transform: rotate(0deg); }
-            to { -webkit-transform: rotate(360deg); }
+            from {
+                -webkit-transform: rotate(0deg);
+            }
+
+            to {
+                -webkit-transform: rotate(360deg);
+            }
         }
+
         @keyframes spin {
             from {
-                transform:rotate(0deg);
+                transform: rotate(0deg);
             }
+
             to {
-                transform:rotate(360deg);
+                transform: rotate(360deg);
             }
         }
+
         ::placeholder {
             color: #bbb !important;
             opacity: 1;
@@ -74,11 +97,13 @@
         }
     </style>
 </head>
-<body class="bg-gray-lightest font-sans font-normal antialiased min-h-screen">
+
+<body class="bg-gray-400est font-sans font-normal antialiased min-h-screen">
     <div class="flex flex-col">
         @yield('content')
     </div>
 
     <script src="{{ mix('js/app.js') }}"></script>
 </body>
+
 </html>

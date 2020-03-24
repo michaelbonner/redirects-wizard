@@ -11,17 +11,17 @@
             </a>
             <div class="px-6 py-4">
                 <div class="font-bold text-lg mb-2 break-words">
-                    <a class="text-blue no-underline" v-bind:href="url">
+                    <a class="text-blue-500 no-underline" v-bind:href="url">
                         {{ dev_url }}
                     </a>
                 </div>
-                <p class="text-grey-darker text-sm mb-2">
+                <p class="text-gray-700 text-sm mb-2">
                     Created: {{ date_created }}
                 </p>
-                <p class="text-grey-darker text-sm">
+                <p class="text-gray-700 text-sm">
                     <i
                         v-if="needsAddressing"
-                        class="fas fa-exclamation-circle text-red"
+                        class="fas fa-exclamation-circle text-red-500"
                     ></i>
                     {{ count_urls - count_remaining_urls }} /
                     {{ count_urls }} URLs addressed
@@ -30,14 +30,14 @@
             <div class="px-6 py-4">
                 <a
                     v-bind:href="url"
-                    class="no-underline text-xs font-semibold rounded px-4 py-1 leading-normal bg-white border border-blue text-blue hover:bg-blue hover:text-white"
+                    class="no-underline text-xs font-semibold rounded px-4 py-1 leading-normal bg-white border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
                 >
                     View/Edit Redirects
                 </a>
                 <a
                     target="_blank"
                     v-bind:href="dev_url"
-                    class="no-underline text-xs font-semibold rounded px-4 py-1 leading-normal bg-white border border-green text-green hover:bg-green hover:text-white ml-2"
+                    class="no-underline text-xs font-semibold rounded px-4 py-1 leading-normal bg-white border border-green-500 text-green-500 hover:bg-green-500 hover:text-white ml-2"
                 >
                     Visit Site
                     <i class="fas fa-external-link-alt"></i>
