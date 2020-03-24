@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Batch extends Model
 {
     use SoftDeletes;
-    
+
     protected $guarded = [];
 
     public function urls()
@@ -39,9 +40,9 @@ class Batch extends Model
     {
         return $this->devUrlParts ? $this->devUrlParts['host'] : null;
     }
-    
+
     public function getHostWithoutWwwAttribute()
     {
-        return str_after($this->host, 'www.');
+        return Str::after($this->host, 'www.');
     }
 }
