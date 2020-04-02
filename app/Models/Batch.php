@@ -19,7 +19,7 @@ class Batch extends Model
 
     public function getDevUrlWithTrailingSlashAttribute()
     {
-        return ends_with($this->dev_url, '/') ?
+        return Str::endsWith($this->dev_url, '/') ?
             $this->dev_url :
             $this->dev_url . '/';
     }
