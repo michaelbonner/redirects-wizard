@@ -1,10 +1,10 @@
 module.exports = {
-    purge: ["./resources/**/*.blade.php", "./resources/**/*.vue"],
+    purge: ["./resources/views/**/*.blade.php", "./resources/css/**/*.css"],
     theme: {
         extend: {}
     },
     variants: {},
-    plugins: [],
+    plugins: [require("@tailwindcss/ui")],
     future: {
         removeDeprecatedGapUtilities: true
     }
