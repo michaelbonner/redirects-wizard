@@ -36,6 +36,7 @@ class BatchDevUrlScreenshotController extends Controller
                 ->setDelay(800)
                 ->fit(Manipulations::FIT_CONTAIN, 360, 225)
                 ->windowSize(1440, 900)
+                ->setScreenshotType('jpeg', 100)
                 ->save($image_path);
 
             $image = Image::make($image_path);
