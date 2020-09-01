@@ -30,7 +30,7 @@ class BatchDevUrlScreenshotController extends Controller
 
             Browsershot::url($batch->dev_url)
                 ->windowSize(1440, 900)
-                ->setScreenshotType('jpeg', 70)
+                ->setScreenshotType('jpeg', 40)
                 ->save($image_path);
 
             $image = Image::make($image_path);
