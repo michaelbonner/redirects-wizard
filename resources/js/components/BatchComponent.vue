@@ -11,9 +11,9 @@
             </a>
             <div class="px-6 py-4">
                 <div class="font-bold text-lg mb-2 break-words">
-                    <a class="text-blue-500 no-underline" v-bind:href="url">
-                        {{ dev_url }}
-                    </a>
+                    <a class="text-blue-500 no-underline" v-bind:href="url">{{
+                        dev_url
+                    }}</a>
                 </div>
                 <p class="text-gray-700 text-sm mb-2">
                     Created: {{ date_created }}
@@ -31,9 +31,8 @@
                 <a
                     v-bind:href="url"
                     class="no-underline text-xs font-semibold rounded px-4 py-1 leading-normal bg-white border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+                    >View/Edit Redirects</a
                 >
-                    View/Edit Redirects
-                </a>
                 <a
                     target="_blank"
                     v-bind:href="dev_url"
