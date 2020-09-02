@@ -19,4 +19,4 @@ Route::get(
     'BatchDevUrlScreenshotController@show'
 )->middleware('auth');
 
-Auth::routes();
+Auth::routes(['register' => false]);
