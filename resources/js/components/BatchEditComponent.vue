@@ -88,7 +88,7 @@
                     <div class="md:flex mb-6 w-full">
                         <div class="flex-auto">
                             <input
-                                class="bg-gray-100 appearance-none border-2 border-gray-200 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-green-500"
+                                class="bg-gray-100 appearance-none border-2 border-gray-100 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-green-500"
                                 rows="10"
                                 v-bind:disabled="submitting"
                                 v-model="updatedDevUrl"

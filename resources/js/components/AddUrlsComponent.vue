@@ -16,7 +16,7 @@
                     </div>
                     <div class="md:w-4/5">
                         <textarea
-                            class="bg-gray-300 appearance-none border-2 border-gray-300 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-blue-500"
+                            class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white border-2 border-gray-100 focus:border-blue-500"
                             rows="10"
                             v-model="urls"
                             v-bind:disabled="submitting"
