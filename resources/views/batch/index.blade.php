@@ -17,14 +17,14 @@
     </div>
     <div id="app">
         <div class="px-2 my-8">
-            <div class="flex flex-wrap -mx-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 xl:gap-6">
                 @foreach ($batches as $batch)
                 @if($batch->urls->count())
                 <batch-component count_urls="{{ $batch->urls->count() }}"
                     count_remaining_urls="{{ $batch->remainingToAddressUrls->count() }}" batch_id="{{ $batch->id}}"
                     dev_url="{{ $batch->dev_url }}" date_created="{{ $batch->created_at->format('F d, Y') }}"
-                    class="w-full md:w-1/3 px-4 my-8">
-                    <div class="rounded overflow-hidden shadow-lg bg-white">
+                    class="w-full h-full">
+                    <div class="h-full rounded overflow-hidden shadow-lg bg-white">
                         <a href="/batch/{{ $batch->id }}">
                             <img src="/batch-dev-url-screenshot/{{ $batch->id }}.jpg"
                                 alt="{{ $batch->dev_url }} screenshot" class="w-full"
@@ -44,10 +44,6 @@
                             </p>
                         </div>
                         <div class="px-6 py-4">
-                            <a href="/batch/{{ $batch->id }}"
-                                class="no-underline text-xs font-semibold rounded px-4 py-1 leading-normal bg-white border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white">
-                                View/Edit Redirects
-                            </a>
                             <a target="_blank" href="{{ $batch->dev_url }}"
                                 class="no-underline text-xs font-semibold rounded px-4 py-1 leading-normal bg-white border border-green-500 text-green-500 hover:bg-green-500 hover:text-white ml-2">
                                 Visit Site <i class="fas fa-external-link-alt"></i>

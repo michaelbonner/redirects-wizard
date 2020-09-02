@@ -1,47 +1,48 @@
 <template>
-    <div class="w-full md:w-1/3 px-4 my-8">
-        <div class="rounded overflow-hidden shadow-lg bg-white">
-            <a :href="url">
-                <img
-                    style="min-height:200px"
-                    class="w-full"
-                    :src="screenshotUrl"
-                    :alt="screenshotAlt"
-                />
+    <div
+        class="w-full h-full flex flex-col justify-between rounded overflow-hidden shadow-lg bg-white"
+    >
+        <a :href="url">
+            <img
+                style="min-height:200px"
+                class="w-full"
+                :src="screenshotUrl"
+                :alt="screenshotAlt"
+            />
+        </a>
+        <div class="px-6 py-4">
+            <div class="font-bold text-lg mb-2 break-words">
+                <a class="text-blue-500 no-underline" v-bind:href="url">{{
+                    dev_url
+                }}</a>
+            </div>
+            <p class="text-gray-700 text-sm mb-2">
+                Created: {{ date_created }}
+            </p>
+            <p class="text-gray-700 text-sm">
+                <i
+                    v-if="needsAddressing"
+                    class="fas fa-exclamation-circle text-red-500"
+                ></i>
+                {{ count_urls - count_remaining_urls }} / {{ count_urls }} URLs
+                addressed
+            </p>
+        </div>
+        <div class="px-6 py-4 flex justify-between">
+            <a
+                v-bind:href="url"
+                class="no-underline text-xs font-semibold rounded px-4 py-1 leading-normal bg-white border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+            >
+                Manage
             </a>
-            <div class="px-6 py-4">
-                <div class="font-bold text-lg mb-2 break-words">
-                    <a class="text-blue-500 no-underline" v-bind:href="url">{{
-                        dev_url
-                    }}</a>
-                </div>
-                <p class="text-gray-700 text-sm mb-2">
-                    Created: {{ date_created }}
-                </p>
-                <p class="text-gray-700 text-sm">
-                    <i
-                        v-if="needsAddressing"
-                        class="fas fa-exclamation-circle text-red-500"
-                    ></i>
-                    {{ count_urls - count_remaining_urls }} /
-                    {{ count_urls }} URLs addressed
-                </p>
-            </div>
-            <div class="px-6 py-4">
-                <a
-                    v-bind:href="url"
-                    class="no-underline text-xs font-semibold rounded px-4 py-1 leading-normal bg-white border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
-                    >View/Edit Redirects</a
-                >
-                <a
-                    target="_blank"
-                    v-bind:href="dev_url"
-                    class="no-underline text-xs font-semibold rounded px-4 py-1 leading-normal bg-white border border-green-500 text-green-500 hover:bg-green-500 hover:text-white ml-2"
-                >
-                    Visit Site
-                    <i class="fas fa-external-link-alt"></i>
-                </a>
-            </div>
+            <a
+                target="_blank"
+                v-bind:href="dev_url"
+                class="no-underline text-xs font-semibold rounded px-4 py-1 leading-normal bg-white text-green-500 hover:text-green-700 ml-2"
+            >
+                Visit Site
+                <i class="fas fa-external-link-alt"></i>
+            </a>
         </div>
     </div>
 </template>
