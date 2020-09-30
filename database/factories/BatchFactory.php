@@ -5,9 +5,13 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
 
 $sites = collect(
-    json_decode(
-        (new Client)->get('https://redolive.co/sites-json.php')->getBody()
-    )
+    [
+        'https://brightonresort.com/',
+        'https://lineskis.com/',
+        'https://www.apple.com/',
+        'https://www.tesla.com/',
+        'https://www.transitionbikes.com/',
+    ]
 );
 
 $factory->define(App\Models\Batch::class, function (Faker $faker) use ($sites) {
