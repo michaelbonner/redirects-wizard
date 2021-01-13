@@ -1,8 +1,6 @@
 <?php
 
 use Faker\Generator as Faker;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Client;
 
 $sites = collect(
     [
@@ -17,7 +15,7 @@ $sites = collect(
 $factory->define(App\Models\Batch::class, function (Faker $faker) use ($sites) {
     return [
         'dev_url' => function () use ($sites) {
-            return 'https://' . $sites->random();
+            return $sites->random();
         }
     ];
 });
