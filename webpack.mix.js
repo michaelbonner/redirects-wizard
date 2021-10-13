@@ -19,7 +19,7 @@ mix.js("resources/js/app.js", "public/js")
         require("postcss-nested"),
         require("autoprefixer")
     ])
-    .browserSync("redirects-wizard.test");
+    .browserSync("localhost");
 
 if (mix.inProduction()) {
     mix.version();

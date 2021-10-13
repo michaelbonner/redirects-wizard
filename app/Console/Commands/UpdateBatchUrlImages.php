@@ -48,7 +48,7 @@ class UpdateBatchUrlImages extends Command
         }
 
         $this->line('');
-        
+
         $batches = Batch::whereNotNull('dev_url')
             ->where('dev_url', '!=', '')
             ->select('dev_url')
@@ -59,14 +59,14 @@ class UpdateBatchUrlImages extends Command
             $not_fetching = $batches->filter(function ($batch, $i) {
                 $image_path = storage_path(
                     '/app/public/' .
-                    urlencode($batch->dev_url) .
-                    '.jpg'
+                        urlencode($batch->dev_url) .
+                        '.jpg'
                 );
                 if (
                     !$this->option('force') &&
                     file_exists($image_path) &&
                     Carbon::createFromTimestamp(filemtime($image_path))
-                        ->diffInMinutes(Carbon::now()) < 30
+                    ->diffInMinutes(Carbon::now()) < 30
                 ) {
                     return true;
                 }
@@ -75,14 +75,14 @@ class UpdateBatchUrlImages extends Command
             $fetching = $batches->filter(function ($batch, $i) {
                 $image_path = storage_path(
                     '/app/public/' .
-                    urlencode($batch->dev_url) .
-                    '.jpg'
+                        urlencode($batch->dev_url) .
+                        '.jpg'
                 );
                 if (
                     !$this->option('force') &&
                     file_exists($image_path) &&
                     Carbon::createFromTimestamp(filemtime($image_path))
-                        ->diffInMinutes(Carbon::now()) < 30
+                    ->diffInMinutes(Carbon::now()) < 30
                 ) {
                     return false;
                 }
@@ -100,7 +100,7 @@ class UpdateBatchUrlImages extends Command
         } else {
             $fetching = $batches;
         }
-        
+
         $this->table(
             [
                 'URLs to generate screenshots for',
@@ -121,11 +121,13 @@ class UpdateBatchUrlImages extends Command
         $fetching->each(function ($batch) use ($bar) {
             $image_path = storage_path(
                 '/app/public/' .
-                urlencode($batch->dev_url) .
-                '.jpg'
+                    urlencode($batch->dev_url) .
+                    '.jpg'
             );
-            
+
             $image = Browsershot::url($batch->dev_url)
+                ->noSandbox()
+                ->timeout(360)
                 ->windowSize(1440, 900)
                 ->setScreenshotType('jpeg', 70)
                 ->waitUntilNetworkIdle()
@@ -133,7 +135,7 @@ class UpdateBatchUrlImages extends Command
 
             $bar->advance();
         });
-        
+
         $bar->finish();
 
         $this->line('');

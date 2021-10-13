@@ -3,6 +3,7 @@
 use Illuminate\Database\Seeder;
 use App\Models\Batch;
 use App\Models\Url;
+use App\Models\User;
 
 class BatchesTableSeeder extends Seeder
 {
@@ -24,5 +25,9 @@ class BatchesTableSeeder extends Seeder
                 ]);
             }
         });
+        factory(User::class)->create([
+            'name' => 'Michael Bonner',
+            'email' => 'mike@bootpackdigital.com',
+        ]);
     }
 }
