@@ -56,5 +56,13 @@
             </div>
         </div>
     </div>
+
+    <form action="/logout" class="px-2 py-8 flex justify-end" method="POST">
+        @csrf
+        <button class="no-underline text-sm font-semibold py-1 leading-normal text-blue-500" type="submit">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
+        </button>
+    </form>
 </div>
 @endsection
