@@ -3,14 +3,12 @@
         class="w-full h-full flex flex-col justify-between rounded overflow-hidden shadow-lg bg-white"
     >
         <a :href="url">
-            <iframe v-bind:src="dev_url" frameborder="0" class="w-full"
-                style="min-height: 200px;max-height: 300px;"></iframe>
-            <!-- <img
+            <img
                 style="min-height:200px"
                 class="w-full"
                 :src="screenshotUrl"
                 :alt="screenshotAlt"
-            /> -->
+            />
         </a>
         <div class="px-6 py-4">
             <div class="font-bold text-lg mb-2 break-words">
@@ -65,7 +63,7 @@ export default {
             return `/batch/${this.batch_id}`;
         },
         screenshotUrl: function() {
-            return `/batch-dev-url-screenshot/${this.batch_id}.jpg`;
+            return `https://screenshot-maker.bootpack.dev/api/screenshot/?url=${this.dev_url}`;
         },
         screenshotAlt: function() {
             return `${this.dev_url} screenshot`;

@@ -26,11 +26,9 @@
                     class="w-full h-full">
                     <div class="h-full rounded overflow-hidden shadow-lg bg-white">
                         <a href="/batch/{{ $batch->id }}">
-                            {{-- <img src="/batch-dev-url-screenshot/{{ $batch->id }}.jpg"
+                            <img src="https://screenshot-maker.bootpack.dev/api/screenshot/?url={{ $batch->dev_url }}"
                                 alt="{{ $batch->dev_url }} screenshot" class="w-full"
-                                style="min-height: 200px;max-height: 300px;"> --}}
-                            <iframe src="{{ $batch->dev_url }}" frameborder="0" class="w-full"
-                                style="min-height: 200px;max-height: 300px;"></iframe>
+                                style="min-height: 200px;max-height: 300px;">
                         </a>
                         <div class="px-6 py-4">
                             <div class="font-bold text-lg mb-2 break-words">
