@@ -35,7 +35,7 @@ class UpdateBatchUrlImages extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): int
     {
         return 0;
         // $this->info('Generating screenshots');

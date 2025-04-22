@@ -12,14 +12,14 @@ class BatchTest extends TestCase
     use DatabaseMigrations;
 
     /** @test */
-    public function can_create()
+    public function can_create(): void
     {
         $batch = factory(Batch::class)->create();
         $this->assertInstanceOf(Batch::class, $batch);
     }
 
     /** @test */
-    public function can_get_urls()
+    public function can_get_urls(): void
     {
         $batch = factory(Batch::class)->create();
         factory(Url::class)->create([
