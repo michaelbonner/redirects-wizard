@@ -1,13 +1,13 @@
 <?php
+
 namespace App\Classes;
 
-use App\Models\Url;
 use GuzzleHttp\Client;
-use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\RequestOptions;
 
 class UrlChecker
 {
@@ -21,9 +21,9 @@ class UrlChecker
         // First you configure Guzzle with redirect tracking and make a request
         $client = new Client([
             RequestOptions::ALLOW_REDIRECTS => [
-                'max'             => 5,
-                'strict'          => true,
-                'referer'         => true,
+                'max' => 5,
+                'strict' => true,
+                'referer' => true,
                 'track_redirects' => true,
             ],
         ]);
@@ -42,7 +42,7 @@ class UrlChecker
                     'Pragma' => 'no-cache',
                     'Upgrade-Insecure-Requests' => '1',
                     'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
-                ]
+                ],
             ]);
 
             // retrieve Redirect URI history
@@ -53,36 +53,37 @@ class UrlChecker
                 'url' => $url,
                 'status_code' => $res->getStatusCode(),
                 'redirect_path' => $redirectUriHistory,
-                'headers' => $res->getHeaders()
+                'headers' => $res->getHeaders(),
             ];
         } catch (ClientException $e) {
             $res = $e->getResponse();
+
             return [
                 'url' => $url,
                 'status_code' => $res->getStatusCode(),
                 'message' => $e->getMessage(),
-                'headers' => $res->getHeaders()
+                'headers' => $res->getHeaders(),
             ];
         } catch (ConnectException $e) {
             return [
                 'url' => $url,
                 'status_code' => 504,
                 'message' => $e->getMessage(),
-                'headers' => []
+                'headers' => [],
             ];
         } catch (ServerException $e) {
             return [
                 'url' => $url,
                 'status_code' => 500,
                 'message' => $e->getMessage(),
-                'headers' => []
+                'headers' => [],
             ];
         } catch (RequestException $e) {
             return [
                 'url' => $url,
                 'status_code' => 'Request Exception',
                 'message' => $e->getMessage(),
-                'headers' => []
+                'headers' => [],
             ];
         }
     }

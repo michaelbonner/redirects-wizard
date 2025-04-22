@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Database\Seeder;
 use App\Models\Batch;
 use App\Models\Url;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class BatchesTableSeeder extends Seeder
 {
@@ -19,8 +19,8 @@ class BatchesTableSeeder extends Seeder
             for ($i = 0; $i < 10; $i++) {
                 factory(Url::class)->create([
                     'batch_id' => $batch->id,
-                    'url' => $batch->dev_url . $faker->slug,
-                    'redirect_to' => $batch->dev_url . $faker->slug,
+                    'url' => $batch->dev_url.$faker->slug,
+                    'redirect_to' => $batch->dev_url.$faker->slug,
                     'addressed' => $faker->boolean,
                 ]);
             }

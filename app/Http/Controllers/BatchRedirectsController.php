@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Batch;
-use App\Classes\UrlChecker;
 
 class BatchRedirectsController extends Controller
 {
     public function show(Batch $batch)
     {
-        echo "<pre>";
+        echo '<pre>';
         echo "RewriteEngine On \n";
         $batch->urls()
             ->where('addressed', 0)
@@ -24,7 +22,7 @@ class BatchRedirectsController extends Controller
                 echo $url->rewrite;
                 echo "\n";
             });
-        echo "</pre>";
+        echo '</pre>';
 
         return response('');
     }

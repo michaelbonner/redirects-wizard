@@ -21,13 +21,13 @@ class Batch extends Model
     {
         return Str::endsWith($this->dev_url, '/') ?
             $this->dev_url :
-            $this->dev_url . '/';
+            $this->dev_url.'/';
     }
 
     public function getRemainingToAddressUrlsAttribute()
     {
         return $this->urls->filter(function ($url) {
-            return !$url->addressed;
+            return ! $url->addressed;
         });
     }
 

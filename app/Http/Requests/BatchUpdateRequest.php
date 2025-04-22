@@ -24,7 +24,7 @@ class BatchUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'dev_url' => 'nullable|url'
+            'dev_url' => 'nullable|url',
         ];
     }
 }
