@@ -12,14 +12,14 @@ class UrlTest extends TestCase
     use DatabaseMigrations;
 
     /** @test */
-    public function can_create()
+    public function can_create(): void
     {
         $url = factory(Url::class)->create();
         $this->assertInstanceOf(Url::class, $url);
     }
 
     /** @test */
-    public function can_get_batch()
+    public function can_get_batch(): void
     {
         $url = factory(Url::class)->create();
         $this->assertInstanceOf(Batch::class, $url->batch);
