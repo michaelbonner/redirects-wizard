@@ -3,12 +3,14 @@
         class="w-full h-full flex flex-col justify-between rounded overflow-hidden shadow-lg bg-white"
     >
         <a :href="url">
-            <img
+            <iframe v-bind:src="dev_url" frameborder="0" class="w-full"
+                style="min-height: 200px;max-height: 300px;"></iframe>
+            <!-- <img
                 style="min-height:200px"
                 class="w-full"
                 :src="screenshotUrl"
                 :alt="screenshotAlt"
-            />
+            /> -->
         </a>
         <div class="px-6 py-4">
             <div class="font-bold text-lg mb-2 break-words">
