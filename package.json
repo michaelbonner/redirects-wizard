@@ -1,7 +1,6 @@
 {
     "private": true,
     "scripts": {
-        "prod": "mix --production",
         "dev": "vite",
         "build": "vite build"
     },
