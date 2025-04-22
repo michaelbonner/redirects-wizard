@@ -4,8 +4,8 @@ use App\Http\Controllers\BatchController;
 use App\Http\Controllers\BatchRedirectsController;
 use App\Http\Controllers\BatchUrlController;
 use App\Http\Controllers\UrlController;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
