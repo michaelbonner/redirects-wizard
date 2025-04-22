@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\BatchController;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,9 +14,9 @@
 |
 */
 
-Route::get('/', 'BatchController@index')->middleware('auth');
-Route::get('/batch/create', 'BatchController@store')->middleware('auth');
-Route::get('/batch/{batch}', 'BatchController@edit')->middleware('auth');
+Route::get('/', [BatchController::class, 'index'])->middleware('auth');
+Route::get('/batch/create', [BatchController::class, 'store'])->middleware('auth');
+Route::get('/batch/{batch}', [BatchController::class, 'edit'])->middleware('auth');
 // Route::get(
 //     '/batch-dev-url-screenshot/{batch}.jpg',
 //     'BatchDevUrlScreenshotController@show'

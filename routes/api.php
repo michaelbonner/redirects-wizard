@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\BatchController;
+use App\Http\Controllers\BatchRedirectsController;
+use App\Http\Controllers\BatchUrlController;
+use App\Http\Controllers\UrlController;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 /*
@@ -17,11 +22,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::patch('/batch/{batch}', 'BatchController@update');
-Route::delete('/batch/{batch}', 'BatchController@destroy');
-Route::post('/batch/{batch}/url', 'BatchUrlController@store');
-Route::get('/batch/{batch}/redirects', 'BatchRedirectsController@show');
-Route::get('/url/{url}/details', 'UrlController@details');
-Route::get('/url/{url}', 'UrlController@show');
-Route::patch('/url/{url}', 'UrlController@update');
-Route::delete('/url/{url}', 'UrlController@destroy');
+Route::patch('/batch/{batch}', [BatchController::class, 'update']);
+Route::delete('/batch/{batch}', [BatchController::class, 'destroy']);
+Route::post('/batch/{batch}/url', [BatchUrlController::class, 'store']);
+Route::get('/batch/{batch}/redirects', [BatchRedirectsController::class, 'show']);
+Route::get('/url/{url}/details', [UrlController::class, 'details']);
+Route::get('/url/{url}', [UrlController::class, 'show']);
+Route::patch('/url/{url}', [UrlController::class, 'update']);
+Route::delete('/url/{url}', [UrlController::class, 'destroy']);
