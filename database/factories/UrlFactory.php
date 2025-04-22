@@ -1,19 +1,33 @@
 <?php
 
+namespace Database\Factories;
+
 use App\Models\Batch;
-use Faker\Generator as Faker;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(App\Models\Url::class, function (Faker $faker) {
-    return [
-        'batch_id' => function () {
-            if (Batch::count()) {
-                return Batch::inRandomOrder()->first()->id;
-            }
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Url>
+ */
+class UrlFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        return [
+            'batch_id' => function () {
+                if (Batch::count()) {
+                    return Batch::inRandomOrder()->first()->id;
+                }
 
-            return factory(Batch::class)->create()->id;
-        },
-        'url' => $faker->url(),
-        'redirect_to' => '',
-        'addressed' => false,
-    ];
-});
+                return Batch::factory()->create()->id;
+            },
+            'url' => fake()->url(),
+            'redirect_to' => '',
+            'addressed' => false,
+        ];
+    }
+}

@@ -14,10 +14,10 @@ class BatchesTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(Batch::class, 10)->create()->each(function ($batch) {
+        Batch::factory(10)->create()->each(function ($batch) {
             $faker = Faker\Factory::create();
             for ($i = 0; $i < 10; $i++) {
-                factory(Url::class)->create([
+                Url::factory()->create([
                     'batch_id' => $batch->id,
                     'url' => $batch->dev_url.$faker->slug(),
                     'redirect_to' => $batch->dev_url.$faker->slug(),
@@ -25,7 +25,7 @@ class BatchesTableSeeder extends Seeder
                 ]);
             }
         });
-        factory(User::class)->create([
+        User::factory()->create([
             'name' => 'Michael Bonner',
             'email' => 'mike@bootpackdigital.com',
         ]);

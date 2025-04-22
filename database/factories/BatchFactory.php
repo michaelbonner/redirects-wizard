@@ -1,21 +1,34 @@
 <?php
 
-use Faker\Generator as Faker;
+namespace Database\Factories;
 
-$sites = collect(
-    [
-        'https://brightonresort.com/',
-        'https://lineskis.com/',
-        'https://www.apple.com/',
-        'https://www.tesla.com/',
-        'https://www.transitionbikes.com/',
-    ]
-);
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(App\Models\Batch::class, function (Faker $faker) use ($sites) {
-    return [
-        'dev_url' => function () use ($sites) {
-            return $sites->random();
-        },
-    ];
-});
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Batch>
+ */
+class BatchFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        $sites = collect(
+            [
+                'https://brightonresort.com/',
+                'https://lineskis.com/',
+                'https://www.apple.com/',
+                'https://www.transitionbikes.com/',
+            ]
+        );
+
+        return [
+            'dev_url' => function () use ($sites) {
+                return $sites->random();
+            },
+        ];
+    }
+}

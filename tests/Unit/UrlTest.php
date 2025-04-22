@@ -1,27 +1,16 @@
 <?php
 
-namespace Tests\Unit;
-
 use App\Models\Batch;
 use App\Models\Url;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Tests\TestCase;
 
-class UrlTest extends TestCase
-{
-    use DatabaseMigrations;
+uses(\Illuminate\Foundation\Testing\DatabaseMigrations::class);
 
-    /** @test */
-    public function can_create(): void
-    {
-        $url = factory(Url::class)->create();
-        $this->assertInstanceOf(Url::class, $url);
-    }
+test('can create', function () {
+    $url = Url::factory()->create();
+    expect($url)->toBeInstanceOf(Url::class);
+});
 
-    /** @test */
-    public function can_get_batch(): void
-    {
-        $url = factory(Url::class)->create();
-        $this->assertInstanceOf(Batch::class, $url->batch);
-    }
-}
+test('can get batch', function () {
+    $url = Url::factory()->create();
+    expect($url->batch)->toBeInstanceOf(Batch::class);
+});
