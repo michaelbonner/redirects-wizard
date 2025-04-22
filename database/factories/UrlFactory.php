@@ -12,7 +12,7 @@ $factory->define(App\Models\Url::class, function (Faker $faker) {
 
             return factory(Batch::class)->create()->id;
         },
-        'url' => $faker->url,
+        'url' => $faker->url(),
         'redirect_to' => '',
         'addressed' => false,
     ];
