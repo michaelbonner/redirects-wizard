@@ -16,6 +16,6 @@ $factory->define(App\Models\Batch::class, function (Faker $faker) use ($sites) {
     return [
         'dev_url' => function () use ($sites) {
             return $sites->random();
-        }
+        },
     ];
 });

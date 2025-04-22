@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Url;
 use Illuminate\Http\Request;
-use GuzzleHttp\Client;
 
 class UrlController extends Controller
 {
@@ -31,7 +30,6 @@ class UrlController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -42,15 +40,15 @@ class UrlController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Url  $url
      * @return \Illuminate\Http\Response
      */
     public function show(Url $url)
     {
         $url = $url->checkAddressed();
+
         return $url;
     }
-    
+
     public function details($url)
     {
         return Url::find($url);
@@ -59,7 +57,6 @@ class UrlController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Url  $url
      * @return \Illuminate\Http\Response
      */
     public function edit(Url $url)
@@ -70,8 +67,6 @@ class UrlController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Url  $url
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Url $url)
@@ -79,18 +74,19 @@ class UrlController extends Controller
         $url->update(
             $request->all()
         );
+
         return $url;
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Url  $url
      * @return \Illuminate\Http\Response
      */
     public function destroy(Url $url)
     {
         $url->delete();
+
         return ['success' => true];
     }
 }

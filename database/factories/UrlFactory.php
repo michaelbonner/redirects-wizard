@@ -1,7 +1,7 @@
 <?php
 
-use Faker\Generator as Faker;
 use App\Models\Batch;
+use Faker\Generator as Faker;
 
 $factory->define(App\Models\Url::class, function (Faker $faker) {
     return [
@@ -9,6 +9,7 @@ $factory->define(App\Models\Url::class, function (Faker $faker) {
             if (Batch::count()) {
                 return Batch::inRandomOrder()->first()->id;
             }
+
             return factory(Batch::class)->create()->id;
         },
         'url' => $faker->url,

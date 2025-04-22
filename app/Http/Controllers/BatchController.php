@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BatchUpdateRequest;
 use App\Models\Batch;
 use Illuminate\Http\Request;
-use App\Http\Requests\BatchUpdateRequest;
 
 class BatchController extends Controller
 {
@@ -37,21 +37,20 @@ class BatchController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         $batch = Batch::create([
-            'dev_url' => ''
+            'dev_url' => '',
         ]);
-        return redirect('/batch/' . $batch->id);
+
+        return redirect('/batch/'.$batch->id);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Batch  $batch
      * @return \Illuminate\Http\Response
      */
     public function show(Batch $batch)
@@ -62,18 +61,17 @@ class BatchController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Batch  $batch
      * @return \Illuminate\Http\Response
      */
     public function edit(Batch $batch)
     {
         return view('batch.edit', [
             'batch' => $batch,
-            'title' => $batch->dev_url . ' Redirects',
+            'title' => $batch->dev_url.' Redirects',
             'urls' => $batch->urls()
-                        ->orderBy('addressed', 'ASC')
-                        ->orderBy('url')
-                        ->get(),
+                ->orderBy('addressed', 'ASC')
+                ->orderBy('url')
+                ->get(),
         ]);
     }
 
@@ -81,7 +79,6 @@ class BatchController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Batch  $batch
      * @return \Illuminate\Http\Response
      */
     public function update(BatchUpdateRequest $request, Batch $batch)
@@ -89,13 +86,13 @@ class BatchController extends Controller
         $batch->update(
             $request->all()
         );
+
         return $batch;
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Batch  $batch
      * @return \Illuminate\Http\Response
      */
     public function destroy(Batch $batch)
