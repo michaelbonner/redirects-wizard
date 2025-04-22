@@ -9,7 +9,6 @@
     "type": "project",
     "require": {
         "php": "^8.2",
-        "doctrine/dbal": "^3.5",
         "guzzlehttp/guzzle": "^7.8",
         "laravel/framework": "^11.44",
         "laravel/legacy-factories": "^1.4",
