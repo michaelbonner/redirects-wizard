@@ -17,9 +17,12 @@ class Url extends Model
         'devRedirectUrl',
     ];
 
-    protected $casts = [
-        'http_response' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'http_response' => 'array',
+        ];
+    }
 
     public function batch()
     {
