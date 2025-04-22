@@ -20,7 +20,7 @@ class BatchUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'dev_url' => 'nullable|url',
+            'dev_url' => 'nullable|url|max:255',
         ];
     }
 }
