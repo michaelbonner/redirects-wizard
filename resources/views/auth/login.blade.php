@@ -4,7 +4,7 @@
 <div class="container mx-auto">
     <div class="flex flex-wrap justify-center">
         <div class="w-full max-w-sm">
-            <div class="flex flex-col break-words bg-white rounded shadow-lg">
+            <div class="flex flex-col break-words bg-white rounded-sm shadow-lg">
 
                 <div class="font-bold text-xl text-gray-800 py-8 px-6 mb-0">
                     {{ __('Login') }}
@@ -19,7 +19,7 @@
                         </label>
 
                         <input id="email" type="email"
-                            class="border py-2 px-4 rounded form-input w-full @error('email') border-red-500 @enderror"
+                            class="border py-2 px-4 rounded-sm form-input w-full @error('email') border-red-500 @enderror"
                             name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
 
                         @error('email')
@@ -35,7 +35,7 @@
                         </label>
 
                         <input id="password" type="password"
-                            class="border py-2 px-4 rounded form-input w-full @error('password') border-red-500 @enderror"
+                            class="border py-2 px-4 rounded-sm form-input w-full @error('password') border-red-500 @enderror"
                             name="password" required>
 
                         @error('password')
@@ -55,7 +55,7 @@
 
                     <div class="flex flex-wrap items-center">
                         <button type="submit"
-                            class="bg-blue-500 hover:bg-blue-700 text-gray-100 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                            class="bg-blue-500 hover:bg-blue-700 text-gray-100 font-bold py-2 px-4 rounded-sm focus:outline-hidden focus:shadow-outline">
                             {{ __('Login') }}
                         </button>
 

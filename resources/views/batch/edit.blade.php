@@ -8,7 +8,7 @@
         Redirect Batch
     </h1>
     <p class="mb-6 px-4">
-        <a href="/" class="no-underline text-sm font-semibold rounded text-blue-500 py-1 leading-normal">
+        <a href="/" class="no-underline text-sm font-semibold rounded-sm text-blue-500 py-1 leading-normal">
             <i class="fas fa-home"></i>
             Home
         </a>

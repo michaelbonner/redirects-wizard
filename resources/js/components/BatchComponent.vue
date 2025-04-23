@@ -1,6 +1,6 @@
 <template>
     <div
-        class="w-full h-full flex flex-col justify-between rounded overflow-hidden shadow-lg bg-white"
+        class="w-full h-full flex flex-col justify-between rounded-sm overflow-hidden shadow-lg bg-white"
     >
         <a :href="url">
             <img
@@ -31,14 +31,14 @@
         <div class="px-6 py-4 flex justify-between">
             <a
                 v-bind:href="url"
-                class="no-underline text-xs font-semibold rounded px-4 py-1 leading-normal bg-white border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+                class="no-underline text-xs font-semibold rounded-sm px-4 py-1 leading-normal bg-white border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
             >
                 Manage
             </a>
             <a
                 target="_blank"
                 v-bind:href="dev_url"
-                class="no-underline text-xs font-semibold rounded px-4 py-1 leading-normal bg-white text-green-500 hover:text-green-700 ml-2"
+                class="no-underline text-xs font-semibold rounded-sm px-4 py-1 leading-normal bg-white text-green-500 hover:text-green-700 ml-2"
             >
                 Visit Site
                 <i class="fas fa-external-link-alt"></i>

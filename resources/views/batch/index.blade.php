@@ -24,7 +24,7 @@
                     count_remaining_urls="{{ $batch->remainingToAddressUrls->count() }}" batch_id="{{ $batch->id}}"
                     dev_url="{{ $batch->dev_url }}" date_created="{{ $batch->created_at->format('F d, Y') }}"
                     class="w-full h-full">
-                    <div class="h-full rounded overflow-hidden shadow-lg bg-white">
+                    <div class="h-full rounded-sm overflow-hidden shadow-lg bg-white">
                         <a href="/batch/{{ $batch->id }}">
                             <img src="https://screenshot-maker.bootpack.dev/api/screenshot/?url={{ $batch->dev_url }}"
                                 alt="{{ $batch->dev_url }} screenshot" class="w-full"
@@ -45,7 +45,7 @@
                         </div>
                         <div class="px-6 py-4">
                             <a target="_blank" href="{{ $batch->dev_url }}"
-                                class="no-underline text-xs font-semibold rounded px-4 py-1 leading-normal bg-white border border-green-500 text-green-500 hover:bg-green-500 hover:text-white ml-2">
+                                class="no-underline text-xs font-semibold rounded-sm px-4 py-1 leading-normal bg-white border border-green-500 text-green-500 hover:bg-green-500 hover:text-white ml-2">
                                 Visit Site <i class="fas fa-external-link-alt"></i>
                             </a>
                         </div>

@@ -31,7 +31,7 @@
                     <div class="md:flex mb-2">
                         <div class="flex-auto">
                             <input
-                                class="bg-gray-100 appearance-none border-2 border-gray-200 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-green-500 text-xs"
+                                class="bg-gray-100 appearance-none border-2 border-gray-200 rounded-sm w-full py-3 px-4 text-gray-700 leading-tight focus:outline-hidden focus:bg-white focus:border-green-500 text-xs"
                                 v-bind:disabled="submitting"
                                 @focus="clearUpdatable"
                                 v-model="updatedRedirectTo"
@@ -72,13 +72,13 @@
                     <p class="my-2">
                         <button
                             v-on:click.stop.prevent="testUrl"
-                            class="no-underline text-sm font-semibold rounded px-4 py-1 leading-normal bg-white border border-green-500 text-green-500 hover:bg-green-500 hover:text-white mr-1"
+                            class="no-underline text-sm font-semibold rounded-sm px-4 py-1 leading-normal bg-white border border-green-500 text-green-500 hover:bg-green-500 hover:text-white mr-1"
                         >
                             Test Live Redirect
                         </button>
                         <button
                             v-on:click.stop.prevent="removeUrl"
-                            class="no-underline text-sm font-semibold rounded px-4 py-1 leading-normal bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white mx-1"
+                            class="no-underline text-sm font-semibold rounded-sm px-4 py-1 leading-normal bg-white border border-red-500 text-red-500 hover:bg-red-500 hover:text-white mx-1"
                         >
                             Remove
                         </button>

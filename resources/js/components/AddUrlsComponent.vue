@@ -16,7 +16,7 @@
                     </div>
                     <div class="md:w-4/5">
                         <textarea
-                            class="bg-gray-100 appearance-none rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white border-2 border-gray-100 focus:border-blue-500"
+                            class="bg-gray-100 appearance-none rounded-sm w-full py-2 px-4 text-gray-700 leading-tight focus:outline-hidden focus:bg-white border-2 border-gray-100 focus:border-blue-500"
                             rows="10"
                             v-model="urls"
                             v-bind:disabled="submitting"
@@ -30,7 +30,7 @@
                     <div class="md:w-1/5"></div>
                     <div class="md:w-4/3">
                         <button
-                            class="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                            class="shadow-sm bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-hidden text-white font-bold py-2 px-4 rounded-sm"
                             type="submit"
                             v-bind:disabled="submitting"
                         >

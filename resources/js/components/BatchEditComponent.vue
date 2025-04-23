@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-white mx-auto shadow-md rounded overflow-hidden mb-4">
+  <div class="bg-white mx-auto shadow-md rounded-sm overflow-hidden mb-4">
     <div class="p-4 border-gray-300 border-b mb-6" v-if="dev_url">
       <button
-        class="no-underline text-base font-semibold rounded px-4 py-1 leading-normal text-blue-500 mx-1"
+        class="no-underline text-base font-semibold rounded-sm px-4 py-1 leading-normal text-blue-500 mx-1"
         @click.prevent="toggleSuccessful(true)"
         v-if="!hideSuccessful"
       >
@@ -10,7 +10,7 @@
         Hide Addressed URLs
       </button>
       <button
-        class="no-underline text-base font-semibold rounded px-4 py-1 leading-normal bg-blue-500 border border-blue-800 text-white hover:bg-blue-800 mx-1"
+        class="no-underline text-base font-semibold rounded-sm px-4 py-1 leading-normal bg-blue-500 border border-blue-800 text-white hover:bg-blue-800 mx-1"
         @click.prevent="toggleSuccessful(false)"
         v-else
       >
@@ -19,7 +19,7 @@
       </button>
 
       <button
-        class="no-underline text-base font-semibold rounded px-4 py-1 leading-normal text-blue-500 mx-1"
+        class="no-underline text-base font-semibold rounded-sm px-4 py-1 leading-normal text-blue-500 mx-1"
         @click.prevent="togglePending(true)"
         v-if="!hidePending"
       >
@@ -27,7 +27,7 @@
         Hide Pending URLs
       </button>
       <button
-        class="no-underline text-base font-semibold rounded px-4 py-1 leading-normal bg-blue-500 border border-blue-800 text-white hover:bg-blue-800 mx-1"
+        class="no-underline text-base font-semibold rounded-sm px-4 py-1 leading-normal bg-blue-500 border border-blue-800 text-white hover:bg-blue-800 mx-1"
         @click.prevent="togglePending(false)"
         v-else
       >
@@ -36,7 +36,7 @@
       </button>
 
       <button
-        class="no-underline text-base font-semibold rounded px-4 py-1 leading-normal text-blue-500 mx-1"
+        class="no-underline text-base font-semibold rounded-sm px-4 py-1 leading-normal text-blue-500 mx-1"
         @click.prevent="recheckUnaddressed()"
         :disabled="submittingRecheckUnaddressed"
         :class="{
@@ -51,7 +51,7 @@
         Recheck Unaddressed
       </button>
       <button
-        class="no-underline text-base font-semibold rounded px-4 py-1 leading-normal text-blue-500 mx-1"
+        class="no-underline text-base font-semibold rounded-sm px-4 py-1 leading-normal text-blue-500 mx-1"
         @click.prevent="recheckAll()"
         :disabled="submittingRecheckAll"
         :class="{
@@ -65,14 +65,14 @@
       <a
         :href="rewriteUrl"
         target="_blank"
-        class="float-right no-underline text-base font-semibold rounded px-4 py-1 leading-normal text-blue-500 mx-1"
+        class="float-right no-underline text-base font-semibold rounded-sm px-4 py-1 leading-normal text-blue-500 mx-1"
       >
         View Rewrites
         <i class="fas fa-external-link-alt"></i>
       </a>
     </div>
     <div class="sm:flex sm:items-center px-6 py-4">
-      <div class="sm:text-left sm:flex-grow w-full">
+      <div class="sm:text-left sm:grow w-full">
         <div class="mb-6">
           <div>
             <label
@@ -85,7 +85,7 @@
           <div class="md:flex mb-6 w-full">
             <div class="flex-auto">
               <input
-                class="bg-gray-100 appearance-none border-2 border-gray-100 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-green-500"
+                class="bg-gray-100 appearance-none border-2 border-gray-100 rounded-sm w-full py-3 px-4 text-gray-700 leading-tight focus:outline-hidden focus:bg-white focus:border-green-500"
                 rows="10"
                 v-bind:disabled="submitting"
                 v-model="updatedDevUrl"
@@ -94,7 +94,7 @@
             </div>
             <div class="flex-initial pl-4 pt-1">
               <button
-                class="shadow bg-green-500 hover:bg-green-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+                class="shadow-sm bg-green-500 hover:bg-green-400 focus:shadow-outline focus:outline-hidden text-white font-bold py-2 px-4 rounded-sm"
                 type="submit"
                 v-bind:disabled="submitting"
                 v-on:click.stop.prevent="updateDevUrl"
