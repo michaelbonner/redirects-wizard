@@ -33,7 +33,7 @@
                             <input
                                 class="bg-gray-100 appearance-none border-2 border-gray-200 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-green-500 text-xs"
                                 v-bind:disabled="submitting"
-                                @focus="clearUpdatble"
+                                @focus="clearUpdatable"
                                 v-model="updatedRedirectTo"
                                 placeholder="/"
                             />
@@ -239,7 +239,7 @@ export default {
                 })
                 .then(result => {
                     this.submitting = false;
-                    this.success = "Sucessfully updated Dev URL";
+                    this.success = "Successfully updated Dev URL";
                     this.getDevRedirectUrl = result.data.devRedirectUrl;
 
                     setTimeout(() => {
@@ -274,7 +274,7 @@ export default {
                 });
             }
         },
-        clearUpdatble: function() {
+        clearUpdatable: function() {
             this.updatable = false;
         }
     }

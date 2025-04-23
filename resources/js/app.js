@@ -3,26 +3,18 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
-import Vue from "vue/dist/vue.common.js";
-
+import { createApp } from "vue/dist/vue.esm-bundler";
 import "./bootstrap";
-
+import AddUrlsComponent from "./components/AddUrlsComponent.vue";
 import BatchComponent from "./components/BatchComponent.vue";
 import BatchEditComponent from "./components/BatchEditComponent.vue";
 import UrlComponent from "./components/UrlComponent.vue";
-import AddUrlsComponent from "./components/AddUrlsComponent.vue";
 
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
+const app = createApp({});
 
-Vue.component("batch-component", BatchComponent);
-Vue.component("batch-edit-component", BatchEditComponent);
-Vue.component("url-component", UrlComponent);
-Vue.component("add-urls-component", AddUrlsComponent);
+app.component("batch-component", BatchComponent)
+    .component("batch-edit-component", BatchEditComponent)
+    .component("url-component", UrlComponent)
+    .component("add-urls-component", AddUrlsComponent);
 
-const app = new Vue({
-    el: "#app",
-});
+app.mount("#app");
