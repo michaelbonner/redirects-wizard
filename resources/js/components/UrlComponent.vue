@@ -5,7 +5,7 @@
     >
         <div class="text-center sm:text-left p-4">
             <div class="mb-4">
-                <p class="text-l leading-tight mb-2 break-words">
+                <p class="text-l leading-tight mb-2 break-words flex items-center gap-1">
                     <span
                         v-if="isAddressed"
                         class="fa fa-check-square text-blue-500"
@@ -13,8 +13,8 @@
                     <a
                         :href="url"
                         target="_blank"
-                        class="text-blue-500 text-sm underline"
-                        :class="{ 'line-through': isAddressed }"
+                        class="text-blue-500 text-sm"
+                        :class="{ 'line-through': isAddressed, 'underline': !isAddressed }"
                     >
                         {{ url }}<br />
                     </a>
