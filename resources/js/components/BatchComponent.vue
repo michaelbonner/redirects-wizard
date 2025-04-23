@@ -63,7 +63,9 @@ export default {
             return `/batch/${this.batch_id}`;
         },
         screenshotUrl: function() {
-            return `https://screenshot-maker.bootpack.dev/api/screenshot/?url=${this.dev_url}`;
+            const url = new URL('https://screenshot-maker.bootpack.dev/api/screenshot');
+            url.searchParams.set('url', this.dev_url);
+            return url.toString();
         },
         screenshotAlt: function() {
             return `${this.dev_url} screenshot`;
