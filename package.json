@@ -2,7 +2,9 @@
     "private": true,
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "vite build",
+        "out": "bun outdated",
+        "up": "bun update"
     },
     "devDependencies": {
         "@tailwindcss/postcss": "^4.1.4",
@@ -10,7 +12,7 @@
         "axios": "^1.8.4",
         "laravel-vite-plugin": "^1.2.0",
         "lodash": "^4.17.21",
-        "postcss": "^8.4.13",
+        "postcss": "^8.5.3",
         "tailwindcss": "^4.1.4",
         "vite": "^6.3.2",
         "vue": "^3.5.13",
