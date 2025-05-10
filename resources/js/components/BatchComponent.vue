@@ -4,10 +4,12 @@
     >
         <a :href="url">
             <img
-                style="min-height:200px"
-                class="w-full"
-                :src="screenshotUrl"
                 :alt="screenshotAlt"
+                :src="screenshotUrl"
+                class="w-full"
+                height="280"
+                style="min-height: 200px;"
+                width="490"
             />
         </a>
         <div class="px-6 py-4">
@@ -65,6 +67,10 @@ export default {
         screenshotUrl: function() {
             const url = new URL('https://screenshot-maker.bootpack.dev/api/screenshot');
             url.searchParams.set('url', this.dev_url);
+            url.searchParams.set('width', '1400');
+            url.searchParams.set('height', '800');
+            url.searchParams.set('scale', '0.35');
+            url.searchParams.set('quality', '80');
             return url.toString();
         },
         screenshotAlt: function() {
