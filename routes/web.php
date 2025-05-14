@@ -22,4 +22,4 @@ Route::get('/batch/{batch}', [BatchController::class, 'edit'])->middleware('auth
 //     'BatchDevUrlScreenshotController@show'
 // )->middleware('auth');
 
-Auth::routes(['register' => false]);
+Auth::routes(['register' => true]);
