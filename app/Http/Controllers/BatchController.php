@@ -47,7 +47,7 @@ class BatchController extends Controller
             'user_id' => auth()->user()->id,
         ]);
 
-        return redirect('/batch/' . $batch->id);
+        return redirect('/batch/'.$batch->id);
     }
 
     /**
@@ -69,7 +69,7 @@ class BatchController extends Controller
     {
         return view('batch.edit', [
             'batch' => $batch,
-            'title' => $batch->dev_url . ' Redirects',
+            'title' => $batch->dev_url.' Redirects',
             'urls' => $batch->urls()
                 ->orderBy('addressed', 'ASC')
                 ->orderBy('url')
