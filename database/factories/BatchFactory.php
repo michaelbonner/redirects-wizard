@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -29,6 +30,7 @@ class BatchFactory extends Factory
             'dev_url' => function () use ($sites) {
                 return $sites->random();
             },
+            'user_id' => User::factory()->create()->id,
         ];
     }
 }
