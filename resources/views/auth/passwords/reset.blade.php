@@ -20,7 +20,9 @@
                                 {{ __('E-Mail Address') }}:
                             </label>
 
-                            <input id="email" type="email" class="form-input w-full @error('email') border-red-500 @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                            <input id="email" type="email"
+                                class="form-input w-full @error('email') border-red-500 @enderror" name="email"
+                                value="{{ old('email') }}" required autocomplete="email" autofocus>
 
                             @error('email')
                                 <p class="text-red-500 text-xs italic mt-4">
@@ -34,7 +36,9 @@
                                 {{ __('Password') }}:
                             </label>
 
-                            <input id="password" type="password" class="form-input w-full @error('password') border-red-500 @enderror" name="password" required autocomplete="new-password">
+                            <input id="password" type="password"
+                                class="form-input w-full @error('password') border-red-500 @enderror" name="password"
+                                required autocomplete="new-password">
 
                             @error('password')
                                 <p class="text-red-500 text-xs italic mt-4">
@@ -48,11 +52,13 @@
                                 {{ __('Confirm Password') }}:
                             </label>
 
-                            <input id="password-confirm" type="password" class="form-input w-full" name="password_confirmation" required autocomplete="new-password">
+                            <input id="password-confirm" type="password" class="form-input w-full"
+                                name="password_confirmation" required autocomplete="new-password">
                         </div>
 
                         <div class="flex flex-wrap">
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-gray-100 font-bold  py-2 px-4 rounded-sm focus:outline-hidden focus:shadow-outline">
+                            <button type="submit"
+                                class="bg-blue-500 hover:bg-blue-700 text-gray-100 font-bold  py-2 px-4 rounded-sm focus:outline-hidden focus:shadow-outline">
                                 {{ __('Reset Password') }}
                             </button>
                         </div>
