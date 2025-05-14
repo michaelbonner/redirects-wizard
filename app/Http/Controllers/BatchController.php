@@ -18,6 +18,7 @@ class BatchController extends Controller
         return view('batch.index', [
             'batches' => Batch::where('dev_url', '!=', '')
                 ->whereNotNull('dev_url')
+                ->where('user_id', auth()->user()->id)
                 ->get()
                 ->sortBy('hostWithoutWww'),
             'title' => 'Redirect Batches',
@@ -43,9 +44,10 @@ class BatchController extends Controller
     {
         $batch = Batch::create([
             'dev_url' => '',
+            'user_id' => auth()->user()->id,
         ]);
 
-        return redirect('/batch/'.$batch->id);
+        return redirect('/batch/' . $batch->id);
     }
 
     /**
@@ -67,7 +69,7 @@ class BatchController extends Controller
     {
         return view('batch.edit', [
             'batch' => $batch,
-            'title' => $batch->dev_url.' Redirects',
+            'title' => $batch->dev_url . ' Redirects',
             'urls' => $batch->urls()
                 ->orderBy('addressed', 'ASC')
                 ->orderBy('url')
