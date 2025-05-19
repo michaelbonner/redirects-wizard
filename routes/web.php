@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [BatchController::class, 'index'])->middleware('auth');
 Route::get('/batch/create', [BatchController::class, 'store'])->middleware('auth');
 Route::get('/batch/{batch}', [BatchController::class, 'edit'])->middleware('auth');
+Route::get('health/json', \Spatie\Health\Http\Controllers\HealthCheckJsonResultsController::class);
 Route::get('health', \Spatie\Health\Http\Controllers\HealthCheckResultsController::class);
 
 // Route::get(
