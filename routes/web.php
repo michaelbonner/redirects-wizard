@@ -25,4 +25,3 @@ Route::get('health', \Spatie\Health\Http\Controllers\HealthCheckResultsControlle
 // )->middleware('auth');
 
 Auth::routes(['register' => true]);
-
