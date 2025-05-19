@@ -27,7 +27,8 @@
         "words": [
             "axios",
             "endforeach",
-            "endsection"
+            "endsection",
+            "Spatie"
         ],
         "ignoreWords": [],
         "import": []

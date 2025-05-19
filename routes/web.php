@@ -17,9 +17,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [BatchController::class, 'index'])->middleware('auth');
 Route::get('/batch/create', [BatchController::class, 'store'])->middleware('auth');
 Route::get('/batch/{batch}', [BatchController::class, 'edit'])->middleware('auth');
+Route::get('health', \Spatie\Health\Http\Controllers\HealthCheckResultsController::class);
+
 // Route::get(
 //     '/batch-dev-url-screenshot/{batch}.jpg',
 //     'BatchDevUrlScreenshotController@show'
 // )->middleware('auth');
 
 Auth::routes(['register' => true]);
+

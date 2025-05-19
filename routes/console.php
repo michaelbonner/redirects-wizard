@@ -8,5 +8,4 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('update:batchurlimages')
-    ->hourly();
+Schedule::command(\Spatie\Health\Commands\RunHealthChecksCommand::class)->everyMinute();
