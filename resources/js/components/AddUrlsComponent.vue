@@ -46,28 +46,28 @@
 <script>
 export default {
     mounted() {},
-    data: function() {
+    data: function () {
         return {
             urls: "",
             submitting: false,
             submitText: "Add URLs",
             countAdded: 0,
-            countToAdd: 0
+            countToAdd: 0,
         };
     },
     props: ["batch_id"],
     computed: {
-        uniqueUrls: function() {
+        uniqueUrls: function () {
             const urls = this.urls
                 .split("\n")
-                .filter(url => {
+                .filter((url) => {
                     return this.validateUrl(url);
                 })
                 .filter((url, index, self) => {
                     return self.indexOf(url) === index;
                 });
 
-            const uniqueUrls = urls.filter(url => {
+            const uniqueUrls = urls.filter((url) => {
                 return url.substring(url.length - 1) == "/"
                     ? !urls.includes(url.substring(url.length - 1))
                     : !urls.includes(url + "/");
@@ -76,10 +76,10 @@ export default {
             this.urls = uniqueUrls.join("\n");
 
             return uniqueUrls;
-        }
+        },
     },
     methods: {
-        onSubmit: function(event) {
+        onSubmit: function (event) {
             if (this.uniqueUrls.length) {
                 this.submitting = true;
                 this.countToAdd = this.uniqueUrls.length;
@@ -93,7 +93,7 @@ export default {
                     promises.push(
                         axios
                             .post(`/api/batch/${this.batch_id}/url`, {
-                                url
+                                url,
                             })
                             .then(() => {
                                 this.countAdded++;
@@ -110,18 +110,18 @@ export default {
                 });
             }
         },
-        validateUrl: function(url) {
+        validateUrl: function (url) {
             const pattern = new RegExp(
                 "^(https?:\\/\\/)" + // protocol
-                "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|" + // domain name
-                "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-                "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-                "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+                    "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|" + // domain name
+                    "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+                    "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+                    "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
                     "(\\#[-a-z\\d_]*)?$",
                 "i"
             ); // fragment locator
             return pattern.test(url);
-        }
-    }
+        },
+    },
 };
 </script>

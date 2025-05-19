@@ -5,7 +5,9 @@
     >
         <div class="text-center sm:text-left p-4">
             <div class="mb-4">
-                <p class="text-l leading-tight mb-2 break-words flex items-center gap-1">
+                <p
+                    class="text-l leading-tight mb-2 break-words flex items-center gap-1"
+                >
                     <span
                         v-if="isAddressed"
                         class="fa fa-check-square text-blue-500"
@@ -14,7 +16,10 @@
                         :href="url"
                         target="_blank"
                         class="text-blue-500 text-sm"
-                        :class="{ 'line-through': isAddressed, 'underline': !isAddressed }"
+                        :class="{
+                            'line-through': isAddressed,
+                            underline: !isAddressed,
+                        }"
                     >
                         {{ url }}<br />
                     </a>
@@ -116,7 +121,7 @@ export default {
         //     this.updateSelf();
         // }, 10000);
     },
-    data: function() {
+    data: function () {
         return {
             message: "",
             redirectPath: [],
@@ -128,7 +133,7 @@ export default {
             success: "",
             getDevRedirectUrl: "",
             testingUrl: false,
-            updatable: false
+            updatable: false,
         };
     },
     props: [
@@ -141,39 +146,39 @@ export default {
         "hideSuccessful",
         "hidePending",
         "doRecheck",
-        "doRecheckUnaddressed"
+        "doRecheckUnaddressed",
     ],
     computed: {
         responseMessage: () => {
             return this.message;
-        }
+        },
     },
     watch: {
-        hideSuccessful: function() {
+        hideSuccessful: function () {
             this.showOrHide();
         },
-        hidePending: function() {
+        hidePending: function () {
             this.showOrHide();
         },
-        doRecheck: function() {
+        doRecheck: function () {
             this.testUrl();
         },
-        doRecheckUnaddressed: function() {
+        doRecheckUnaddressed: function () {
             if (!this.isAddressed) {
                 this.testUrl();
             }
         },
-        updatedRedirectTo: function(value) {
+        updatedRedirectTo: function (value) {
             this.updateRedirectTo();
-        }
+        },
     },
     methods: {
-        testUrl: function() {
+        testUrl: function () {
             this.testingUrl = true;
             this.resetMessages();
             axios
                 .get(`/api/url/${this.id}`)
-                .then(result => {
+                .then((result) => {
                     this.isAddressed = result.data.addressed;
                     if (result.data.http_response.status_code == 200) {
                         this.message = "Received successful result: 200";
@@ -187,16 +192,16 @@ export default {
                     this.testingUrl = false;
                 });
         },
-        removeUrl: function() {
+        removeUrl: function () {
             axios
                 .post(`/api/url/${this.id}`, {
-                    _method: "DELETE"
+                    _method: "DELETE",
                 })
-                .then(result => {
+                .then((result) => {
                     window.location.reload();
                 });
         },
-        showOrHide: function() {
+        showOrHide: function () {
             if (!this.hideSuccessful && !this.hidePending) {
                 this.visible = true;
                 return;
@@ -214,7 +219,7 @@ export default {
 
             this.visible = true;
         },
-        updateRedirectTo: _.debounce(function() {
+        updateRedirectTo: _.debounce(function () {
             this.submitting = true;
             this.resetMessages();
             if (
@@ -228,16 +233,16 @@ export default {
             ) {
                 this.error = {
                     message:
-                        "Redirect URL cannot be the same as the url to redirect"
+                        "Redirect URL cannot be the same as the url to redirect",
                 };
                 this.submitting = false;
                 return true;
             }
             axios
                 .patch(`/api/url/${this.id}`, {
-                    redirect_to: this.updatedRedirectTo
+                    redirect_to: this.updatedRedirectTo,
                 })
-                .then(result => {
+                .then((result) => {
                     this.submitting = false;
                     this.success = "Successfully updated Dev URL";
                     this.getDevRedirectUrl = result.data.devRedirectUrl;
@@ -246,24 +251,24 @@ export default {
                         this.success = "";
                     }, 2000);
                 })
-                .catch(error => {
+                .catch((error) => {
                     this.error = error.response.data;
                     this.submitting = false;
                 });
         }, 1000),
-        resetMessages: function() {
+        resetMessages: function () {
             this.error = {};
             this.success = "";
             this.message = "";
             this.redirectPath = [];
         },
-        getBaseUrlFromString: function(string) {
+        getBaseUrlFromString: function (string) {
             const urlParts = string.split("/");
             return `${urlParts[0]}//${urlParts[2]}`;
         },
-        updateSelf: function() {
+        updateSelf: function () {
             if (this.updatable && !this.updatedRedirectTo && !this.addressed) {
-                axios.get(`/api/url/${this.id}/details`).then(result => {
+                axios.get(`/api/url/${this.id}/details`).then((result) => {
                     if (this.updatable) {
                         this.updatedRedirectTo = result.data.redirect_to;
                         this.getDevRedirectUrl = result.data.devRedirectUrl;
@@ -274,9 +279,9 @@ export default {
                 });
             }
         },
-        clearUpdatable: function() {
+        clearUpdatable: function () {
             this.updatable = false;
-        }
-    }
+        },
+    },
 };
 </script>

@@ -8,7 +8,7 @@
                 :src="screenshotUrl"
                 class="w-full"
                 height="280"
-                style="min-height: 200px;"
+                style="min-height: 200px"
                 width="490"
             />
         </a>
@@ -57,28 +57,30 @@ export default {
         "count_remaining_urls",
         "count_urls",
         "date_created",
-        "dev_url"
+        "dev_url",
     ],
     computed: {
         // a computed getter
-        url: function() {
+        url: function () {
             return `/batch/${this.batch_id}`;
         },
-        screenshotUrl: function() {
-            const url = new URL('https://screenshot-maker.bootpack.dev/api/screenshot');
-            url.searchParams.set('url', this.dev_url);
-            url.searchParams.set('width', '1400');
-            url.searchParams.set('height', '800');
-            url.searchParams.set('scale', '0.35');
-            url.searchParams.set('quality', '80');
+        screenshotUrl: function () {
+            const url = new URL(
+                "https://screenshot-maker.bootpack.dev/api/screenshot"
+            );
+            url.searchParams.set("url", this.dev_url);
+            url.searchParams.set("width", "1400");
+            url.searchParams.set("height", "800");
+            url.searchParams.set("scale", "0.35");
+            url.searchParams.set("quality", "80");
             return url.toString();
         },
-        screenshotAlt: function() {
+        screenshotAlt: function () {
             return `${this.dev_url} screenshot`;
         },
-        needsAddressing: function() {
+        needsAddressing: function () {
             return this.count_remaining_urls > 0 ? true : false;
-        }
-    }
+        },
+    },
 };
 </script>
