@@ -4,7 +4,8 @@
         "dev": "vite",
         "build": "vite build",
         "out": "bun outdated",
-        "up": "bun update"
+        "up": "bun update",
+        "lint": "bunx prettier --check ."
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.10",
@@ -26,11 +27,15 @@
         "dictionaries": [],
         "words": [
             "axios",
+            "bunx",
             "endforeach",
             "endsection",
             "Spatie"
         ],
         "ignoreWords": [],
         "import": []
+    },
+    "prettier": {
+        "trailingComma": "es5"
     }
 }

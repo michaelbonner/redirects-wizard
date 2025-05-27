@@ -304,7 +304,7 @@ export default {
                 .then((data) => {
                     this.submitting = false;
                     this.submittedDevUrl = true;
-                    this.success = "Sucessfully updated Dev URL";
+                    this.success = "Successfully updated Dev URL";
                 })
                 .catch((error) => {
                     this.error = error.response.data;

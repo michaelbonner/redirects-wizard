@@ -1,0 +1,4 @@
+public/vendor
+composer.lock
+public/css/app.css
+public/js/app.js
