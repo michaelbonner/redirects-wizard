@@ -16,7 +16,7 @@
         "postcss": "^8.5.3",
         "tailwindcss": "^4.1.7",
         "vite": "^6.3.5",
-        "vue": "^3.5.14",
+        "vue": "^3.5.15",
         "vue-loader": "^17.4.2"
     },
     "cspell": {
