@@ -224,10 +224,12 @@ export default {
             this.resetMessages();
             if (
                 this.updatedRedirectTo == this.url ||
-                `${this.getBaseUrlFromString(this.url)}${this.updatedRedirectTo}` ==
-                    this.url ||
-                `${this.getBaseUrlFromString(this.url)}/${this.updatedRedirectTo}` ==
-                    this.url
+                `${this.getBaseUrlFromString(this.url)}${
+                    this.updatedRedirectTo
+                }` == this.url ||
+                `${this.getBaseUrlFromString(this.url)}/${
+                    this.updatedRedirectTo
+                }` == this.url
             ) {
                 this.error = {
                     message:
