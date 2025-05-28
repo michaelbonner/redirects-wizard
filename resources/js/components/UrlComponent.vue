@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import _ from "lodash";
+import { debounce } from "lodash";
 
 export default {
     mounted() {
@@ -219,7 +219,7 @@ export default {
 
             this.visible = true;
         },
-        updateRedirectTo: _.debounce(function () {
+        updateRedirectTo: debounce(function () {
             this.submitting = true;
             this.resetMessages();
             if (
