@@ -8,7 +8,7 @@
                 :src="screenshotUrl"
                 class="w-full"
                 height="280"
-                style="min-height: 200px"
+                style="min-height: 200px; background-color: #cbd5e1;"
                 width="490"
             />
         </a>

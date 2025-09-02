@@ -28,7 +28,7 @@
                                     <a href="/batch/{{ $batch->id }}">
                                         <img alt="{{ $batch->dev_url }} screenshot" class="w-full" height="280"
                                             src="https://screenshot-maker.bootpack.dev/api/screenshot?url={{ $batch->dev_url }}&width=1400&height=800&scale=0.35&quality=80"
-                                            style="min-height: 200px;" width="490" />
+                                            style="min-height: 200px; background-color: #cbd5e1;" width="490" />
                                     </a>
                                     <div class="px-6 py-4">
                                         <div class="font-bold text-lg mb-2 break-words">
