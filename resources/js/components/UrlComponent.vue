@@ -149,7 +149,7 @@ export default {
         "doRecheckUnaddressed",
     ],
     computed: {
-        responseMessage: () => {
+        responseMessage() {
             return this.message;
         },
     },
