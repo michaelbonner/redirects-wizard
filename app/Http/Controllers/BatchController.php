@@ -11,7 +11,7 @@ class BatchController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function index()
     {
@@ -26,19 +26,9 @@ class BatchController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
@@ -47,23 +37,13 @@ class BatchController extends Controller
             'user_id' => auth()->user()->id,
         ]);
 
-        return redirect('/batch/'.$batch->id);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Batch $batch)
-    {
-        //
+        return redirect("/batch/{$batch->id}");
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function edit(Batch $batch)
     {
@@ -81,7 +61,7 @@ class BatchController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \App\Models\Batch
      */
     public function update(BatchUpdateRequest $request, Batch $batch)
     {
@@ -95,7 +75,7 @@ class BatchController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @return \Illuminate\Http\Response
+     * @return string
      */
     public function destroy(Batch $batch)
     {
