@@ -73,7 +73,7 @@ export default {
             url.searchParams.set("height", "800");
             url.searchParams.set("scale", "0.35");
             url.searchParams.set("quality", "80");
-            url.searchParams.set("format", "webp");
+            url.searchParams.set("type", "webp");
             return url.toString();
         },
         screenshotAlt: function () {
