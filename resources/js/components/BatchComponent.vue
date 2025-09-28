@@ -8,7 +8,7 @@
                 :src="screenshotUrl"
                 class="w-full"
                 height="280"
-                style="min-height: 200px; background-color: #cbd5e1;"
+                style="min-height: 200px; background-color: #cbd5e1"
                 width="490"
             />
         </a>
@@ -73,6 +73,7 @@ export default {
             url.searchParams.set("height", "800");
             url.searchParams.set("scale", "0.35");
             url.searchParams.set("quality", "80");
+            url.searchParams.set("format", "webp");
             return url.toString();
         },
         screenshotAlt: function () {
