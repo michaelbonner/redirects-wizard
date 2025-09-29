@@ -71,9 +71,9 @@ export default {
             url.searchParams.set("url", this.dev_url);
             url.searchParams.set("width", "1400");
             url.searchParams.set("height", "800");
-            url.searchParams.set("scale", "0.35");
+            url.searchParams.set("scale", "0.5");
             url.searchParams.set("quality", "80");
-            url.searchParams.set("type", "webp");
+            url.searchParams.set("type", "avif");
             return url.toString();
         },
         screenshotAlt: function () {
