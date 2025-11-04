@@ -18,3 +18,4 @@ supervisord.pid
 
 
 redirects-wizard_test_*
+.dokploy
