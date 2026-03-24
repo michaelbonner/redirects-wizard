@@ -2,8 +2,9 @@
 
 use App\Models\Batch;
 use App\Models\Url;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 
-uses(\Illuminate\Foundation\Testing\DatabaseMigrations::class);
+uses(DatabaseMigrations::class);
 
 test('can create', function () {
     $url = Url::factory()->create();

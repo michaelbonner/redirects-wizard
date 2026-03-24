@@ -3,6 +3,7 @@
 use App\Models\Batch;
 use App\Models\Url;
 use App\Models\User;
+use Faker\Factory;
 use Illuminate\Database\Seeder;
 
 class BatchesTableSeeder extends Seeder
@@ -15,7 +16,7 @@ class BatchesTableSeeder extends Seeder
     public function run()
     {
         Batch::factory(10)->create()->each(function ($batch) {
-            $faker = Faker\Factory::create();
+            $faker = Factory::create();
             for ($i = 0; $i < 10; $i++) {
                 Url::factory()->create([
                     'batch_id' => $batch->id,

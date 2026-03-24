@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BatchUpdateRequest;
 use App\Models\Batch;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class BatchController extends Controller
@@ -11,7 +13,7 @@ class BatchController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Contracts\View\View
+     * @return View
      */
     public function index()
     {
@@ -28,7 +30,7 @@ class BatchController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function store(Request $request)
     {
@@ -43,7 +45,7 @@ class BatchController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @return \Illuminate\Contracts\View\View
+     * @return View
      */
     public function edit(Batch $batch)
     {
@@ -60,8 +62,8 @@ class BatchController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \App\Models\Batch
+     * @param  Request  $request
+     * @return Batch
      */
     public function update(BatchUpdateRequest $request, Batch $batch)
     {
