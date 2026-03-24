@@ -10,7 +10,7 @@ class UrlController extends Controller
     /**
      * Display the specified resource.
      *
-     * @return \App\Models\Url
+     * @return Url
      */
     public function show(Url $url)
     {
@@ -27,7 +27,7 @@ class UrlController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @return \App\Models\Url
+     * @return Url
      */
     public function update(Request $request, Url $url)
     {

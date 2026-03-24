@@ -1,9 +1,16 @@
 <?php
 
+use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\CheckForMaintenanceMode;
 use App\Providers\AppServiceProvider;
+use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Session\Middleware\AuthenticateSession;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withProviders()
@@ -18,19 +25,19 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn () => route('login'));
         $middleware->redirectUsersTo(AppServiceProvider::HOME);
 
-        $middleware->append(\App\Http\Middleware\CheckForMaintenanceMode::class);
+        $middleware->append(CheckForMaintenanceMode::class);
 
         $middleware->alias([
-            'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            'bindings' => SubstituteBindings::class,
         ]);
 
         $middleware->priority([
-            \Illuminate\Session\Middleware\StartSession::class,
-            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \App\Http\Middleware\Authenticate::class,
-            \Illuminate\Session\Middleware\AuthenticateSession::class,
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            \Illuminate\Auth\Middleware\Authorize::class,
+            StartSession::class,
+            ShareErrorsFromSession::class,
+            Authenticate::class,
+            AuthenticateSession::class,
+            SubstituteBindings::class,
+            Authorize::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

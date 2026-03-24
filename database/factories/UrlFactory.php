@@ -3,10 +3,11 @@
 namespace Database\Factories;
 
 use App\Models\Batch;
+use App\Models\Url;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Url>
+ * @extends Factory<Url>
  */
 class UrlFactory extends Factory
 {

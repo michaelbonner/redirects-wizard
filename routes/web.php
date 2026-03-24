@@ -3,6 +3,7 @@
 use App\Http\Controllers\BatchController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Spatie\Health\Http\Controllers\HealthCheckResultsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [BatchController::class, 'index'])->middleware('auth');
 Route::get('/batch/create', [BatchController::class, 'store'])->middleware('auth');
 Route::get('/batch/{batch}', [BatchController::class, 'edit'])->middleware('auth');
-Route::get('health', \Spatie\Health\Http\Controllers\HealthCheckResultsController::class);
+Route::get('health', HealthCheckResultsController::class);
 
 // Route::get(
 //     '/batch-dev-url-screenshot/{batch}.jpg',
