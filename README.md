@@ -68,6 +68,22 @@ bun run db:migrate:laravel -- --execute --reset
 
 Laravel bcrypt password hashes are not compatible with Better Auth's default password hashing. Migrated users are preserved for ownership/history, but they need a password reset or a Laravel bcrypt verifier before they can sign in with their old passwords.
 
+## Deploying
+
+The app uses `svelte-adapter-bun` for SvelteKit production builds.
+
+Build command:
+
+```sh
+bun run build
+```
+
+Start command:
+
+```sh
+bun ./build/index.js
+```
+
 ## Building redirects
 
 1. Create a batch from the dashboard.
