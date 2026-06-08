@@ -72,8 +72,6 @@ Laravel bcrypt password hashes are not compatible with Better Auth's default pas
 
 The app uses `svelte-adapter-bun` for SvelteKit production builds.
 
-Dokploy should deploy this app with the included `Dockerfile`.
-
 Build command:
 
 ```sh
@@ -89,7 +87,7 @@ bun ./build/index.js
 Dokploy settings:
 
 - Application port: `3000`
-- Dockerfile path: `./Dockerfile`
+- Builder: Nixpacks
 - Domain: `redirects.bootpack.work`
 - `HOST=0.0.0.0`
 - `PORT=3000`
