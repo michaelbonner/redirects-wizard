@@ -1,0 +1,10 @@
+.env
+.env.*
+.git
+.svelte-kit
+build
+node_modules
+npm-debug.log
+yarn-error.log
+.dokploy
+.DS_Store
