@@ -71,6 +71,7 @@ Laravel bcrypt password hashes are not compatible with Better Auth's default pas
 ## Deploying
 
 The app uses `svelte-adapter-bun` for SvelteKit production builds.
+The included `nixpacks.toml` forces Nixpacks to start the Bun server instead of detecting the built assets as a Caddy static site.
 
 Build command:
 
