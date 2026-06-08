@@ -1,14 +1,20 @@
-import { getRequestEvent } from "$app/server";
-import { BETTER_AUTH_SECRET, BETTER_AUTH_URL } from "$env/static/private";
+import { env } from "$env/dynamic/private";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { betterAuth } from "better-auth";
-import { sveltekitCookies } from "better-auth/svelte-kit";
 import { db } from "$lib/server/db";
 import * as schema from "$lib/server/schema";
 
+if (!env.BETTER_AUTH_SECRET) {
+    throw new Error("BETTER_AUTH_SECRET is required.");
+}
+
+if (!env.BETTER_AUTH_URL) {
+    throw new Error("BETTER_AUTH_URL is required.");
+}
+
 export const auth = betterAuth({
-    baseURL: BETTER_AUTH_URL,
-    secret: BETTER_AUTH_SECRET,
+    baseURL: env.BETTER_AUTH_URL,
+    secret: env.BETTER_AUTH_SECRET,
     database: drizzleAdapter(db, {
         provider: "pg",
         schema,
@@ -16,5 +22,4 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true,
     },
-    plugins: [sveltekitCookies(getRequestEvent)],
 });
