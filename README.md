@@ -84,6 +84,17 @@ Start command:
 bun ./build/index.js
 ```
 
+Dokploy settings:
+
+- Application port: `3000`
+- Domain: `redirects.bootpack.work`
+- `HOST=0.0.0.0`
+- `PORT=3000`
+- `ORIGIN=https://redirects.bootpack.work`
+- `BETTER_AUTH_URL=https://redirects.bootpack.work`
+- `BETTER_AUTH_SECRET=<random 32+ byte secret>`
+- `DATABASE_URL=<postgres connection string>`
+
 ## Building redirects
 
 1. Create a batch from the dashboard.
