@@ -81,6 +81,13 @@
             urlRows = urlRows.filter((url) => url.id !== id);
         }
     }
+
+    function confirmArchive(event: SubmitEvent) {
+        const batchName = data.batch.devUrl || "this redirect batch";
+        if (!window.confirm(`Archive ${batchName}?`)) {
+            event.preventDefault();
+        }
+    }
 </script>
 
 <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -333,7 +340,7 @@
     {/if}
 
     <section class="mt-6 flex justify-end">
-        <form method="POST" action="?/archive">
+        <form method="POST" action="?/archive" onsubmit={confirmArchive}>
             <Button type="submit" variant="danger">Archive batch</Button>
         </form>
     </section>
