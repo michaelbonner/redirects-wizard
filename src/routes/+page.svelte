@@ -4,6 +4,7 @@
     import Button from "$lib/components/ui/button/button.svelte";
     import Input from "$lib/components/ui/input/input.svelte";
     import * as Sheet from "$lib/components/ui/sheet/index.js";
+    import { urlSortKey } from "$lib/utils";
     import {
         Check,
         ExternalLink,
@@ -44,7 +45,8 @@
             : [...data.batches];
 
         return matches.sort((a, b) => {
-            if (sort === "name") return a.devUrl.localeCompare(b.devUrl);
+            if (sort === "name")
+                return urlSortKey(a.devUrl).localeCompare(urlSortKey(b.devUrl));
             if (sort === "needs-work")
                 return b.remainingCount - a.remainingCount;
             return (
