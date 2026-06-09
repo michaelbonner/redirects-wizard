@@ -9,6 +9,7 @@
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit migrate",
+        "db:copy-production-to-preview": "bun scripts/copy-production-db-to-preview.ts",
         "db:migrate:laravel": "bun scripts/migrate-laravel-mysql-to-postgres.ts",
         "lint": "prettier --check src scripts components.json svelte.config.js vite.config.ts tsconfig.json drizzle.config.ts package.json README.md docker-compose.yml nixpacks.toml --ignore-unknown"
     },
