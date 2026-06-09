@@ -10,7 +10,6 @@
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit migrate",
         "db:copy-production-to-preview": "bun scripts/copy-production-db-to-preview.ts",
-        "db:migrate:laravel": "bun scripts/migrate-laravel-mysql-to-postgres.ts",
         "lint": "prettier --check src scripts components.json svelte.config.js vite.config.ts tsconfig.json drizzle.config.ts package.json README.md docker-compose.yml nixpacks.toml --ignore-unknown"
     },
     "dependencies": {
@@ -20,9 +19,7 @@
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "drizzle-orm": "^0.45.0",
-        "kysely": "0.28.8",
         "lucide-svelte": "^0.556.0",
-        "mysql2": "^3.22.5",
         "postgres": "^3.4.7",
         "svelte": "^5.43.14",
         "tailwind-merge": "^3.5.0"
