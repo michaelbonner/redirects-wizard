@@ -3,6 +3,7 @@
     import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
     import Badge from "$lib/components/ui/badge/badge.svelte";
     import Button from "$lib/components/ui/button/button.svelte";
+    import { buttonVariants } from "$lib/components/ui/button/index.js";
     import * as Dialog from "$lib/components/ui/dialog/index.js";
     import Input from "$lib/components/ui/input/input.svelte";
     import Textarea from "$lib/components/ui/textarea/textarea.svelte";
@@ -511,8 +512,8 @@
 
     <section class="mt-6 flex justify-end">
         <AlertDialog.Root>
-            <AlertDialog.Trigger>
-                <Button variant="destructive">Archive batch</Button>
+            <AlertDialog.Trigger class={buttonVariants({ variant: "destructive" })}>
+                Archive batch
             </AlertDialog.Trigger>
             <AlertDialog.Content
                 class="mx-4 max-w-[calc(100%-2rem)] bg-white text-zinc-950 ring-zinc-950/10"
