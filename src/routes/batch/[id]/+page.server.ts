@@ -7,6 +7,7 @@ import {
     withoutTrailingSlash,
 } from "$lib/server/redirects";
 import { db } from "$lib/server/db";
+import { captureScreenshot } from "$lib/server/screenshots";
 import { batches, urls } from "$lib/server/schema";
 import { error, fail, redirect } from "@sveltejs/kit";
 import { and, asc, eq, isNull, or } from "drizzle-orm";
@@ -74,6 +75,15 @@ export const actions = {
             .update(batches)
             .set({ devUrl, updatedAt: new Date() })
             .where(eq(batches.id, batch.id));
+
+        try {
+            await captureScreenshot(batch.id, devUrl);
+        } catch (error) {
+            console.error("[screenshot] capture failed on updateDevUrl", error);
+            return {
+                success: "Dev URL updated. Screenshot could not be generated.",
+            };
+        }
 
         return { success: "Dev URL updated." };
     },

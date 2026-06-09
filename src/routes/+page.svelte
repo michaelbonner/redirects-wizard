@@ -9,6 +9,7 @@
         ExternalLink,
         FolderPlus,
         Plus,
+        RotateCw,
         Search,
     } from "lucide-svelte";
 
@@ -16,6 +17,8 @@
 
     let createOpen = $state(false);
     let creating = $state(false);
+
+    let refreshing = $state<Record<number, boolean>>({});
 
     let query = $state("");
     let sort = $state<"recent" | "name" | "needs-work">("recent");
@@ -51,17 +54,13 @@
         });
     });
 
-    function screenshotUrl(devUrl: string) {
-        const url = new URL(
-            "https://screenshot-maker.bootpack.dev/api/screenshot",
-        );
-        url.searchParams.set("url", devUrl);
-        url.searchParams.set("width", "1400");
-        url.searchParams.set("height", "800");
-        url.searchParams.set("scale", "0.5");
-        url.searchParams.set("quality", "80");
-        url.searchParams.set("type", "avif");
-        return url.toString();
+    function screenshotUrl(batch: {
+        id: number;
+        screenshotUpdatedAt: Date | null;
+    }) {
+        if (!batch.screenshotUpdatedAt) return null;
+        const version = new Date(batch.screenshotUpdatedAt).getTime();
+        return `/api/screenshot/${batch.id}?v=${version}`;
     }
 </script>
 
@@ -178,17 +177,56 @@
                             <article
                                 class="group overflow-hidden rounded-lg bg-white ring-1 ring-zinc-200 transition hover:shadow-md hover:ring-zinc-300"
                             >
-                                <a
-                                    href={`/batch/${batch.id}`}
-                                    aria-label={`Manage ${batch.devUrl}`}
-                                >
-                                    <img
-                                        src={screenshotUrl(batch.devUrl)}
-                                        alt={`${batch.devUrl} screenshot`}
-                                        class="aspect-video w-full bg-zinc-200 object-cover transition group-hover:opacity-90"
-                                        loading="lazy"
-                                    />
-                                </a>
+                                <div class="relative">
+                                    <a
+                                        href={`/batch/${batch.id}`}
+                                        aria-label={`Manage ${batch.devUrl}`}
+                                    >
+                                        {#if screenshotUrl(batch)}
+                                            <img
+                                                src={screenshotUrl(batch)}
+                                                alt={`${batch.devUrl} screenshot`}
+                                                class="aspect-video w-full bg-zinc-200 object-cover transition group-hover:opacity-90"
+                                                loading="lazy"
+                                            />
+                                        {:else}
+                                            <div
+                                                class="flex aspect-video w-full items-center justify-center bg-zinc-200 text-sm text-zinc-500"
+                                            >
+                                                No screenshot yet
+                                            </div>
+                                        {/if}
+                                    </a>
+                                    <form
+                                        method="POST"
+                                        action="?/refreshScreenshot"
+                                        class="absolute top-2 right-2"
+                                        use:enhance={() => {
+                                            refreshing[batch.id] = true;
+                                            return async ({ update }) => {
+                                                await update();
+                                                refreshing[batch.id] = false;
+                                            };
+                                        }}
+                                    >
+                                        <input
+                                            type="hidden"
+                                            name="batchId"
+                                            value={batch.id}
+                                        />
+                                        <button
+                                            type="submit"
+                                            disabled={refreshing[batch.id]}
+                                            title="Refresh screenshot"
+                                            aria-label="Refresh screenshot"
+                                            class="rounded-md bg-white/90 p-1.5 text-zinc-700 ring-1 ring-zinc-200 backdrop-blur hover:bg-white disabled:opacity-60"
+                                        >
+                                            <RotateCw
+                                                class={`size-4 ${refreshing[batch.id] ? "animate-spin" : ""}`}
+                                            />
+                                        </button>
+                                    </form>
+                                </div>
                                 <div class="space-y-4 p-4">
                                     <div class="space-y-2">
                                         <a

@@ -50,10 +50,10 @@ Build command:
 bun run build
 ```
 
-Start command:
+Start command (set in `nixpacks.toml`):
 
 ```sh
-bun ./build/index.js
+CHROMIUM_PATH=$(command -v chromium) bun ./build/index.js
 ```
 
 Dokploy settings:
@@ -67,6 +67,24 @@ Dokploy settings:
 - `BETTER_AUTH_URL=https://redirects.bootpack.work`
 - `BETTER_AUTH_SECRET=<random 32+ byte secret>`
 - `DATABASE_URL=<postgres connection string>`
+- `SCREENSHOTS_DIR=/data/screenshots`
+
+### Screenshots
+
+Batch thumbnails are captured locally with Playwright driving headless
+Chromium. `nixpacks.toml` adds `chromium` to the build and points Playwright at
+it via `CHROMIUM_PATH`, so no separate screenshot service is required.
+
+Captured images are written to `SCREENSHOTS_DIR`. Mount a **persistent volume**
+at that path in Dokploy (e.g. `/data/screenshots`) so screenshots survive
+redeploys. Screenshots are (re)captured when a batch's dev URL is set and via
+the refresh button on each batch card.
+
+For local development, install the browser once:
+
+```sh
+bunx playwright install chromium
+```
 
 ## Building redirects
 
