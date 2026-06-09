@@ -15,7 +15,10 @@ export async function load({ locals }) {
             devUrl: batches.devUrl,
             createdAt: batches.createdAt,
             urlCount: count(urls.id),
-            remainingCount: sql<number>`count(${urls.id}) filter (where ${urls.addressed} = false)`,
+            remainingCount:
+                sql<number>`count(${urls.id}) filter (where ${urls.addressed} = false)`.mapWith(
+                    Number,
+                ),
         })
         .from(batches)
         .leftJoin(
