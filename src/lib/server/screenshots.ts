@@ -47,12 +47,7 @@ async function getBrowser(): Promise<Browser> {
         // In production CHROMIUM_PATH points at the Nix-provided chromium. When
         // unset (local dev) Playwright uses its bundled download.
         executablePath: env.CHROMIUM_PATH || undefined,
-        args: [
-            "--no-sandbox",
-            "--disable-dev-shm-usage",
-            "--disable-gpu",
-            "--disable-software-rasterizer",
-        ],
+        args: ["--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
     });
 
     return browserPromise;
@@ -106,6 +101,37 @@ async function waitForPageToSettle(page: Page): Promise<void> {
     await page.waitForTimeout(FINAL_SETTLE_MS);
 }
 
+async function preparePageForScreenshot(page: Page): Promise<void> {
+    await page.addStyleTag({
+        content: `
+            *,
+            *::before,
+            *::after {
+                animation: none !important;
+                transition: none !important;
+                scroll-behavior: auto !important;
+            }
+
+            iframe[src*="youtube"],
+            iframe[src*="youtube-nocookie"],
+            iframe[src*="youtu.be"],
+            iframe[src*="vimeo"],
+            video,
+            audio {
+                visibility: hidden !important;
+            }
+        `,
+    });
+
+    await page.evaluate(() => {
+        for (const media of document.querySelectorAll("video, audio")) {
+            media.removeAttribute("autoplay");
+            media.removeAttribute("src");
+            media.replaceChildren();
+        }
+    });
+}
+
 async function captureOnce(batchId: number, devUrl: string): Promise<void> {
     const browser = await getBrowser();
     const context = await browser.newContext({ viewport: VIEWPORT });
@@ -139,9 +165,12 @@ async function captureOnce(batchId: number, devUrl: string): Promise<void> {
         }
 
         await waitForPageToSettle(page);
+        await preparePageForScreenshot(page);
         const buffer = await page.screenshot({
             type: "jpeg",
             quality: JPEG_QUALITY,
+            animations: "disabled",
+            caret: "hide",
         });
 
         await mkdir(STORAGE_DIR, { recursive: true });
