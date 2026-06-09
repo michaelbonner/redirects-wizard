@@ -26,6 +26,20 @@ const BLOCKED_VIDEO_HOSTS = [
     "vimeo.com",
     "vimeocdn.com",
 ];
+const CAPTURE_MODES = [
+    {
+        name: "standard",
+        javaScriptEnabled: true,
+        preparePage: true,
+    },
+    {
+        name: "static",
+        javaScriptEnabled: false,
+        preparePage: false,
+    },
+];
+
+type CaptureMode = (typeof CAPTURE_MODES)[number];
 
 let browserPromise: Promise<Browser> | null = null;
 
@@ -132,9 +146,16 @@ async function preparePageForScreenshot(page: Page): Promise<void> {
     });
 }
 
-async function captureOnce(batchId: number, devUrl: string): Promise<void> {
+async function captureOnce(
+    batchId: number,
+    devUrl: string,
+    mode: CaptureMode,
+): Promise<void> {
     const browser = await getBrowser();
-    const context = await browser.newContext({ viewport: VIEWPORT });
+    const context = await browser.newContext({
+        viewport: VIEWPORT,
+        javaScriptEnabled: mode.javaScriptEnabled,
+    });
 
     // Block video/audio and common video embeds: they're the most common
     // renderer-memory hogs (autoplay hero videos) and never add anything useful
@@ -165,7 +186,9 @@ async function captureOnce(batchId: number, devUrl: string): Promise<void> {
         }
 
         await waitForPageToSettle(page);
-        await preparePageForScreenshot(page);
+        if (mode.preparePage) {
+            await preparePageForScreenshot(page);
+        }
         const buffer = await page.screenshot({
             type: "jpeg",
             quality: JPEG_QUALITY,
@@ -188,8 +211,8 @@ async function captureOnce(batchId: number, devUrl: string): Promise<void> {
 // Capture devUrl to disk and stamp the batch so the UI knows a screenshot
 // exists (and can cache-bust on the new timestamp). Best-effort on navigation:
 // if the page never fully settles we still capture whatever rendered. Some
-// pages crash the renderer ("Target crashed") on the first attempt; relaunching
-// the browser and retrying once almost always succeeds.
+// pages crash the renderer ("Target crashed") with their own scripts running,
+// so the fallback retries as a static document with JavaScript disabled.
 export async function captureScreenshot(
     batchId: number,
     devUrl: string,
@@ -198,17 +221,21 @@ export async function captureScreenshot(
         `[screenshot] capturing batch ${batchId} (${devUrl}) → ${screenshotFilePath(batchId)}; chromium=${env.CHROMIUM_PATH || "(bundled)"}`,
     );
 
-    const MAX_ATTEMPTS = 2;
     let lastError: unknown;
 
-    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    for (let attempt = 1; attempt <= CAPTURE_MODES.length; attempt++) {
+        const mode = CAPTURE_MODES[attempt - 1];
+
         try {
-            await captureOnce(batchId, devUrl);
+            await captureOnce(batchId, devUrl, mode);
+            console.log(
+                `[screenshot] captured batch ${batchId} using ${mode.name} mode`,
+            );
             return;
         } catch (error) {
             lastError = error;
             console.warn(
-                `[screenshot] attempt ${attempt}/${MAX_ATTEMPTS} failed for batch ${batchId}: ${error instanceof Error ? error.message : String(error)}`,
+                `[screenshot] attempt ${attempt}/${CAPTURE_MODES.length} (${mode.name}) failed for batch ${batchId}: ${error instanceof Error ? error.message : String(error)}`,
             );
             // The browser may have crashed — drop it so the next attempt
             // launches a fresh one.
