@@ -1,0 +1,1 @@
+ALTER TABLE "batches" ADD COLUMN "screenshot_updated_at" timestamp;

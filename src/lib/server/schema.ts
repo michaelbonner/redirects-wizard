@@ -76,6 +76,7 @@ export const batches = pgTable(
             .notNull()
             .references(() => user.id, { onDelete: "cascade" }),
         devUrl: text("dev_url").notNull().default(""),
+        screenshotUpdatedAt: timestamp("screenshot_updated_at"),
         createdAt: timestamp("created_at").notNull().defaultNow(),
         updatedAt: timestamp("updated_at").notNull().defaultNow(),
         deletedAt: timestamp("deleted_at"),

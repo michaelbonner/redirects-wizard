@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["nodejs_22", "bun"]
+nixPkgs = ["nodejs_22", "bun", "chromium"]
 
 [phases.install]
 cmds = ["bun install --frozen-lockfile"]
@@ -8,4 +8,7 @@ cmds = ["bun install --frozen-lockfile"]
 cmds = ["bun run build"]
 
 [start]
-cmd = "bun ./build/index.js"
+# chromium comes from nixPkgs above; resolve its path at runtime so Playwright
+# uses the Nix-provided browser (which ships its own system libraries) rather
+# than downloading its own.
+cmd = "CHROMIUM_PATH=$(command -v chromium) bun ./build/index.js"
