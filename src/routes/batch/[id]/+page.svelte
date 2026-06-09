@@ -1,4 +1,5 @@
 <script lang="ts">
+    import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
     import Badge from "$lib/components/ui/badge.svelte";
     import Button from "$lib/components/ui/button.svelte";
     import Input from "$lib/components/ui/input.svelte";
@@ -79,13 +80,6 @@
         const response = await fetch(`/api/urls/${id}`, { method: "DELETE" });
         if (response.ok) {
             urlRows = urlRows.filter((url) => url.id !== id);
-        }
-    }
-
-    function confirmArchive(event: SubmitEvent) {
-        const batchName = data.batch.devUrl || "this redirect batch";
-        if (!window.confirm(`Archive ${batchName}?`)) {
-            event.preventDefault();
         }
     }
 </script>
@@ -340,8 +334,41 @@
     {/if}
 
     <section class="mt-6 flex justify-end">
-        <form method="POST" action="?/archive" onsubmit={confirmArchive}>
-            <Button type="submit" variant="danger">Archive batch</Button>
-        </form>
+        <AlertDialog.Root>
+            <AlertDialog.Trigger
+                class="inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-base/6 font-medium text-red-700 transition hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 sm:py-1.5 sm:text-sm/6"
+            >
+                Archive batch
+            </AlertDialog.Trigger>
+            <AlertDialog.Content
+                class="mx-4 max-w-[calc(100%-2rem)] bg-white text-zinc-950 ring-zinc-950/10"
+            >
+                <AlertDialog.Header>
+                    <AlertDialog.Title class="text-zinc-950">
+                        Archive batch?
+                    </AlertDialog.Title>
+                    <AlertDialog.Description class="text-zinc-600">
+                        This will hide {data.batch.devUrl ||
+                            "this redirect batch"} from your batches list. You can
+                        no longer access it from the app after archiving.
+                    </AlertDialog.Description>
+                </AlertDialog.Header>
+                <AlertDialog.Footer>
+                    <AlertDialog.Cancel
+                        class="rounded-md bg-white px-3 py-2 text-base/6 font-medium text-zinc-900 ring-1 ring-zinc-200 hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 sm:py-1.5 sm:text-sm/6"
+                    >
+                        Cancel
+                    </AlertDialog.Cancel>
+                    <form method="POST" action="?/archive">
+                        <AlertDialog.Action
+                            type="submit"
+                            class="w-full rounded-md px-3 py-2 text-base/6 font-medium text-red-700 hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 sm:w-auto sm:py-1.5 sm:text-sm/6"
+                        >
+                            Archive batch
+                        </AlertDialog.Action>
+                    </form>
+                </AlertDialog.Footer>
+            </AlertDialog.Content>
+        </AlertDialog.Root>
     </section>
 </main>
