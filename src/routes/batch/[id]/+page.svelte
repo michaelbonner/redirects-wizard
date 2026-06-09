@@ -1,11 +1,12 @@
 <script lang="ts">
-    import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-    import * as Dialog from "$lib/components/ui/dialog/index.js";
-    import Badge from "$lib/components/ui/badge.svelte";
-    import Button from "$lib/components/ui/button.svelte";
-    import Input from "$lib/components/ui/input.svelte";
-    import Textarea from "$lib/components/ui/textarea.svelte";
     import { enhance } from "$app/forms";
+    import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
+    import Badge from "$lib/components/ui/badge/badge.svelte";
+    import Button from "$lib/components/ui/button/button.svelte";
+    import { buttonVariants } from "$lib/components/ui/button/index.js";
+    import * as Dialog from "$lib/components/ui/dialog/index.js";
+    import Input from "$lib/components/ui/input/input.svelte";
+    import Textarea from "$lib/components/ui/textarea/textarea.svelte";
     import {
         Check,
         Clipboard,
@@ -330,7 +331,7 @@
                 />
             </div>
             <div class="flex items-end">
-                <Button type="submit" variant="primary" class="w-full sm:w-auto"
+                <Button type="submit" class="w-full sm:w-auto"
                     >Update URL</Button
                 >
             </div>
@@ -391,7 +392,7 @@
                                     href={url.url}
                                     target="_blank"
                                     rel="noreferrer"
-                                    class={`min-w-0 text-base/7 font-medium break-words text-teal-800 sm:text-sm/6 ${url.addressed ? "line-through" : ""}`}
+                                    class={`min-w-0 text-base/7 font-medium wrap-break-word text-teal-800 sm:text-sm/6 ${url.addressed ? "line-through" : ""}`}
                                 >
                                     {url.url}
                                 </a>
@@ -441,6 +442,7 @@
                             <div class="mt-4 flex flex-wrap items-center gap-2">
                                 <Button
                                     type="button"
+                                    variant="outline"
                                     onclick={() => recheck(url.id)}
                                 >
                                     <RotateCw class="size-5 sm:size-4" /> Test live
@@ -448,7 +450,7 @@
                                 </Button>
                                 <Button
                                     type="button"
-                                    variant="danger"
+                                    variant="destructive"
                                     onclick={() => removeUrl(url.id)}
                                 >
                                     <Trash2 class="size-5 sm:size-4" /> Remove
@@ -497,7 +499,7 @@
                     >
                     <Textarea id="urls" name="urls" rows={8} />
                 </div>
-                <Button type="submit" variant="primary">Add URLs</Button>
+                <Button type="submit">Add URLs</Button>
             </form>
         </section>
     {:else}
@@ -510,9 +512,7 @@
 
     <section class="mt-6 flex justify-end">
         <AlertDialog.Root>
-            <AlertDialog.Trigger
-                class="inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-base/6 font-medium text-red-700 transition hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 sm:py-1.5 sm:text-sm/6"
-            >
+            <AlertDialog.Trigger class={buttonVariants({ variant: "destructive" })}>
                 Archive batch
             </AlertDialog.Trigger>
             <AlertDialog.Content
@@ -529,16 +529,9 @@
                     </AlertDialog.Description>
                 </AlertDialog.Header>
                 <AlertDialog.Footer>
-                    <AlertDialog.Cancel
-                        class="rounded-md bg-white px-3 py-2 text-base/6 font-medium text-zinc-900 ring-1 ring-zinc-200 hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 sm:py-1.5 sm:text-sm/6"
-                    >
-                        Cancel
-                    </AlertDialog.Cancel>
+                    <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
                     <form method="POST" action="?/archive">
-                        <AlertDialog.Action
-                            type="submit"
-                            class="w-full rounded-md px-3 py-2 text-base/6 font-medium text-red-700 hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 sm:w-auto sm:py-1.5 sm:text-sm/6"
-                        >
+                        <AlertDialog.Action type="submit" variant="destructive">
                             Archive batch
                         </AlertDialog.Action>
                     </form>

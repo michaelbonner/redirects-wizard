@@ -24,10 +24,6 @@
             >
             {#if data.user}
                 <nav class="flex items-center gap-3 text-base/6 sm:text-sm/6">
-                    <span
-                        class="hidden max-w-48 truncate text-zinc-500 sm:inline"
-                        >{data.user.email}</span
-                    >
                     <button
                         type="button"
                         class="font-medium text-zinc-700 hover:text-zinc-950"
