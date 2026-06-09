@@ -1,7 +1,7 @@
-import { getRewrite } from "$lib/server/redirects";
+import { getRedirectFormats } from "$lib/server/redirects";
 import { db } from "$lib/server/db";
 import { batches, urls } from "$lib/server/schema";
-import { error, redirect, text } from "@sveltejs/kit";
+import { error, json, redirect } from "@sveltejs/kit";
 import { and, eq, isNull, isNotNull } from "drizzle-orm";
 
 export async function GET({ locals, params }) {
@@ -30,13 +30,8 @@ export async function GET({ locals, params }) {
         ),
     });
 
-    const rewrites = pendingUrls
-        .map((url) => getRewrite(batch, url))
-        .sort((a, b) => b.length - a.length || a.localeCompare(b));
-
-    return text(["RewriteEngine On", ...rewrites].join("\n"), {
-        headers: {
-            "content-type": "text/plain; charset=utf-8",
-        },
+    return json({
+        formats: getRedirectFormats(batch, pendingUrls),
+        count: pendingUrls.length,
     });
 }
