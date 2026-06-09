@@ -1,5 +1,6 @@
 import { db } from "$lib/server/db";
 import { batches, urls } from "$lib/server/schema";
+import { isValidHttpUrl } from "$lib/server/redirects";
 import { fail, redirect } from "@sveltejs/kit";
 import { and, count, eq, isNull, sql } from "drizzle-orm";
 
@@ -35,14 +36,24 @@ export async function load({ locals }) {
 }
 
 export const actions = {
-    create: async ({ locals }) => {
+    create: async ({ locals, request }) => {
         if (!locals.user) {
-            return fail(401, { message: "You must be signed in." });
+            return fail(401, { devUrl: "", message: "You must be signed in." });
+        }
+
+        const formData = await request.formData();
+        const devUrl = String(formData.get("devUrl") ?? "").trim();
+
+        if (!isValidHttpUrl(devUrl)) {
+            return fail(400, {
+                devUrl,
+                message: "Enter a valid dev URL including http:// or https://.",
+            });
         }
 
         const [batch] = await db
             .insert(batches)
-            .values({ userId: locals.user.id })
+            .values({ userId: locals.user.id, devUrl })
             .returning({ id: batches.id });
 
         throw redirect(303, `/batch/${batch.id}`);

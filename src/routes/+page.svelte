@@ -1,9 +1,15 @@
 <script lang="ts">
+    import { enhance } from "$app/forms";
     import Badge from "$lib/components/ui/badge/badge.svelte";
     import Button from "$lib/components/ui/button/button.svelte";
+    import Input from "$lib/components/ui/input/input.svelte";
+    import * as Sheet from "$lib/components/ui/sheet/index.js";
     import { ExternalLink, Plus } from "lucide-svelte";
 
-    let { data } = $props();
+    let { data, form } = $props();
+
+    let createOpen = $state(false);
+    let creating = $state(false);
 
     function screenshotUrl(devUrl: string) {
         const url = new URL(
@@ -31,11 +37,71 @@
                 Manage redirect checks and Apache rewrite output.
             </p>
         </div>
-        <form method="POST" action="?/create">
-            <Button type="submit"
-                ><Plus class="size-5 sm:size-4" /> New batch</Button
-            >
-        </form>
+        <Sheet.Root bind:open={createOpen}>
+            <Sheet.Trigger>
+                {#snippet child({ props })}
+                    <Button {...props}>
+                        <Plus class="size-5 sm:size-4" /> New batch
+                    </Button>
+                {/snippet}
+            </Sheet.Trigger>
+            <Sheet.Content>
+                <Sheet.Header>
+                    <Sheet.Title>New redirect batch</Sheet.Title>
+                    <Sheet.Description>
+                        Enter the Dev URL — the site where you're actively
+                        working on the redirects. You'll add the redirects to
+                        check after creating the batch.
+                    </Sheet.Description>
+                </Sheet.Header>
+
+                <form
+                    method="POST"
+                    action="?/create"
+                    class="flex flex-1 flex-col gap-6"
+                    use:enhance={() => {
+                        creating = true;
+                        return async ({ update }) => {
+                            await update();
+                            creating = false;
+                        };
+                    }}
+                >
+                    <div class="space-y-1.5">
+                        <label
+                            for="new-batch-dev-url"
+                            class="block text-base/6 font-medium text-zinc-900 sm:text-sm/6"
+                        >
+                            Dev URL
+                        </label>
+                        <Input
+                            id="new-batch-dev-url"
+                            name="devUrl"
+                            type="url"
+                            value={form?.devUrl ?? ""}
+                            placeholder="https://www.example.test"
+                            autocomplete="off"
+                            required
+                        />
+                        <p class="text-sm/6 text-zinc-500">
+                            The staging or development site where you're
+                            actively working on the redirects.
+                        </p>
+                        {#if form?.message}
+                            <p class="text-sm/6 text-red-600">
+                                {form.message}
+                            </p>
+                        {/if}
+                    </div>
+
+                    <Sheet.Footer showCloseButton>
+                        <Button type="submit" disabled={creating}>
+                            {creating ? "Creating…" : "Create batch"}
+                        </Button>
+                    </Sheet.Footer>
+                </form>
+            </Sheet.Content>
+        </Sheet.Root>
     </div>
 
     {#if data.batches.length}
