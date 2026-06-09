@@ -15,6 +15,15 @@ const VIEWPORT = { width: 1280, height: 720 };
 const NAV_TIMEOUT = 20_000;
 const SETTLE_MS = 750;
 const JPEG_QUALITY = 72;
+const BLOCKED_VIDEO_HOSTS = [
+    "youtube.com",
+    "youtube-nocookie.com",
+    "youtu.be",
+    "googlevideo.com",
+    "ytimg.com",
+    "vimeo.com",
+    "vimeocdn.com",
+];
 
 let browserPromise: Promise<Browser> | null = null;
 
@@ -64,15 +73,35 @@ export function screenshotFilePath(batchId: number): string {
     return join(STORAGE_DIR, `${batchId}.jpg`);
 }
 
+function isBlockedVideoRequest(url: string): boolean {
+    let hostname: string;
+
+    try {
+        hostname = new URL(url).hostname.replace(/^www\./, "");
+    } catch {
+        return false;
+    }
+
+    return BLOCKED_VIDEO_HOSTS.some(
+        (blockedHost) =>
+            hostname === blockedHost || hostname.endsWith(`.${blockedHost}`),
+    );
+}
+
 async function captureOnce(batchId: number, devUrl: string): Promise<void> {
     const browser = await getBrowser();
     const context = await browser.newContext({ viewport: VIEWPORT });
 
-    // Block video/audio: it's the most common renderer-memory hog (autoplay
-    // hero videos) and never adds anything useful to a static thumbnail.
-    // Heavy media has crashed the renderer ("Target crashed") on some pages.
+    // Block video/audio and common video embeds: they're the most common
+    // renderer-memory hogs (autoplay hero videos) and never add anything useful
+    // to a static thumbnail. Heavy media has crashed the renderer ("Target
+    // crashed") on some pages, and iframe players can keep load from settling.
     await context.route("**/*", (route) => {
-        if (route.request().resourceType() === "media") {
+        const request = route.request();
+        if (
+            request.resourceType() === "media" ||
+            isBlockedVideoRequest(request.url())
+        ) {
             return route.abort();
         }
         return route.continue();
@@ -83,7 +112,7 @@ async function captureOnce(batchId: number, devUrl: string): Promise<void> {
 
         try {
             await page.goto(devUrl, {
-                waitUntil: "load",
+                waitUntil: "domcontentloaded",
                 timeout: NAV_TIMEOUT,
             });
         } catch {
