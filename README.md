@@ -1,40 +1,107 @@
 # Redirects Wizard
 
-## Prerequisites
+Redirects Wizard is a SvelteKit app for building and checking Apache redirect rules during site migrations.
 
-- PHP
-- Database
+## Stack
 
-I like using [Laravel Valet](https://laravel.com/docs/5.7/valet). You should check it out if you haven't already.
+- SvelteKit
+- shadcn-svelte-style local components
+- Tailwind CSS
+- Postgres
+- Drizzle ORM
+- better-auth
 
 ## Getting started
 
-1. Clone this repo
-1. Copy `.env.example` to `.env` and update your details
-1. Run `composer install`
-1. Run `php artisan key:generate`
-1. Run `php artisan migrate`
+1. Copy `.env.example` to `.env` and set `BETTER_AUTH_SECRET`.
+1. Start Postgres:
 
-## Building Redirects
+    ```sh
+    docker compose up -d
+    ```
 
-1. Click "Create New Batch" from the front page.
-1. Enter the "Dev URL." This is the URL you are actively developing the site on.
-1. Add the known URLs
-1. The system will automatically hit each URL at the dev url to determine whether or not a redirect is necessary.
-1. Once you've entered where each URL will go, click the "View Rewrites" button.
-1. Copy and paste the rewrite rules into your vhost config or .htaccess file.
-1. Click the "Recheck Unaddressed" button to see if your redirects were successful.
+1. Install dependencies:
 
-## Screenshots
+    ```sh
+    bun install
+    ```
 
-Index Page
-![Alt text](/github/screenshot-index.png?raw=true "Optional Title")
+1. Generate and run migrations:
 
-Show Page
-![Alt text](/github/screenshot-show.png?raw=true "Optional Title")
+    ```sh
+    bun run db:generate
+    bun run db:migrate
+    ```
 
-## Need some dev help?
+1. Start the app:
 
-Reach out to use at https://bootpackdigital.com. We're always happy to chat about projects and see if we can help.
+    ```sh
+    bun run dev
+    ```
 
-<a href="https://bootpackdigital.com"><img src="https://bootpackdigital.com/og-image.jpg" alt="Bootpack Digital" /></a>
+## Migrating from Laravel
+
+Set both database URLs in `.env`:
+
+```sh
+LARAVEL_DATABASE_URL=mysql://user:password@host:3306/database
+PRODUCTION_DATABASE_URL=postgres://user:password@host:5432/database
+```
+
+Run a dry-run first:
+
+```sh
+bun run db:migrate:laravel
+```
+
+Execute the migration after Drizzle migrations have been applied to the target Postgres database:
+
+```sh
+bun run db:migrate:laravel -- --execute
+```
+
+To clear existing Postgres `urls`, `batches`, and migrated Laravel users before importing:
+
+```sh
+bun run db:migrate:laravel -- --execute --reset
+```
+
+Laravel bcrypt password hashes are not compatible with Better Auth's default password hashing. Migrated users are preserved for ownership/history, but they need a password reset or a Laravel bcrypt verifier before they can sign in with their old passwords.
+
+## Deploying
+
+The app uses `svelte-adapter-bun` for SvelteKit production builds.
+The included `nixpacks.toml` forces Nixpacks to start the Bun server instead of detecting the built assets as a Caddy static site.
+
+Build command:
+
+```sh
+bun run build
+```
+
+Start command:
+
+```sh
+bun ./build/index.js
+```
+
+Dokploy settings:
+
+- Application port: `3000`
+- Builder: Nixpacks
+- Domain: `redirects.bootpack.work`
+- `HOST=0.0.0.0`
+- `PORT=3000`
+- `ORIGIN=https://redirects.bootpack.work`
+- `BETTER_AUTH_URL=https://redirects.bootpack.work`
+- `BETTER_AUTH_SECRET=<random 32+ byte secret>`
+- `DATABASE_URL=<postgres connection string>`
+
+## Building redirects
+
+1. Create a batch from the dashboard.
+1. Enter the dev URL for the site being checked.
+1. Add known production URLs, one per line.
+1. Set redirect targets for unresolved URLs.
+1. Open "View rewrites" to get Apache rewrite rules.
+1. Recheck unresolved URLs after adding the rewrites to the server.
