@@ -39,35 +39,6 @@ Redirects Wizard is a SvelteKit app for building and checking Apache redirect ru
     bun run dev
     ```
 
-## Migrating from Laravel
-
-Set both database URLs in `.env`:
-
-```sh
-LARAVEL_DATABASE_URL=mysql://user:password@host:3306/database
-PRODUCTION_DATABASE_URL=postgres://user:password@host:5432/database
-```
-
-Run a dry-run first:
-
-```sh
-bun run db:migrate:laravel
-```
-
-Execute the migration after Drizzle migrations have been applied to the target Postgres database:
-
-```sh
-bun run db:migrate:laravel -- --execute
-```
-
-To clear existing Postgres `urls`, `batches`, and migrated Laravel users before importing:
-
-```sh
-bun run db:migrate:laravel -- --execute --reset
-```
-
-Laravel bcrypt password hashes are not compatible with Better Auth's default password hashing. Migrated users are preserved for ownership/history, but they need a password reset or a Laravel bcrypt verifier before they can sign in with their old passwords.
-
 ## Deploying
 
 The app uses `svelte-adapter-bun` for SvelteKit production builds.
