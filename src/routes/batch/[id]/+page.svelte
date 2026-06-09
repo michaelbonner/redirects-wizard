@@ -1,11 +1,27 @@
 <script lang="ts">
     import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
+    import * as Dialog from "$lib/components/ui/dialog/index.js";
     import Badge from "$lib/components/ui/badge.svelte";
     import Button from "$lib/components/ui/button.svelte";
     import Input from "$lib/components/ui/input.svelte";
     import Textarea from "$lib/components/ui/textarea.svelte";
     import { enhance } from "$app/forms";
-    import { ExternalLink, Eye, EyeOff, RotateCw, Trash2 } from "lucide-svelte";
+    import {
+        Check,
+        Clipboard,
+        Eye,
+        EyeOff,
+        FileText,
+        RotateCw,
+        Trash2,
+    } from "lucide-svelte";
+
+    type RedirectFormat = {
+        id: string;
+        label: string;
+        filename: string;
+        body: string;
+    };
 
     let { data, form } = $props();
 
@@ -14,9 +30,24 @@
     let checkingAll = $state(false);
     let checkMessage = $state("");
     let urlRows = $state<typeof data.urls>([]);
+    let redirectsOpen = $state(false);
+    let redirectsLoading = $state(false);
+    let redirectsError = $state("");
+    let redirectFormats = $state<RedirectFormat[]>([]);
+    let selectedFormatId = $state("apache");
+    let copyMessage = $state("");
+    let redirectCount = $state(0);
 
     $effect(() => {
         urlRows = data.urls;
+    });
+
+    $effect(() => {
+        if (redirectsOpen) {
+            void loadRedirects();
+        } else {
+            copyMessage = "";
+        }
     });
 
     const validDevUrl = $derived(Boolean(data.batch.devUrl));
@@ -33,6 +64,80 @@
             return true;
         }),
     );
+    const selectedFormat = $derived(
+        redirectFormats.find((format) => format.id === selectedFormatId) ??
+            redirectFormats[0],
+    );
+
+    async function loadRedirects() {
+        redirectsLoading = true;
+        redirectsError = "";
+        copyMessage = "";
+
+        try {
+            const response = await fetch(
+                `/api/batches/${data.batch.id}/redirects`,
+            );
+            if (!response.ok) {
+                redirectsError = "Could not load redirects.";
+                return;
+            }
+
+            const payload = (await response.json()) as {
+                formats: RedirectFormat[];
+                count: number;
+            };
+            redirectFormats = payload.formats;
+            redirectCount = payload.count;
+            if (
+                !payload.formats.some(
+                    (format) => format.id === selectedFormatId,
+                )
+            ) {
+                selectedFormatId = payload.formats[0]?.id ?? "apache";
+            }
+        } catch {
+            redirectsError = "Could not load redirects.";
+        } finally {
+            redirectsLoading = false;
+        }
+    }
+
+    function selectRedirectFormat(id: string) {
+        selectedFormatId = id;
+        copyMessage = "";
+    }
+
+    function copyWithFallback(text: string) {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.append(textarea);
+        textarea.select();
+        const copied = document.execCommand("copy");
+        textarea.remove();
+
+        if (!copied) {
+            throw new Error("Copy command failed");
+        }
+    }
+
+    async function copySelectedRedirects() {
+        if (!selectedFormat) return;
+
+        try {
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(selectedFormat.body);
+            } else {
+                copyWithFallback(selectedFormat.body);
+            }
+            copyMessage = "Copied";
+        } catch {
+            copyMessage = "Copy failed";
+        }
+    }
 
     async function recheck(id: number) {
         const response = await fetch(`/api/urls/${id}/check`, {
@@ -110,13 +215,83 @@
         </div>
 
         {#if validDevUrl}
-            <a
-                href={`/api/batches/${data.batch.id}/redirects`}
-                target="_blank"
-                class="inline-flex items-center justify-center gap-1.5 rounded-md bg-white px-3 py-2 text-base/6 font-medium text-zinc-900 ring-1 ring-zinc-200 hover:bg-zinc-50 sm:py-1.5 sm:text-sm/6"
-            >
-                View rewrites <ExternalLink class="size-5 sm:size-4" />
-            </a>
+            <Dialog.Root bind:open={redirectsOpen}>
+                <Dialog.Trigger
+                    class="inline-flex items-center justify-center gap-1.5 rounded-md bg-white px-3 py-2 text-base/6 font-medium text-zinc-900 ring-1 ring-zinc-200 transition hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 sm:py-1.5 sm:text-sm/6"
+                >
+                    View redirects <FileText class="size-5 sm:size-4" />
+                </Dialog.Trigger>
+                <Dialog.Content class="sm:max-w-4xl">
+                    <Dialog.Header>
+                        <Dialog.Title>Redirects</Dialog.Title>
+                        <Dialog.Description>
+                            {redirectCount} pending URL{redirectCount === 1
+                                ? ""
+                                : "s"} with redirect targets.
+                        </Dialog.Description>
+                    </Dialog.Header>
+
+                    {#if redirectsLoading}
+                        <div
+                            class="rounded-md bg-zinc-50 px-4 py-8 text-center text-base/7 text-zinc-600 ring-1 ring-zinc-200 sm:text-sm/6"
+                        >
+                            Loading redirects...
+                        </div>
+                    {:else if redirectsError}
+                        <div
+                            class="rounded-md bg-red-50 px-4 py-3 text-base/7 text-red-800 ring-1 ring-red-200 sm:text-sm/6"
+                        >
+                            {redirectsError}
+                        </div>
+                    {:else if selectedFormat}
+                        <div class="flex flex-wrap gap-2">
+                            {#each redirectFormats as format}
+                                <button
+                                    type="button"
+                                    aria-pressed={selectedFormatId ===
+                                        format.id}
+                                    class={`rounded-md px-3 py-2 text-base/6 font-medium ring-1 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 sm:py-1.5 sm:text-sm/6 ${
+                                        selectedFormatId === format.id
+                                            ? "bg-teal-700 text-white ring-teal-700"
+                                            : "bg-white text-zinc-900 ring-zinc-200 hover:bg-zinc-50"
+                                    }`}
+                                    onclick={() =>
+                                        selectRedirectFormat(format.id)}
+                                >
+                                    {format.label}
+                                </button>
+                            {/each}
+                        </div>
+
+                        <div class="min-h-0 overflow-hidden">
+                            <div
+                                class="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+                            >
+                                <span
+                                    class="font-mono text-base/7 text-zinc-600 sm:text-sm/6"
+                                >
+                                    {selectedFormat.filename}
+                                </span>
+                                <Button
+                                    type="button"
+                                    onclick={copySelectedRedirects}
+                                >
+                                    {#if copyMessage === "Copied"}
+                                        <Check class="size-5 sm:size-4" />
+                                    {:else}
+                                        <Clipboard class="size-5 sm:size-4" />
+                                    {/if}
+                                    {copyMessage || "Copy to clipboard"}
+                                </Button>
+                            </div>
+                            <pre
+                                class="max-h-[52vh] min-h-72 overflow-auto rounded-md bg-zinc-950 p-4 text-sm/6 whitespace-pre-wrap text-zinc-50 ring-1 ring-zinc-950/10"><code
+                                    >{selectedFormat.body}</code
+                                ></pre>
+                        </div>
+                    {/if}
+                </Dialog.Content>
+            </Dialog.Root>
         {/if}
     </div>
 
