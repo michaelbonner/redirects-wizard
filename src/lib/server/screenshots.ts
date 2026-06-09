@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { env } from "$env/dynamic/private";
-import type { Browser } from "playwright";
+import type { Browser, Page } from "playwright";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
 import { batches } from "./schema";
@@ -13,7 +13,9 @@ const STORAGE_DIR = resolve(env.SCREENSHOTS_DIR || ".screenshots");
 
 const VIEWPORT = { width: 1280, height: 720 };
 const NAV_TIMEOUT = 20_000;
-const SETTLE_MS = 750;
+const LOAD_SETTLE_TIMEOUT = 3_000;
+const FONT_SETTLE_TIMEOUT = 2_000;
+const FINAL_SETTLE_MS = 1_000;
 const JPEG_QUALITY = 72;
 const BLOCKED_VIDEO_HOSTS = [
     "youtube.com",
@@ -88,6 +90,22 @@ function isBlockedVideoRequest(url: string): boolean {
     );
 }
 
+async function waitForPageToSettle(page: Page): Promise<void> {
+    await Promise.allSettled([
+        page.waitForLoadState("load", { timeout: LOAD_SETTLE_TIMEOUT }),
+        page.evaluate(async (timeoutMs) => {
+            if (!("fonts" in document)) return;
+
+            await Promise.race([
+                document.fonts.ready,
+                new Promise((resolve) => setTimeout(resolve, timeoutMs)),
+            ]);
+        }, FONT_SETTLE_TIMEOUT),
+    ]);
+
+    await page.waitForTimeout(FINAL_SETTLE_MS);
+}
+
 async function captureOnce(batchId: number, devUrl: string): Promise<void> {
     const browser = await getBrowser();
     const context = await browser.newContext({ viewport: VIEWPORT });
@@ -120,7 +138,7 @@ async function captureOnce(batchId: number, devUrl: string): Promise<void> {
             // current state rather than giving up entirely.
         }
 
-        await page.waitForTimeout(SETTLE_MS);
+        await waitForPageToSettle(page);
         const buffer = await page.screenshot({
             type: "jpeg",
             quality: JPEG_QUALITY,
