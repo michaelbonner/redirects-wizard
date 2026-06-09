@@ -1,10 +1,8 @@
 {
     "$schema": "https://shadcn-svelte.com/schema.json",
-    "style": "new-york",
     "tailwind": {
-        "config": "",
         "css": "src/app.css",
-        "baseColor": "zinc"
+        "baseColor": "mist"
     },
     "aliases": {
         "components": "$lib/components",
@@ -13,5 +11,10 @@
         "hooks": "$lib/hooks",
         "lib": "$lib"
     },
-    "typescript": true
+    "typescript": true,
+    "registry": "https://shadcn-svelte.com/registry",
+    "style": "luma",
+    "iconLibrary": "lucide",
+    "menuColor": "default-translucent",
+    "menuAccent": "subtle"
 }

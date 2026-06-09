@@ -1,6 +1,6 @@
 <script lang="ts">
-    import Button from "$lib/components/ui/button.svelte";
-    import Input from "$lib/components/ui/input.svelte";
+    import Button from "$lib/components/ui/button/button.svelte";
+    import Input from "$lib/components/ui/input/input.svelte";
     import { authClient } from "$lib/auth-client";
 
     let email = $state("");
@@ -77,7 +77,7 @@
             {/if}
             <Button
                 type="submit"
-                variant="primary"
+                variant="default"
                 class="w-full"
                 disabled={submitting}
             >

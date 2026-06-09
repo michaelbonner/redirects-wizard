@@ -1,6 +1,6 @@
 <script lang="ts">
-    import Button from "$lib/components/ui/button.svelte";
-    import Input from "$lib/components/ui/input.svelte";
+    import Button from "$lib/components/ui/button/button.svelte";
+    import Input from "$lib/components/ui/input/input.svelte";
     import { authClient } from "$lib/auth-client";
 
     let name = $state("");
@@ -91,12 +91,7 @@
             {#if error}
                 <p class="text-base/7 text-red-700 sm:text-sm/6">{error}</p>
             {/if}
-            <Button
-                type="submit"
-                variant="primary"
-                class="w-full"
-                disabled={submitting}
-            >
+            <Button type="submit" class="w-full" disabled={submitting}>
                 {submitting ? "Creating..." : "Create account"}
             </Button>
         </form>

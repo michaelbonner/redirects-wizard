@@ -1,6 +1,6 @@
 <script lang="ts">
-    import Badge from "$lib/components/ui/badge.svelte";
-    import Button from "$lib/components/ui/button.svelte";
+    import Badge from "$lib/components/ui/badge/badge.svelte";
+    import Button from "$lib/components/ui/button/button.svelte";
     import { ExternalLink, Plus } from "lucide-svelte";
 
     let { data } = $props();
@@ -32,7 +32,7 @@
             </p>
         </div>
         <form method="POST" action="?/create">
-            <Button type="submit" variant="primary"
+            <Button type="submit"
                 ><Plus class="size-5 sm:size-4" /> New batch</Button
             >
         </form>
