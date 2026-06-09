@@ -84,7 +84,9 @@ function normalizeRedirectTarget(batch: BatchLike, url: UrlLike) {
 function getRedirectRule(batch: BatchLike, url: UrlLike): RedirectRule {
     const current = new URL(url.url);
     const target = normalizeRedirectTarget(batch, url);
-    const sourceQuery = current.searchParams.toString();
+    const sourceQuery = current.search.startsWith("?")
+        ? current.search.slice(1)
+        : "";
     const sourcePathWithQuery = `${current.pathname}${current.search}`;
     const targetPathWithQuery = `${target.pathname}${target.search}`;
 
@@ -100,7 +102,7 @@ function getRedirectRule(batch: BatchLike, url: UrlLike): RedirectRule {
 export function getApacheRewrite(batch: BatchLike, url: UrlLike) {
     const rule = getRedirectRule(batch, url);
     const path = rule.sourcePath.replace(/^\//, "");
-    let pattern = "(.*) ";
+    let pattern = "^$ ";
 
     if (path) {
         const escaped = escapeApacheRegex(path);
@@ -132,10 +134,8 @@ function getNginxRedirect(batch: BatchLike, url: UrlLike) {
 
     if (rule.sourceQuery) {
         return [
-            `location = ${rule.sourcePath} {`,
-            `    if ($args = "${escapeNginxQuoted(rule.sourceQuery)}") {`,
-            `        return 301 ${target};`,
-            "    }",
+            `if ($request_uri = "${escapeNginxQuoted(rule.sourcePathWithQuery)}") {`,
+            `    return 301 ${target};`,
             "}",
         ].join("\n");
     }
