@@ -2,6 +2,7 @@
     "private": true,
     "type": "module",
     "scripts": {
+        "prepare": "lefthook install",
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
@@ -33,6 +34,7 @@
         "@sveltejs/vite-plugin-svelte": "^6.2.1",
         "bits-ui": "^2.16.3",
         "drizzle-kit": "^0.31.8",
+        "lefthook": "^2.1.9",
         "prettier": "^3.7.4",
         "prettier-plugin-svelte": "^3.4.0",
         "prettier-plugin-tailwindcss": "^0.7.1",
