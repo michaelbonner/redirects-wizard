@@ -441,6 +441,7 @@
                             <div class="mt-4 flex flex-wrap items-center gap-2">
                                 <Button
                                     type="button"
+                                    variant="outline"
                                     onclick={() => recheck(url.id)}
                                 >
                                     <RotateCw class="size-5 sm:size-4" /> Test live
