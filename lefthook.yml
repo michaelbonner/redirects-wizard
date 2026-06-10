@@ -1,7 +1,12 @@
 pre-commit:
   parallel: true
   jobs:
-    - name: prettier
-      glob: "{*,**/*}.{svelte,ts,js,css,json,md,yml,yaml}"
-      run: bunx prettier --write --ignore-unknown {staged_files}
+    - name: oxfmt
+      glob: "{*,**/*}.{ts,js,mjs,cjs}"
+      run: |
+        command -v vp >/dev/null 2>&1 || {
+          echo "vp (Vite+) not found. Install it from https://viteplus.dev"
+          exit 1
+        }
+        vp fmt --write {staged_files}
       stage_fixed: true
