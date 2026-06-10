@@ -14,9 +14,13 @@
         <div
             class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8"
         >
-            <a href="/dashboard" class="text-base/6 font-semibold text-zinc-950"
-                >Redirects Wizard</a
+            <a
+                href="/dashboard"
+                class="flex items-center gap-2 text-base/6 font-semibold text-zinc-950"
             >
+                <img src="/favicon.svg" alt="" class="size-6" />
+                <span>Redirects Wizard</span>
+            </a>
             <nav class="flex items-center gap-3 text-base/6 sm:text-sm/6">
                 <button
                     type="button"
