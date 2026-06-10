@@ -164,6 +164,20 @@ function getNetlifyRedirect(batch: BatchLike, url: UrlLike) {
     return `${source} ${rule.targetPathWithQuery} 301!`;
 }
 
+function formatNextJsProperty(name: string, value: string, indent: string) {
+    return `${indent}${name}: ${JSON.stringify(value)},`;
+}
+
+function getNextJsRedirect(batch: BatchLike, url: UrlLike) {
+    const rule = getRedirectRule(batch, url);
+    return [
+        "  {",
+        formatNextJsProperty("source", rule.sourcePathWithQuery, "    "),
+        formatNextJsProperty("destination", rule.targetPathWithQuery, "    "),
+        "  },",
+    ].join("\n");
+}
+
 export function getRedirectFormats(batch: BatchLike, redirectUrls: UrlLike[]) {
     const sortedUrls = [...redirectUrls].sort((a, b) => {
         const aRule = getRedirectRule(batch, a);
@@ -178,6 +192,7 @@ export function getRedirectFormats(batch: BatchLike, redirectUrls: UrlLike[]) {
     const nginxRules = sortedUrls.map((url) => getNginxRedirect(batch, url));
     const caddyRules = sortedUrls.map((url, index) => getCaddyRedirect(batch, url, index));
     const netlifyRules = sortedUrls.map((url) => getNetlifyRedirect(batch, url));
+    const nextJsRules = sortedUrls.map((url) => getNextJsRedirect(batch, url));
 
     return [
         {
@@ -203,6 +218,32 @@ export function getRedirectFormats(batch: BatchLike, redirectUrls: UrlLike[]) {
             label: "Netlify _redirects",
             filename: "_redirects",
             body: netlifyRules.join("\n"),
+        },
+        {
+            id: "next-js",
+            label: "Next.js",
+            filename: "proxy.ts",
+            body: [
+                'import { NextResponse } from "next/server";',
+                'import type { NextRequest } from "next/server";',
+                "",
+                "const redirects = [",
+                nextJsRules.join("\n"),
+                "] as const;",
+                "",
+                "export function proxy(request: NextRequest) {",
+                "  const requestPath = `${request.nextUrl.pathname}${request.nextUrl.search}`;",
+                "  const redirect =",
+                "    redirects.find(({ source }) => source === requestPath) ??",
+                '    redirects.find(({ source }) => !source.includes("?") && source === request.nextUrl.pathname);',
+                "",
+                "  if (!redirect) {",
+                "    return NextResponse.next();",
+                "  }",
+                "",
+                "  return NextResponse.redirect(new URL(redirect.destination, request.url), 308);",
+                "}",
+            ].join("\n"),
         },
     ] satisfies RedirectFormat[];
 }
