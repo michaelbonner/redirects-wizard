@@ -639,10 +639,11 @@
                                                 <Button
                                                     type="button"
                                                     variant="destructive"
-                                                    size="sm"
+                                                    size="icon-sm"
+                                                    aria-label="Remove URL"
                                                     onclick={() => removeUrl(url.id)}
                                                 >
-                                                    <Trash2 class="size-4" /> Remove
+                                                    <Trash2 class="size-4" />
                                                 </Button>
                                             </div>
                                         </td>
@@ -732,10 +733,11 @@
                             <Button
                                 type="button"
                                 variant="destructive"
-                                size="sm"
+                                size="icon-sm"
+                                aria-label="Remove URL"
                                 onclick={() => removeUrl(url.id)}
                             >
-                                <Trash2 class="size-5 sm:size-4" /> Remove
+                                <Trash2 class="size-5 sm:size-4" />
                             </Button>
                         </div>
 
