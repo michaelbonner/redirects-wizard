@@ -7,6 +7,14 @@ cmds = ["bun install --frozen-lockfile"]
 [phases.build]
 cmds = ["bun run build"]
 
+[phases.caddy]
+# Nixpacks' Vite/static-site provider adds a Caddy phase even though this app
+# runs through SvelteKit's Bun adapter. Keep the phase empty so deployment does
+# not install an unused Caddy package from a separate nixpkgs snapshot.
+cmds = []
+nixPkgs = []
+nixOverlays = []
+
 [start]
 # chromium comes from nixPkgs above; resolve its path at runtime so Playwright
 # uses the Nix-provided browser (which ships its own system libraries) rather
