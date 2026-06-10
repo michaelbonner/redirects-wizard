@@ -75,6 +75,14 @@ function escapeNginxQuoted(value: string) {
     return value.replaceAll("\\", "\\\\").replaceAll('"', '\\"');
 }
 
+function escapeNextJsSourcePath(value: string) {
+    return value.replace(/[(){}:*+?]/g, "\\$&");
+}
+
+function escapeNextJsRegexValue(value: string) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function normalizeRedirectTarget(batch: BatchLike, url: UrlLike) {
     return new URL(getDevRedirectUrl(batch, url));
 }
@@ -164,6 +172,47 @@ function getNetlifyRedirect(batch: BatchLike, url: UrlLike) {
     return `${source} ${rule.targetPathWithQuery} 301!`;
 }
 
+function getNextJsQueryMatchers(rule: RedirectRule) {
+    return Array.from(new URLSearchParams(rule.sourceQuery).entries()).map(([key, value]) => ({
+        type: "query",
+        key,
+        value: escapeNextJsRegexValue(value),
+    }));
+}
+
+function formatNextJsProperty(name: string, value: string, indent: string) {
+    return `${indent}${name}: ${JSON.stringify(value)},`;
+}
+
+function getNextJsRedirect(batch: BatchLike, url: UrlLike) {
+    const rule = getRedirectRule(batch, url);
+    const lines = [
+        "      {",
+        formatNextJsProperty("source", escapeNextJsSourcePath(rule.sourcePath), "        "),
+    ];
+    const queryMatchers = getNextJsQueryMatchers(rule);
+
+    if (queryMatchers.length) {
+        lines.push("        has: [");
+        for (const matcher of queryMatchers) {
+            lines.push("          {");
+            lines.push(formatNextJsProperty("type", matcher.type, "            "));
+            lines.push(formatNextJsProperty("key", matcher.key, "            "));
+            lines.push(formatNextJsProperty("value", matcher.value, "            "));
+            lines.push("          },");
+        }
+        lines.push("        ],");
+    }
+
+    lines.push(
+        formatNextJsProperty("destination", rule.targetPathWithQuery, "        "),
+        "        permanent: true,",
+        "      },",
+    );
+
+    return lines.join("\n");
+}
+
 export function getRedirectFormats(batch: BatchLike, redirectUrls: UrlLike[]) {
     const sortedUrls = [...redirectUrls].sort((a, b) => {
         const aRule = getRedirectRule(batch, a);
@@ -178,6 +227,7 @@ export function getRedirectFormats(batch: BatchLike, redirectUrls: UrlLike[]) {
     const nginxRules = sortedUrls.map((url) => getNginxRedirect(batch, url));
     const caddyRules = sortedUrls.map((url, index) => getCaddyRedirect(batch, url, index));
     const netlifyRules = sortedUrls.map((url) => getNetlifyRedirect(batch, url));
+    const nextJsRules = sortedUrls.map((url) => getNextJsRedirect(batch, url));
 
     return [
         {
@@ -203,6 +253,20 @@ export function getRedirectFormats(batch: BatchLike, redirectUrls: UrlLike[]) {
             label: "Netlify _redirects",
             filename: "_redirects",
             body: netlifyRules.join("\n"),
+        },
+        {
+            id: "next-js",
+            label: "Next.js",
+            filename: "next.config.js",
+            body: [
+                "module.exports = {",
+                "  async redirects() {",
+                "    return [",
+                nextJsRules.join("\n"),
+                "    ];",
+                "  },",
+                "};",
+            ].join("\n"),
         },
     ] satisfies RedirectFormat[];
 }
