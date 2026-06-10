@@ -27,7 +27,7 @@ type RedirectRule = {
 export function normalizeUrlInput(url: string) {
     const withoutHash = url.trim().split("#")[0] ?? "";
     if (!withoutHash) return "";
-    return withoutHash.startsWith("http") ? withoutHash : `http://${withoutHash}`;
+    return /^https?:\/\//i.test(withoutHash) ? withoutHash : `http://${withoutHash}`;
 }
 
 export function withoutTrailingSlash(url: string) {
