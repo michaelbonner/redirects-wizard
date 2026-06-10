@@ -63,6 +63,11 @@ export const verification = pgTable("verification", {
 export type HttpResponse = {
     url: string;
     status_code: number | string;
+    redirect_chain?: {
+        url: string;
+        status_code: number | string;
+        redirect_to?: string;
+    }[];
     redirect_path?: string[];
     message?: string;
     headers: Record<string, string | string[]>;

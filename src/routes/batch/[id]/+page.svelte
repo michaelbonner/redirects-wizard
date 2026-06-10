@@ -12,6 +12,7 @@
         Clipboard,
         Eye,
         EyeOff,
+        ExternalLink,
         FileText,
         RotateCw,
         Trash2,
@@ -24,11 +25,19 @@
         body: string;
     };
 
+    type RedirectChainEntry = {
+        url: string;
+        status_code?: number | string;
+        redirect_to?: string;
+    };
+
     let { data, form } = $props();
 
     let hideAddressed = $state(false);
     let hidePending = $state(false);
     let checkingAll = $state(false);
+    let checkingUrls = $state<Record<number, boolean>>({});
+    let checkErrors = $state<Record<number, string>>({});
     let checkMessage = $state("");
     let urlRows = $state<typeof data.urls>([]);
     let redirectsOpen = $state(false);
@@ -125,6 +134,43 @@
         }
     }
 
+    function getRedirectEntries(
+        response: (typeof data.urls)[number]["httpResponse"],
+    ): RedirectChainEntry[] {
+        if (!response) return [];
+
+        if (response.redirect_chain?.length) {
+            return response.redirect_chain.map((entry) => ({
+                url: entry.url,
+                status_code: entry.status_code,
+                redirect_to: entry.redirect_to,
+            }));
+        }
+
+        return (
+            response.redirect_path?.map((url) => ({
+                url,
+            })) ?? []
+        );
+    }
+
+    function getStatusCode(status: number | string) {
+        return String(status);
+    }
+
+    function getDisplayUrl(value: string) {
+        try {
+            const devUrl = new URL(data.batch.devUrl);
+            const candidate = new URL(value, devUrl.origin);
+
+            if (candidate.origin !== devUrl.origin) return value;
+
+            return `${candidate.pathname}${candidate.search}${candidate.hash}`;
+        } catch {
+            return value;
+        }
+    }
+
     async function copySelectedRedirects() {
         if (!selectedFormat) return;
 
@@ -141,14 +187,25 @@
     }
 
     async function recheck(id: number) {
-        const response = await fetch(`/api/urls/${id}/check`, {
-            method: "POST",
-        });
-        if (response.ok) {
-            const updated = await response.json();
-            urlRows = urlRows.map((url) =>
-                url.id === id ? { ...url, ...updated } : url,
-            );
+        checkingUrls[id] = true;
+        checkErrors[id] = "";
+
+        try {
+            const response = await fetch(`/api/urls/${id}/check`, {
+                method: "POST",
+            });
+            if (response.ok) {
+                const updated = await response.json();
+                urlRows = urlRows.map((url) =>
+                    url.id === id ? { ...url, ...updated } : url,
+                );
+            } else {
+                checkErrors[id] = "Could not test URL.";
+            }
+        } catch {
+            checkErrors[id] = "Could not test URL.";
+        } finally {
+            checkingUrls[id] = false;
         }
     }
 
@@ -191,36 +248,29 @@
 </script>
 
 <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-    <div
-        class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
-    >
+    <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div class="min-w-0">
-            <a
-                href="/"
-                class="text-base/7 font-medium text-teal-700 sm:text-sm/6"
-                >Back to batches</a
-            >
+            <a href="/" class="text-base/7 font-medium text-primary sm:text-sm/6">
+                Back to batches
+            </a>
             <h1 class="mt-2 truncate text-2xl/8 font-semibold text-zinc-950">
                 {data.batch.devUrl || "New redirect batch"}
             </h1>
-            <div class="mt-2 flex flex-wrap gap-2">
-                <Badge>{urlRows.length} URLs</Badge>
-                <Badge
-                    class={pendingCount > 0
-                        ? "bg-amber-100 text-amber-800"
-                        : "bg-teal-100 text-teal-800"}
-                >
-                    {addressedCount} addressed
-                </Badge>
-            </div>
+            <p class="mt-1 text-base/7 text-zinc-600 sm:text-sm/6">
+                Review live URL checks, add redirect targets, and export rewrite rules.
+            </p>
         </div>
 
         {#if validDevUrl}
             <Dialog.Root bind:open={redirectsOpen}>
                 <Dialog.Trigger
-                    class="inline-flex items-center justify-center gap-1.5 rounded-md bg-white px-3 py-2 text-base/6 font-medium text-zinc-900 ring-1 ring-zinc-200 transition hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 sm:py-1.5 sm:text-sm/6"
+                    class={buttonVariants({
+                        variant: "outline",
+                        class: "w-full gap-1.5 lg:w-auto",
+                    })}
                 >
-                    View redirects <FileText class="size-5 sm:size-4" />
+                    <FileText class="size-5 sm:size-4" />
+                    View redirects
                 </Dialog.Trigger>
                 <Dialog.Content class="sm:max-w-4xl">
                     <Dialog.Header>
@@ -296,6 +346,31 @@
         {/if}
     </div>
 
+    <div
+        class="@container mb-6 grid grid-cols-3 gap-px overflow-hidden rounded-lg bg-zinc-200 ring-1 ring-zinc-200"
+    >
+        <div class="bg-white p-4">
+            <p class="truncate text-sm/6 text-zinc-500">Total URLs</p>
+            <p class="text-2xl/8 font-semibold text-zinc-950 tabular-nums">
+                {urlRows.length}
+            </p>
+        </div>
+        <div class="bg-white p-4">
+            <p class="truncate text-sm/6 text-zinc-500">Addressed</p>
+            <p class="text-2xl/8 font-semibold text-teal-700 tabular-nums">
+                {addressedCount}
+            </p>
+        </div>
+        <div class="bg-white p-4">
+            <p class="truncate text-sm/6 text-zinc-500">Open</p>
+            <p
+                class={`text-2xl/8 font-semibold tabular-nums ${pendingCount > 0 ? "text-amber-700" : "text-teal-700"}`}
+            >
+                {pendingCount}
+            </p>
+        </div>
+    </div>
+
     {#if form?.message}
         <div
             class="mb-4 rounded-md bg-amber-50 px-4 py-3 text-base/7 text-amber-900 ring-1 ring-amber-200 sm:text-sm/6"
@@ -315,7 +390,7 @@
         <form
             method="POST"
             action="?/updateDevUrl"
-            class="grid gap-3 sm:grid-cols-[1fr_auto]"
+            class="grid gap-3 lg:grid-cols-[1fr_auto]"
         >
             <div>
                 <label
@@ -331,18 +406,35 @@
                 />
             </div>
             <div class="flex items-end">
-                <Button type="submit" class="w-full sm:w-auto"
-                    >Update URL</Button
-                >
+                <Button type="submit" class="w-full lg:w-auto">Update URL</Button>
             </div>
         </form>
     </section>
 
     {#if validDevUrl}
-        <section class="mt-4 rounded-lg bg-white p-4 ring-1 ring-zinc-200">
+        <section class="mt-6">
+            <div class="mb-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <h2 class="text-lg/7 font-semibold text-zinc-950 sm:text-base/7">
+                        URLs
+                    </h2>
+                    <p class="text-base/7 text-zinc-600 sm:text-sm/6">
+                        Showing {visibleUrls.length} of {urlRows.length} URL{urlRows.length === 1
+                            ? ""
+                            : "s"}.
+                    </p>
+                </div>
+                {#if checkMessage}
+                    <span class="text-base/7 text-zinc-500 sm:text-sm/6">
+                        {checkMessage}
+                    </span>
+                {/if}
+            </div>
+
             <div class="mb-4 flex flex-wrap items-center gap-2">
                 <Button
                     type="button"
+                    variant={hideAddressed ? "secondary" : "outline"}
                     onclick={() => (hideAddressed = !hideAddressed)}
                 >
                     {#if hideAddressed}<Eye class="size-5 sm:size-4" /> Show addressed{:else}<EyeOff
@@ -351,6 +443,7 @@
                 </Button>
                 <Button
                     type="button"
+                    variant={hidePending ? "secondary" : "outline"}
                     onclick={() => (hidePending = !hidePending)}
                 >
                     {#if hidePending}<Eye class="size-5 sm:size-4" /> Show pending{:else}<EyeOff
@@ -359,6 +452,7 @@
                 </Button>
                 <Button
                     type="button"
+                    variant="outline"
                     disabled={checkingAll}
                     onclick={() => recheckMany(true)}
                 >
@@ -368,6 +462,7 @@
                 </Button>
                 <Button
                     type="button"
+                    variant="outline"
                     disabled={checkingAll}
                     onclick={() => recheckMany(false)}
                 >
@@ -375,113 +470,309 @@
                         class={`size-5 sm:size-4 ${checkingAll ? "animate-spin" : ""}`}
                     /> Recheck all
                 </Button>
-                {#if checkMessage}<span
-                        class="text-base/7 text-zinc-500 sm:text-sm/6"
-                        >{checkMessage}</span
-                    >{/if}
             </div>
 
-            <div class="@container">
-                <div class="grid gap-3 @4xl:grid-cols-2">
-                    {#each visibleUrls as url}
-                        <article
-                            class={`rounded-lg p-4 ring-1 ring-zinc-200 ${url.addressed ? "bg-zinc-50" : "bg-white"}`}
-                        >
-                            <div class="flex items-start justify-between gap-3">
-                                <a
-                                    href={url.url}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    class={`min-w-0 text-base/7 font-medium wrap-break-word text-teal-800 sm:text-sm/6 ${url.addressed ? "line-through" : ""}`}
-                                >
-                                    {url.url}
-                                </a>
-                                <Badge
-                                    class={url.addressed
-                                        ? "bg-teal-100 text-teal-800"
-                                        : "bg-amber-100 text-amber-800"}
-                                >
-                                    {url.addressed ? "Addressed" : "Open"}
-                                </Badge>
-                            </div>
-
-                            {#if !url.addressed}
-                                <div class="mt-4">
-                                    <label
-                                        for={`redirect-${url.id}`}
-                                        class="mb-1 block text-base/6 font-medium text-zinc-900 sm:text-sm/6"
+            <div class="hidden lg:block">
+                <div class="-mx-4 -my-2 overflow-x-auto whitespace-nowrap sm:-mx-6 lg:-mx-8">
+                    <div class="inline-block min-w-full px-4 py-2 align-middle sm:px-6 lg:px-8">
+                        <table class="w-full table-fixed">
+                            <colgroup>
+                                <col class="w-[34%]" />
+                                <col class="w-[26%]" />
+                                <col class="w-[22%]" />
+                                <col class="w-[18rem]" />
+                            </colgroup>
+                            <thead>
+                                <tr class="border-b border-zinc-200">
+                                    <th
+                                        scope="col"
+                                        class="py-3 pr-4 text-left text-sm/6 font-medium whitespace-nowrap text-zinc-600"
+                                    >
+                                        URL
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        class="px-4 py-3 text-left text-sm/6 font-medium whitespace-nowrap text-zinc-600"
                                     >
                                         Redirect to
-                                    </label>
-                                    <Input
-                                        id={`redirect-${url.id}`}
-                                        name={`redirect-${url.id}`}
-                                        value={url.redirectTo ?? ""}
-                                        placeholder="/"
-                                        onblur={(event: FocusEvent) =>
-                                            updateRedirect(
-                                                url.id,
-                                                (
-                                                    event.currentTarget as HTMLInputElement
-                                                ).value,
-                                            )}
-                                    />
-                                    {#if url.devRedirectUrl}
-                                        <a
-                                            href={url.devRedirectUrl}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            class="mt-2 inline-flex text-base/7 font-medium text-teal-700 sm:text-sm/6"
-                                        >
-                                            Verify redirect target
-                                        </a>
-                                    {/if}
-                                </div>
-                            {/if}
-
-                            <div class="mt-4 flex flex-wrap items-center gap-2">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onclick={() => recheck(url.id)}
-                                >
-                                    <RotateCw class="size-5 sm:size-4" /> Test live
-                                    redirect
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="destructive"
-                                    onclick={() => removeUrl(url.id)}
-                                >
-                                    <Trash2 class="size-5 sm:size-4" /> Remove
-                                </Button>
-                            </div>
-
-                            {#if url.httpResponse}
-                                <div
-                                    class="mt-3 text-base/7 text-zinc-600 sm:text-sm/6"
-                                >
-                                    Status: {url.httpResponse.status_code}
-                                    {#if url.httpResponse.redirect_path?.length}
-                                        <ol
-                                            class="mt-2 list-decimal space-y-1 pl-5"
-                                        >
-                                            {#each url.httpResponse.redirect_path as redirect}
-                                                <li class="break-all">
-                                                    {redirect}
-                                                </li>
-                                            {/each}
-                                        </ol>
-                                    {/if}
-                                </div>
-                            {/if}
-                        </article>
-                    {/each}
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        class="px-4 py-3 text-left text-sm/6 font-medium whitespace-nowrap text-zinc-600"
+                                    >
+                                        Status
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        class="py-3 pl-4 text-right text-sm/6 font-medium whitespace-nowrap text-zinc-600"
+                                    >
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {#each visibleUrls as url}
+                                    {@const isChecking = checkingUrls[url.id]}
+                                    <tr class="border-b border-zinc-200 last:border-b-0">
+                                        <td class="max-w-[27rem] py-3 pr-4 align-top">
+                                            <a
+                                                href={url.url}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                class={`block min-w-0 text-sm/6 font-medium break-all whitespace-normal text-zinc-950 hover:text-primary ${url.addressed ? "line-through decoration-zinc-400" : ""}`}
+                                                title={url.url}
+                                            >
+                                                {getDisplayUrl(url.url)}
+                                            </a>
+                                        </td>
+                                        <td class="w-[24rem] px-4 py-3 align-top">
+                                            {#if !url.addressed}
+                                                <Input
+                                                    id={`redirect-${url.id}`}
+                                                    name={`redirect-${url.id}`}
+                                                    value={url.redirectTo ?? ""}
+                                                    placeholder="/"
+                                                    onblur={(event: FocusEvent) =>
+                                                        updateRedirect(
+                                                            url.id,
+                                                            (
+                                                                event.currentTarget as HTMLInputElement
+                                                            ).value,
+                                                        )}
+                                                />
+                                                {:else if url.redirectTo}
+                                                    <span class="block truncate text-sm/6 text-zinc-700" title={url.redirectTo}>
+                                                        {getDisplayUrl(
+                                                            url.redirectTo,
+                                                        )}
+                                                </span>
+                                            {:else}
+                                                <span class="text-sm/6 text-zinc-400">No redirect target</span>
+                                            {/if}
+                                        </td>
+                                        <td class="px-4 py-3 align-top">
+                                            <div class="min-w-0 space-y-1.5">
+                                                <Badge
+                                                    class={url.addressed
+                                                        ? "bg-teal-100 text-teal-800"
+                                                        : "bg-amber-100 text-amber-800"}
+                                                >
+                                                    {url.addressed ? "Addressed" : "Open"}
+                                                </Badge>
+                                                {#if isChecking}
+                                                    <div class="text-sm/6 text-zinc-600">
+                                                        Testing URL...
+                                                    </div>
+                                                {:else if checkErrors[url.id]}
+                                                    <div class="text-sm/6 text-red-700">
+                                                        {checkErrors[url.id]}
+                                                    </div>
+                                                {:else if url.httpResponse}
+                                                    <div class="text-sm/6 text-zinc-700">
+                                                        Status: {url.httpResponse.status_code}
+                                                    </div>
+                                                    {@const redirectEntries =
+                                                        getRedirectEntries(
+                                                            url.httpResponse,
+                                                        )}
+                                                    {#if redirectEntries.length}
+                                                        <ol class="space-y-1 text-xs/5 whitespace-normal text-zinc-500">
+                                                            {#each redirectEntries as redirect}
+                                                                <li
+                                                                    class="flex min-w-0 items-start gap-1.5"
+                                                                >
+                                                                    {#if redirect.status_code}
+                                                                        <span
+                                                                            class="shrink-0 rounded-full bg-zinc-100 px-1.5 py-0.5 font-medium text-zinc-700"
+                                                                        >
+                                                                            {getStatusCode(
+                                                                                redirect.status_code,
+                                                                            )}
+                                                                        </span>
+                                                                    {/if}
+                                                                    <span
+                                                                        class="min-w-0 break-all"
+                                                                        title={redirect.url}
+                                                                    >
+                                                                        {getDisplayUrl(
+                                                                            redirect.url,
+                                                                        )}
+                                                                    </span>
+                                                                </li>
+                                                            {/each}
+                                                        </ol>
+                                                    {/if}
+                                                {/if}
+                                            </div>
+                                        </td>
+                                        <td class="py-3 pl-4 align-top">
+                                            <div class="flex justify-end gap-2">
+                                                {#if url.devRedirectUrl}
+                                                    <a
+                                                        href={url.devRedirectUrl}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        class={buttonVariants({
+                                                            variant: "outline",
+                                                            size: "sm",
+                                                            class: "gap-1",
+                                                        })}
+                                                    >
+                                                        <ExternalLink class="size-4" /> Verify
+                                                    </a>
+                                                {/if}
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    disabled={isChecking}
+                                                    onclick={() => recheck(url.id)}
+                                                >
+                                                    <RotateCw
+                                                        class={`size-4 ${isChecking ? "animate-spin" : ""}`}
+                                                    />
+                                                    {isChecking ? "Testing" : "Test"}
+                                                </Button>
+                                                <Button
+                                                    type="button"
+                                                    variant="destructive"
+                                                    size="sm"
+                                                    onclick={() => removeUrl(url.id)}
+                                                >
+                                                    <Trash2 class="size-4" /> Remove
+                                                </Button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {/each}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+            </div>
+
+            <div class="space-y-3 lg:hidden">
+                {#each visibleUrls as url}
+                    {@const isChecking = checkingUrls[url.id]}
+                    <article class="rounded-lg bg-white p-4 ring-1 ring-zinc-200">
+                        <div class="flex items-start justify-between gap-3">
+                            <a
+                                href={url.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                class={`min-w-0 text-base/7 font-medium wrap-break-word text-zinc-950 sm:text-sm/6 ${url.addressed ? "line-through decoration-zinc-400" : ""}`}
+                            >
+                                {getDisplayUrl(url.url)}
+                            </a>
+                            <Badge
+                                class={url.addressed
+                                    ? "bg-teal-100 text-teal-800"
+                                    : "bg-amber-100 text-amber-800"}
+                            >
+                                {url.addressed ? "Addressed" : "Open"}
+                            </Badge>
+                        </div>
+
+                        {#if !url.addressed}
+                            <div class="mt-4">
+                                <label
+                                    for={`redirect-mobile-${url.id}`}
+                                    class="mb-1 block text-base/6 font-medium text-zinc-900 sm:text-sm/6"
+                                >
+                                    Redirect to
+                                </label>
+                                <Input
+                                    id={`redirect-mobile-${url.id}`}
+                                    name={`redirect-mobile-${url.id}`}
+                                    value={url.redirectTo ?? ""}
+                                    placeholder="/"
+                                    onblur={(event: FocusEvent) =>
+                                        updateRedirect(
+                                            url.id,
+                                            (
+                                                event.currentTarget as HTMLInputElement
+                                            ).value,
+                                        )}
+                                />
+                                {#if url.devRedirectUrl}
+                                    <a
+                                        href={url.devRedirectUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        class="mt-2 inline-flex items-center gap-1 text-base/7 font-medium text-primary sm:text-sm/6"
+                                    >
+                                        Verify target
+                                        <ExternalLink class="size-4" />
+                                    </a>
+                                {/if}
+                            </div>
+                        {:else if url.redirectTo}
+                            <div class="mt-3 text-base/7 text-zinc-600 sm:text-sm/6">
+                                <span class="font-medium text-zinc-900">Redirect:</span>
+                                {getDisplayUrl(url.redirectTo)}
+                            </div>
+                        {/if}
+
+                        <div class="mt-4 flex flex-wrap items-center gap-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                disabled={isChecking}
+                                onclick={() => recheck(url.id)}
+                            >
+                                <RotateCw
+                                    class={`size-5 sm:size-4 ${isChecking ? "animate-spin" : ""}`}
+                                />
+                                {isChecking ? "Testing" : "Test"}
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onclick={() => removeUrl(url.id)}
+                            >
+                                <Trash2 class="size-5 sm:size-4" /> Remove
+                            </Button>
+                        </div>
+
+                        {#if isChecking}
+                            <div class="mt-3 text-base/7 text-zinc-600 sm:text-sm/6">
+                                Testing URL...
+                            </div>
+                        {:else if checkErrors[url.id]}
+                            <div class="mt-3 text-base/7 text-red-700 sm:text-sm/6">
+                                {checkErrors[url.id]}
+                            </div>
+                        {:else if url.httpResponse}
+                            <div class="mt-3 text-base/7 text-zinc-600 sm:text-sm/6">
+                                Status: {url.httpResponse.status_code}
+                                {#if getRedirectEntries(url.httpResponse).length}
+                                    <ol class="mt-2 list-decimal space-y-1 pl-5">
+                                        {#each getRedirectEntries(url.httpResponse) as redirect}
+                                            <li class="break-all">
+                                                {#if redirect.status_code}
+                                                    <span
+                                                        class="mr-1 rounded-full bg-zinc-100 px-1.5 py-0.5 text-xs/5 font-medium text-zinc-700"
+                                                    >
+                                                        {getStatusCode(
+                                                            redirect.status_code,
+                                                        )}
+                                                    </span>
+                                                {/if}
+                                                {getDisplayUrl(redirect.url)}
+                                            </li>
+                                        {/each}
+                                    </ol>
+                                {/if}
+                            </div>
+                        {/if}
+                    </article>
+                {/each}
             </div>
         </section>
 
-        <section class="mt-4 rounded-lg bg-white p-4 ring-1 ring-zinc-200">
+        <section class="mt-6 rounded-lg bg-white p-4 ring-1 ring-zinc-200">
             <h2 class="text-lg/7 font-semibold text-zinc-950 sm:text-base/7">
                 Add URLs to test
             </h2>
@@ -499,7 +790,7 @@
                     >
                     <Textarea id="urls" name="urls" rows={8} />
                 </div>
-                <Button type="submit">Add URLs</Button>
+                <Button type="submit" variant="secondary">Add URLs</Button>
             </form>
         </section>
     {:else}
