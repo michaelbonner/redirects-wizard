@@ -18,10 +18,7 @@ const defaultEnvFile = ".env";
 const envFile = resolve(
     process.cwd(),
     process.argv.find(
-        (arg) =>
-            !arg.startsWith("--") &&
-            arg !== process.argv[0] &&
-            arg !== process.argv[1],
+        (arg) => !arg.startsWith("--") && arg !== process.argv[0] && arg !== process.argv[1],
     ) ?? defaultEnvFile,
 );
 
@@ -42,9 +39,7 @@ if (!previewDatabaseUrl) {
 }
 
 if (productionDatabaseUrl === previewDatabaseUrl) {
-    throw new Error(
-        "PRODUCTION_DATABASE_URL and PREVIEW_DATABASE_URL must be different.",
-    );
+    throw new Error("PRODUCTION_DATABASE_URL and PREVIEW_DATABASE_URL must be different.");
 }
 
 const production = parsePostgresConnection(productionDatabaseUrl);
@@ -56,14 +51,7 @@ try {
     console.log(`Dumping production database: ${production.redactedUrl}`);
     run(
         "pg_dump",
-        [
-            "--format=custom",
-            "--no-owner",
-            "--no-acl",
-            "--file",
-            dumpFile,
-            production.database,
-        ],
+        ["--format=custom", "--no-owner", "--no-acl", "--file", dumpFile, production.database],
         production.env,
     );
 
@@ -103,10 +91,7 @@ function parseEnvFile(contents: string) {
 }
 
 function parseEnvLine(line: string): EnvLine | undefined {
-    const match =
-        /^(?:\s*export\s+)?(?<key>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?<raw>.*)$/.exec(
-            line,
-        );
+    const match = /^(?:\s*export\s+)?(?<key>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?<raw>.*)$/.exec(line);
 
     if (!match?.groups) return undefined;
 
@@ -250,30 +235,15 @@ function parsePostgresConnection(databaseUrl: string): PostgresConnection {
     if (url.password) env.PGPASSWORD = decodeURIComponent(url.password);
 
     setOptionalLibpqEnv(env, url.searchParams, "application_name", "PGAPPNAME");
-    setOptionalLibpqEnv(
-        env,
-        url.searchParams,
-        "channel_binding",
-        "PGCHANNELBINDING",
-    );
-    setOptionalLibpqEnv(
-        env,
-        url.searchParams,
-        "connect_timeout",
-        "PGCONNECT_TIMEOUT",
-    );
+    setOptionalLibpqEnv(env, url.searchParams, "channel_binding", "PGCHANNELBINDING");
+    setOptionalLibpqEnv(env, url.searchParams, "connect_timeout", "PGCONNECT_TIMEOUT");
     setOptionalLibpqEnv(env, url.searchParams, "options", "PGOPTIONS");
     setOptionalLibpqEnv(env, url.searchParams, "sslcert", "PGSSLCERT");
     setOptionalLibpqEnv(env, url.searchParams, "sslcrl", "PGSSLCRL");
     setOptionalLibpqEnv(env, url.searchParams, "sslkey", "PGSSLKEY");
     setOptionalLibpqEnv(env, url.searchParams, "sslmode", "PGSSLMODE");
     setOptionalLibpqEnv(env, url.searchParams, "sslrootcert", "PGSSLROOTCERT");
-    setOptionalLibpqEnv(
-        env,
-        url.searchParams,
-        "target_session_attrs",
-        "PGTARGETSESSIONATTRS",
-    );
+    setOptionalLibpqEnv(env, url.searchParams, "target_session_attrs", "PGTARGETSESSIONATTRS");
 
     return {
         database,

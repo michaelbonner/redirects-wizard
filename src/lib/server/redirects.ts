@@ -27,9 +27,7 @@ type RedirectRule = {
 export function normalizeUrlInput(url: string) {
     const withoutHash = url.trim().split("#")[0] ?? "";
     if (!withoutHash) return "";
-    return withoutHash.startsWith("http")
-        ? withoutHash
-        : `http://${withoutHash}`;
+    return withoutHash.startsWith("http") ? withoutHash : `http://${withoutHash}`;
 }
 
 export function withoutTrailingSlash(url: string) {
@@ -84,9 +82,7 @@ function normalizeRedirectTarget(batch: BatchLike, url: UrlLike) {
 function getRedirectRule(batch: BatchLike, url: UrlLike): RedirectRule {
     const current = new URL(url.url);
     const target = normalizeRedirectTarget(batch, url);
-    const sourceQuery = current.search.startsWith("?")
-        ? current.search.slice(1)
-        : "";
+    const sourceQuery = current.search.startsWith("?") ? current.search.slice(1) : "";
     const sourcePathWithQuery = `${current.pathname}${current.search}`;
     const targetPathWithQuery = `${target.pathname}${target.search}`;
 
@@ -140,11 +136,7 @@ function getNginxRedirect(batch: BatchLike, url: UrlLike) {
         ].join("\n");
     }
 
-    return [
-        `location = ${rule.sourcePath} {`,
-        `    return 301 ${target};`,
-        "}",
-    ].join("\n");
+    return [`location = ${rule.sourcePath} {`, `    return 301 ${target};`, "}"].join("\n");
 }
 
 function getCaddyRedirect(batch: BatchLike, url: UrlLike, index: number) {
@@ -177,20 +169,15 @@ export function getRedirectFormats(batch: BatchLike, redirectUrls: UrlLike[]) {
         const aRule = getRedirectRule(batch, a);
         const bRule = getRedirectRule(batch, b);
         return (
-            bRule.sourcePathWithQuery.length -
-                aRule.sourcePathWithQuery.length ||
+            bRule.sourcePathWithQuery.length - aRule.sourcePathWithQuery.length ||
             aRule.sourcePathWithQuery.localeCompare(bRule.sourcePathWithQuery)
         );
     });
 
     const apacheRules = sortedUrls.map((url) => getApacheRewrite(batch, url));
     const nginxRules = sortedUrls.map((url) => getNginxRedirect(batch, url));
-    const caddyRules = sortedUrls.map((url, index) =>
-        getCaddyRedirect(batch, url, index),
-    );
-    const netlifyRules = sortedUrls.map((url) =>
-        getNetlifyRedirect(batch, url),
-    );
+    const caddyRules = sortedUrls.map((url, index) => getCaddyRedirect(batch, url, index));
+    const netlifyRules = sortedUrls.map((url) => getNetlifyRedirect(batch, url));
 
     return [
         {
