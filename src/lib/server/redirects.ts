@@ -208,38 +208,65 @@ export function getRedirectFormats(batch: BatchLike, redirectUrls: UrlLike[]) {
 }
 
 export async function checkUrl(url: string): Promise<HttpResponse> {
-    const redirectPath: string[] = [url];
+    const redirectChain: NonNullable<HttpResponse["redirect_chain"]> = [];
+    const redirectPath: string[] = [];
+    let currentUrl = url;
+    let finalResponse: Response | null = null;
+    const maxRedirects = 10;
 
     try {
-        const response = await fetch(url, {
-            redirect: "follow",
-            signal: AbortSignal.timeout(10000),
-            headers: {
-                accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "accept-language": "en-US,en;q=0.9",
-                "cache-control": "no-cache",
-                pragma: "no-cache",
-                "user-agent":
-                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36",
-            },
-        });
+        for (let redirectCount = 0; redirectCount <= maxRedirects; redirectCount++) {
+            const response = await fetch(currentUrl, {
+                redirect: "manual",
+                signal: AbortSignal.timeout(10000),
+                headers: {
+                    accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "accept-language": "en-US,en;q=0.9",
+                    "cache-control": "no-cache",
+                    pragma: "no-cache",
+                    "user-agent":
+                        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36",
+                },
+            });
+            const location = response.headers.get("location");
+            const redirectTo =
+                location && isRedirectStatus(response.status)
+                    ? new URL(location, currentUrl).toString()
+                    : undefined;
 
-        if (response.redirected) {
-            redirectPath.push(response.url);
+            redirectPath.push(currentUrl);
+            redirectChain.push({
+                url: currentUrl,
+                status_code: response.status,
+                ...(redirectTo ? { redirect_to: redirectTo } : {}),
+            });
+
+            finalResponse = response;
+
+            if (!redirectTo) break;
+
+            currentUrl = redirectTo;
         }
 
         return {
             url,
-            status_code: response.status,
+            status_code: finalResponse?.status ?? 504,
+            redirect_chain: redirectChain,
             redirect_path: redirectPath,
-            headers: Object.fromEntries(response.headers.entries()),
+            headers: Object.fromEntries(finalResponse?.headers.entries() ?? []),
         };
     } catch (error) {
         return {
             url,
             status_code: 504,
+            redirect_chain: redirectChain.length ? redirectChain : undefined,
+            redirect_path: redirectPath.length ? redirectPath : undefined,
             message: error instanceof Error ? error.message : "Request failed",
             headers: {},
         };
     }
+}
+
+function isRedirectStatus(status: number) {
+    return status >= 300 && status < 400;
 }
