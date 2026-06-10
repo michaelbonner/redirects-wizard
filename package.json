@@ -11,6 +11,7 @@
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit migrate",
         "db:copy-production-to-preview": "bun scripts/copy-production-db-to-preview.ts",
+        "db:copy-production-to-local": "bun scripts/copy-production-db-to-local.ts",
         "format": "vp fmt --write",
         "lint": "vp fmt --check && vp lint"
     },
