@@ -75,14 +75,6 @@ function escapeNginxQuoted(value: string) {
     return value.replaceAll("\\", "\\\\").replaceAll('"', '\\"');
 }
 
-function escapeNextJsSourcePath(value: string) {
-    return value.replace(/[(){}:*+?]/g, "\\$&");
-}
-
-function escapeNextJsRegexValue(value: string) {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 function normalizeRedirectTarget(batch: BatchLike, url: UrlLike) {
     return new URL(getDevRedirectUrl(batch, url));
 }
@@ -172,45 +164,18 @@ function getNetlifyRedirect(batch: BatchLike, url: UrlLike) {
     return `${source} ${rule.targetPathWithQuery} 301!`;
 }
 
-function getNextJsQueryMatchers(rule: RedirectRule) {
-    return Array.from(new URLSearchParams(rule.sourceQuery).entries()).map(([key, value]) => ({
-        type: "query",
-        key,
-        value: escapeNextJsRegexValue(value),
-    }));
-}
-
 function formatNextJsProperty(name: string, value: string, indent: string) {
     return `${indent}${name}: ${JSON.stringify(value)},`;
 }
 
 function getNextJsRedirect(batch: BatchLike, url: UrlLike) {
     const rule = getRedirectRule(batch, url);
-    const lines = [
-        "      {",
-        formatNextJsProperty("source", escapeNextJsSourcePath(rule.sourcePath), "        "),
-    ];
-    const queryMatchers = getNextJsQueryMatchers(rule);
-
-    if (queryMatchers.length) {
-        lines.push("        has: [");
-        for (const matcher of queryMatchers) {
-            lines.push("          {");
-            lines.push(formatNextJsProperty("type", matcher.type, "            "));
-            lines.push(formatNextJsProperty("key", matcher.key, "            "));
-            lines.push(formatNextJsProperty("value", matcher.value, "            "));
-            lines.push("          },");
-        }
-        lines.push("        ],");
-    }
-
-    lines.push(
-        formatNextJsProperty("destination", rule.targetPathWithQuery, "        "),
-        "        permanent: true,",
-        "      },",
-    );
-
-    return lines.join("\n");
+    return [
+        "  {",
+        formatNextJsProperty("source", rule.sourcePathWithQuery, "    "),
+        formatNextJsProperty("destination", rule.targetPathWithQuery, "    "),
+        "  },",
+    ].join("\n");
 }
 
 export function getRedirectFormats(batch: BatchLike, redirectUrls: UrlLike[]) {
@@ -257,15 +222,27 @@ export function getRedirectFormats(batch: BatchLike, redirectUrls: UrlLike[]) {
         {
             id: "next-js",
             label: "Next.js",
-            filename: "next.config.js",
+            filename: "proxy.ts",
             body: [
-                "module.exports = {",
-                "  async redirects() {",
-                "    return [",
+                'import { NextResponse } from "next/server";',
+                'import type { NextRequest } from "next/server";',
+                "",
+                "const redirects = [",
                 nextJsRules.join("\n"),
-                "    ];",
-                "  },",
-                "};",
+                "] as const;",
+                "",
+                "export function proxy(request: NextRequest) {",
+                "  const requestPath = `${request.nextUrl.pathname}${request.nextUrl.search}`;",
+                "  const redirect =",
+                "    redirects.find(({ source }) => source === requestPath) ??",
+                '    redirects.find(({ source }) => !source.includes("?") && source === request.nextUrl.pathname);',
+                "",
+                "  if (!redirect) {",
+                "    return NextResponse.next();",
+                "  }",
+                "",
+                "  return NextResponse.redirect(new URL(redirect.destination, request.url), 308);",
+                "}",
             ].join("\n"),
         },
     ] satisfies RedirectFormat[];
