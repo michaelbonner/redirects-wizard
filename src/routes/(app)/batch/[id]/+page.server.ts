@@ -14,11 +14,7 @@ import { and, asc, eq, isNull, or } from "drizzle-orm";
 
 async function getOwnedBatch(batchId: number, userId: string) {
     const batch = await db.query.batches.findFirst({
-        where: and(
-            eq(batches.id, batchId),
-            eq(batches.userId, userId),
-            isNull(batches.deletedAt),
-        ),
+        where: and(eq(batches.id, batchId), eq(batches.userId, userId), isNull(batches.deletedAt)),
     });
 
     if (!batch) {
@@ -44,22 +40,16 @@ export async function load({ locals, params }) {
         batch,
         urls: batchUrls.map((url) => ({
             ...url,
-            devUrl:
-                batch.devUrl && isValidHttpUrl(batch.devUrl)
-                    ? getDevUrl(batch, url)
-                    : "",
+            devUrl: batch.devUrl && isValidHttpUrl(batch.devUrl) ? getDevUrl(batch, url) : "",
             devRedirectUrl:
-                batch.devUrl && isValidHttpUrl(batch.devUrl)
-                    ? getDevRedirectUrl(batch, url)
-                    : "",
+                batch.devUrl && isValidHttpUrl(batch.devUrl) ? getDevRedirectUrl(batch, url) : "",
         })),
     };
 }
 
 export const actions = {
     updateDevUrl: async ({ locals, params, request }) => {
-        if (!locals.user)
-            return fail(401, { message: "You must be signed in." });
+        if (!locals.user) return fail(401, { message: "You must be signed in." });
 
         const formData = await request.formData();
         const devUrl = String(formData.get("devUrl") ?? "").trim();
@@ -89,16 +79,13 @@ export const actions = {
     },
 
     addUrls: async ({ locals, params, request }) => {
-        if (!locals.user)
-            return fail(401, { message: "You must be signed in." });
+        if (!locals.user) return fail(401, { message: "You must be signed in." });
 
         const batch = await getOwnedBatch(Number(params.id), locals.user.id);
         const formData = await request.formData();
         const input = String(formData.get("urls") ?? "");
         const candidates = [
-            ...new Set(
-                input.split("\n").map(normalizeUrlInput).filter(Boolean),
-            ),
+            ...new Set(input.split("\n").map(normalizeUrlInput).filter(Boolean)),
         ].filter(isValidHttpUrl);
 
         if (!candidates.length) {
@@ -142,8 +129,7 @@ export const actions = {
     },
 
     archive: async ({ locals, params }) => {
-        if (!locals.user)
-            return fail(401, { message: "You must be signed in." });
+        if (!locals.user) return fail(401, { message: "You must be signed in." });
 
         const batch = await getOwnedBatch(Number(params.id), locals.user.id);
         await db

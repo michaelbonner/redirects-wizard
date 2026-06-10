@@ -40,10 +40,7 @@ export async function PATCH({ locals, params, request }) {
         const original = new URL(url.url);
         const target = new URL(redirectTo, original.origin);
         if (target.toString() === original.toString()) {
-            throw error(
-                422,
-                "Redirect URL cannot be the same as the URL to redirect.",
-            );
+            throw error(422, "Redirect URL cannot be the same as the URL to redirect.");
         }
     }
 

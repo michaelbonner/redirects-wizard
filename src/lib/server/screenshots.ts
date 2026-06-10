@@ -94,8 +94,7 @@ function isBlockedVideoRequest(url: string): boolean {
     }
 
     return BLOCKED_VIDEO_HOSTS.some(
-        (blockedHost) =>
-            hostname === blockedHost || hostname.endsWith(`.${blockedHost}`),
+        (blockedHost) => hostname === blockedHost || hostname.endsWith(`.${blockedHost}`),
     );
 }
 
@@ -146,11 +145,7 @@ async function preparePageForScreenshot(page: Page): Promise<void> {
     });
 }
 
-async function captureOnce(
-    batchId: number,
-    devUrl: string,
-    mode: CaptureMode,
-): Promise<void> {
+async function captureOnce(batchId: number, devUrl: string, mode: CaptureMode): Promise<void> {
     const browser = await getBrowser();
     const context = await browser.newContext({
         viewport: VIEWPORT,
@@ -163,10 +158,7 @@ async function captureOnce(
     // crashed") on some pages, and iframe players can keep load from settling.
     await context.route("**/*", (route) => {
         const request = route.request();
-        if (
-            request.resourceType() === "media" ||
-            isBlockedVideoRequest(request.url())
-        ) {
+        if (request.resourceType() === "media" || isBlockedVideoRequest(request.url())) {
             return route.abort();
         }
         return route.continue();
@@ -213,10 +205,7 @@ async function captureOnce(
 // if the page never fully settles we still capture whatever rendered. Some
 // pages crash the renderer ("Target crashed") with their own scripts running,
 // so the fallback retries as a static document with JavaScript disabled.
-export async function captureScreenshot(
-    batchId: number,
-    devUrl: string,
-): Promise<void> {
+export async function captureScreenshot(batchId: number, devUrl: string): Promise<void> {
     console.log(
         `[screenshot] capturing batch ${batchId} (${devUrl}) → ${screenshotFilePath(batchId)}; chromium=${env.CHROMIUM_PATH || "(bundled)"}`,
     );
@@ -228,9 +217,7 @@ export async function captureScreenshot(
 
         try {
             await captureOnce(batchId, devUrl, mode);
-            console.log(
-                `[screenshot] captured batch ${batchId} using ${mode.name} mode`,
-            );
+            console.log(`[screenshot] captured batch ${batchId} using ${mode.name} mode`);
             return;
         } catch (error) {
             lastError = error;

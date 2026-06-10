@@ -1,9 +1,4 @@
-import {
-    checkUrl,
-    getDevRedirectUrl,
-    getDevUrl,
-    isValidHttpUrl,
-} from "$lib/server/redirects";
+import { checkUrl, getDevRedirectUrl, getDevUrl, isValidHttpUrl } from "$lib/server/redirects";
 import { db } from "$lib/server/db";
 import { batches, urls } from "$lib/server/schema";
 import { error, json } from "@sveltejs/kit";

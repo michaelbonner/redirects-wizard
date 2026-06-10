@@ -23,10 +23,7 @@ export async function load({ locals }) {
                 ),
         })
         .from(batches)
-        .leftJoin(
-            urls,
-            and(eq(urls.batchId, batches.id), isNull(urls.deletedAt)),
-        )
+        .leftJoin(urls, and(eq(urls.batchId, batches.id), isNull(urls.deletedAt)))
         .where(
             and(
                 eq(batches.userId, locals.user.id),
