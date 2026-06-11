@@ -250,7 +250,10 @@
 <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
     <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div class="min-w-0">
-            <a href="/" class="text-base/7 font-medium text-primary sm:text-sm/6">
+            <a
+                href="/dashboard"
+                class="text-base/7 font-medium text-primary sm:text-sm/6"
+            >
                 Back to batches
             </a>
             <h1 class="mt-2 truncate text-2xl/8 font-semibold text-zinc-950">
@@ -805,7 +808,9 @@
 
     <section class="mt-6 flex justify-end">
         <AlertDialog.Root>
-            <AlertDialog.Trigger class={buttonVariants({ variant: "destructive" })}>
+            <AlertDialog.Trigger
+                class={buttonVariants({ variant: "destructive" })}
+            >
                 Archive batch
             </AlertDialog.Trigger>
             <AlertDialog.Content

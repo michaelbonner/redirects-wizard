@@ -55,8 +55,10 @@ body {
     margin: 0;
 }
 
-a {
-    color: inherit;
+@layer base {
+    a {
+        color: inherit;
+    }
 }
 
 .dark {
