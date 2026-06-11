@@ -14,21 +14,21 @@ export const actions = {
         if (!name || !email || !message) {
             return fail(400, {
                 ...values,
-                message: "Please fill in your name, email, and a message.",
+                error: "Please fill in your name, email, and a message.",
             });
         }
 
         if (!EMAIL_RE.test(email)) {
             return fail(400, {
                 ...values,
-                message: "Please enter a valid email address.",
+                error: "Please enter a valid email address.",
             });
         }
 
         if (message.length < 10) {
             return fail(400, {
                 ...values,
-                message: "Your message is a little short — tell us a bit more.",
+                error: "Your message is a little short — tell us a bit more.",
             });
         }
 

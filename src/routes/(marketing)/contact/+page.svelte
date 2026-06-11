@@ -159,9 +159,9 @@
                                 required
                             />
                         </div>
-                        {#if form?.message}
+                        {#if form?.error}
                             <p class="text-base/7 text-red-700 sm:text-sm/6">
-                                {form.message}
+                                {form.error}
                             </p>
                         {/if}
                         <Button type="submit" disabled={submitting}>
