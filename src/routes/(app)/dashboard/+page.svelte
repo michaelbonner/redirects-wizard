@@ -74,7 +74,7 @@
                     Redirect Batches
                 </h1>
                 <p class="text-base/7 text-zinc-600 sm:text-sm/6">
-                    Manage redirect checks and Apache rewrite output.
+                    Manage redirect checks and export redirect rules.
                 </p>
             </div>
             <Sheet.Trigger>
@@ -350,7 +350,8 @@
                 </h2>
                 <p class="mt-1 max-w-sm text-base/7 text-zinc-600 sm:text-sm/6">
                     A batch groups the redirects you want to check against a dev
-                    or staging site, then generates the Apache rewrite output.
+                    or staging site, then generates redirect rules for Apache,
+                    nginx, Caddy, and Netlify.
                 </p>
                 <Sheet.Trigger>
                     {#snippet child({ props })}

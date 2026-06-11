@@ -196,7 +196,7 @@
     >
         <div class="min-w-0">
             <a
-                href="/"
+                href="/dashboard"
                 class="text-base/7 font-medium text-teal-700 sm:text-sm/6"
                 >Back to batches</a
             >
