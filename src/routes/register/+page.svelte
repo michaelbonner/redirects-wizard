@@ -26,12 +26,12 @@
             return;
         }
 
-        window.location.href = "/";
+        window.location.href = "/dashboard";
     }
 </script>
 
 <main
-    class="mx-auto flex min-h-[calc(100vh-57px)] max-w-7xl items-center justify-center px-4 py-10 sm:px-6 lg:px-8"
+    class="mx-auto flex min-h-dvh max-w-7xl items-center justify-center px-4 py-10 sm:px-6 lg:px-8"
 >
     <section
         class="w-full max-w-xs rounded-lg bg-white p-5 ring-1 ring-zinc-200"

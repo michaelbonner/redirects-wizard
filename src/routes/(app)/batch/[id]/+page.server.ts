@@ -151,6 +151,6 @@ export const actions = {
             .set({ deletedAt: new Date(), updatedAt: new Date() })
             .where(eq(batches.id, batch.id));
 
-        throw redirect(303, "/");
+        throw redirect(303, "/dashboard");
     },
 };
