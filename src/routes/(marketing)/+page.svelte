@@ -33,7 +33,7 @@
         {
             icon: FileCode2,
             title: "Export the redirect rules",
-            body: "Copy production-ready rules for Apache, nginx, Caddy, or Netlify once every redirect is verified and addressed.",
+            body: "Copy production-ready rules for Apache, nginx, Caddy, Netlify, or Next.js once every redirect is verified and addressed.",
         },
     ];
 
@@ -46,7 +46,7 @@
         {
             icon: FileCode2,
             title: "Rules for your stack",
-            body: "Generate clean, copy-paste redirect rules for Apache, nginx, Caddy, or Netlify — ready to drop straight into your config.",
+            body: "Generate clean, copy-paste redirect rules for Apache, nginx, Caddy, Netlify, or Next.js — ready to drop straight into your config.",
         },
         {
             icon: Camera,
@@ -75,7 +75,7 @@
     <title>Redirects Wizard — Ship site migrations without losing SEO</title>
     <meta
         name="description"
-        content="Verify every redirect against your staging site and generate production-ready redirect rules for Apache, nginx, Caddy, and Netlify before your migration goes live."
+        content="Verify every redirect against your staging site and generate production-ready redirect rules for Apache, nginx, Caddy, Netlify, and Next.js before your migration goes live."
     />
 </svelte:head>
 
@@ -124,7 +124,7 @@
     <div
         class="mx-auto grid max-w-6xl grid-cols-2 gap-px overflow-hidden px-4 py-12 sm:px-6 lg:grid-cols-4 lg:px-8"
     >
-        {#each [{ stat: "301s", label: "Verified end to end" }, { stat: "4", label: "Export formats, ready to ship" }, { stat: "100%", label: "Coverage before launch" }, { stat: "0", label: "Surprises on go-live" }] as item (item.label)}
+        {#each [{ stat: "301s", label: "Verified end to end" }, { stat: "5", label: "Export formats, ready to ship" }, { stat: "100%", label: "Coverage before launch" }, { stat: "0", label: "Surprises on go-live" }] as item (item.label)}
             <div class="px-4 text-center">
                 <p class="text-3xl/9 font-semibold text-teal-700 tabular-nums">
                     {item.stat}

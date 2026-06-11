@@ -353,7 +353,7 @@
                 <p class="mt-1 max-w-sm text-base/7 text-zinc-600 sm:text-sm/6">
                     A batch groups the redirects you want to check against a dev
                     or staging site, then generates redirect rules for Apache,
-                    nginx, Caddy, and Netlify.
+                    nginx, Caddy, Netlify, and Next.js.
                 </p>
                 <Sheet.Trigger>
                     {#snippet child({ props })}
