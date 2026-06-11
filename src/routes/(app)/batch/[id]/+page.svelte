@@ -512,7 +512,9 @@
 
     <section class="mt-6 flex justify-end">
         <AlertDialog.Root>
-            <AlertDialog.Trigger class={buttonVariants({ variant: "destructive" })}>
+            <AlertDialog.Trigger
+                class={buttonVariants({ variant: "destructive" })}
+            >
                 Archive batch
             </AlertDialog.Trigger>
             <AlertDialog.Content
