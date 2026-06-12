@@ -15,6 +15,13 @@
             "when": 1781039931249,
             "tag": "0001_oval_spectrum",
             "breakpoints": true
+        },
+        {
+            "idx": 2,
+            "version": "7",
+            "when": 1781100000000,
+            "tag": "0002_chunky_paper_doll",
+            "breakpoints": true
         }
     ]
 }

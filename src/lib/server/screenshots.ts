@@ -145,7 +145,7 @@ async function preparePageForScreenshot(page: Page): Promise<void> {
     });
 }
 
-async function captureOnce(batchId: number, devUrl: string, mode: CaptureMode): Promise<void> {
+async function captureOnce(batchId: number, baseUrl: string, mode: CaptureMode): Promise<void> {
     const browser = await getBrowser();
     const context = await browser.newContext({
         viewport: VIEWPORT,
@@ -168,7 +168,7 @@ async function captureOnce(batchId: number, devUrl: string, mode: CaptureMode): 
         const page = await context.newPage();
 
         try {
-            await page.goto(devUrl, {
+            await page.goto(baseUrl, {
                 waitUntil: "domcontentloaded",
                 timeout: NAV_TIMEOUT,
             });
@@ -200,14 +200,14 @@ async function captureOnce(batchId: number, devUrl: string, mode: CaptureMode): 
     }
 }
 
-// Capture devUrl to disk and stamp the batch so the UI knows a screenshot
+// Capture baseUrl to disk and stamp the batch so the UI knows a screenshot
 // exists (and can cache-bust on the new timestamp). Best-effort on navigation:
 // if the page never fully settles we still capture whatever rendered. Some
 // pages crash the renderer ("Target crashed") with their own scripts running,
 // so the fallback retries as a static document with JavaScript disabled.
-export async function captureScreenshot(batchId: number, devUrl: string): Promise<void> {
+export async function captureScreenshot(batchId: number, baseUrl: string): Promise<void> {
     console.log(
-        `[screenshot] capturing batch ${batchId} (${devUrl}) → ${screenshotFilePath(batchId)}; chromium=${env.CHROMIUM_PATH || "(bundled)"}`,
+        `[screenshot] capturing batch ${batchId} (${baseUrl}) → ${screenshotFilePath(batchId)}; chromium=${env.CHROMIUM_PATH || "(bundled)"}`,
     );
 
     let lastError: unknown;
@@ -216,7 +216,7 @@ export async function captureScreenshot(batchId: number, devUrl: string): Promis
         const mode = CAPTURE_MODES[attempt - 1];
 
         try {
-            await captureOnce(batchId, devUrl, mode);
+            await captureOnce(batchId, baseUrl, mode);
             console.log(`[screenshot] captured batch ${batchId} using ${mode.name} mode`);
             return;
         } catch (error) {

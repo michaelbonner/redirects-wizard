@@ -1,7 +1,7 @@
 import {
     checkUrl,
-    getDevRedirectUrl,
-    getDevUrl,
+    getBaseRedirectUrl,
+    getBaseUrl,
     isValidHttpUrl,
     normalizeUrlInput,
     withoutTrailingSlash,
@@ -40,42 +40,42 @@ export async function load({ locals, params }) {
         batch,
         urls: batchUrls.map((url) => ({
             ...url,
-            devUrl: batch.devUrl && isValidHttpUrl(batch.devUrl) ? getDevUrl(batch, url) : "",
-            devRedirectUrl:
-                batch.devUrl && isValidHttpUrl(batch.devUrl) ? getDevRedirectUrl(batch, url) : "",
+            baseUrl: batch.baseUrl && isValidHttpUrl(batch.baseUrl) ? getBaseUrl(batch, url) : "",
+            baseRedirectUrl:
+                batch.baseUrl && isValidHttpUrl(batch.baseUrl) ? getBaseRedirectUrl(batch, url) : "",
         })),
     };
 }
 
 export const actions = {
-    updateDevUrl: async ({ locals, params, request }) => {
+    updateBaseUrl: async ({ locals, params, request }) => {
         if (!locals.user) return fail(401, { message: "You must be signed in." });
 
         const formData = await request.formData();
-        const devUrl = String(formData.get("devUrl") ?? "").trim();
+        const baseUrl = String(formData.get("baseUrl") ?? "").trim();
 
-        if (!isValidHttpUrl(devUrl)) {
+        if (!isValidHttpUrl(baseUrl)) {
             return fail(400, {
-                message: "Enter a valid dev URL including http:// or https://.",
+                message: "Enter a valid base URL including http:// or https://.",
             });
         }
 
         const batch = await getOwnedBatch(Number(params.id), locals.user.id);
         await db
             .update(batches)
-            .set({ devUrl, updatedAt: new Date() })
+            .set({ baseUrl, updatedAt: new Date() })
             .where(eq(batches.id, batch.id));
 
         try {
-            await captureScreenshot(batch.id, devUrl);
+            await captureScreenshot(batch.id, baseUrl);
         } catch (error) {
-            console.error("[screenshot] capture failed on updateDevUrl", error);
+            console.error("[screenshot] capture failed on updateBaseUrl", error);
             return {
-                success: "Dev URL updated. Screenshot could not be generated.",
+                success: "Base URL updated. Screenshot could not be generated.",
             };
         }
 
-        return { success: "Dev URL updated." };
+        return { success: "Base URL updated." };
     },
 
     addUrls: async ({ locals, params, request }) => {
@@ -109,8 +109,8 @@ export const actions = {
                 .insert(urls)
                 .values({ batchId: batch.id, url: candidate })
                 .returning();
-            const response = isValidHttpUrl(batch.devUrl)
-                ? await checkUrl(getDevUrl(batch, created))
+            const response = isValidHttpUrl(batch.baseUrl)
+                ? await checkUrl(getBaseUrl(batch, created))
                 : null;
 
             await db

@@ -60,7 +60,7 @@
         }
     });
 
-    const validDevUrl = $derived(Boolean(data.batch.devUrl));
+    const validBaseUrl = $derived(Boolean(data.batch.baseUrl));
     const addressedCount = $derived(
         urlRows.filter((url) => url.addressed).length,
     );
@@ -160,10 +160,10 @@
 
     function getDisplayUrl(value: string) {
         try {
-            const devUrl = new URL(data.batch.devUrl);
-            const candidate = new URL(value, devUrl.origin);
+            const baseUrl = new URL(data.batch.baseUrl);
+            const candidate = new URL(value, baseUrl.origin);
 
-            if (candidate.origin !== devUrl.origin) return value;
+            if (candidate.origin !== baseUrl.origin) return value;
 
             return `${candidate.pathname}${candidate.search}${candidate.hash}`;
         } catch {
@@ -257,14 +257,14 @@
                 Back to batches
             </a>
             <h1 class="mt-2 truncate text-2xl/8 font-semibold text-zinc-950">
-                {data.batch.devUrl || "New redirect batch"}
+                {data.batch.baseUrl || "New redirect batch"}
             </h1>
             <p class="mt-1 text-base/7 text-zinc-600 sm:text-sm/6">
                 Review live URL checks, add redirect targets, and export rewrite rules.
             </p>
         </div>
 
-        {#if validDevUrl}
+        {#if validBaseUrl}
             <Dialog.Root bind:open={redirectsOpen}>
                 <Dialog.Trigger
                     class={buttonVariants({
@@ -392,19 +392,19 @@
     <section class="rounded-lg bg-white p-4 ring-1 ring-zinc-200">
         <form
             method="POST"
-            action="?/updateDevUrl"
+            action="?/updateBaseUrl"
             class="grid gap-3 lg:grid-cols-[1fr_auto]"
         >
             <div>
                 <label
-                    for="devUrl"
+                    for="baseUrl"
                     class="mb-1 block text-base/6 font-medium text-zinc-900 sm:text-sm/6"
-                    >Dev URL</label
+                    >Base URL</label
                 >
                 <Input
-                    id="devUrl"
-                    name="devUrl"
-                    value={data.batch.devUrl}
+                    id="baseUrl"
+                    name="baseUrl"
+                    value={data.batch.baseUrl}
                     placeholder="https://www.example.test"
                 />
             </div>
@@ -414,7 +414,7 @@
         </form>
     </section>
 
-    {#if validDevUrl}
+    {#if validBaseUrl}
         <section class="mt-6">
             <div class="mb-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div>
@@ -610,9 +610,9 @@
                                         </td>
                                         <td class="py-3 pl-4 align-top">
                                             <div class="flex justify-end gap-2">
-                                                {#if url.devRedirectUrl}
+                                                {#if url.baseRedirectUrl}
                                                     <a
-                                                        href={url.devRedirectUrl}
+                                                        href={url.baseRedirectUrl}
                                                         target="_blank"
                                                         rel="noreferrer"
                                                         class={buttonVariants({
@@ -698,9 +698,9 @@
                                             ).value,
                                         )}
                                 />
-                                {#if url.devRedirectUrl}
+                                {#if url.baseRedirectUrl}
                                     <a
-                                        href={url.devRedirectUrl}
+                                        href={url.baseRedirectUrl}
                                         target="_blank"
                                         rel="noreferrer"
                                         class="mt-2 inline-flex items-center gap-1 text-base/7 font-medium text-primary sm:text-sm/6"
@@ -802,7 +802,7 @@
         <div
             class="mt-4 rounded-lg bg-sky-50 px-4 py-3 text-base/7 text-sky-950 ring-1 ring-sky-200 sm:text-sm/6"
         >
-            Enter a valid dev URL before adding URLs.
+            Enter a valid base URL before adding URLs.
         </div>
     {/if}
 
@@ -821,7 +821,7 @@
                         Archive batch?
                     </AlertDialog.Title>
                     <AlertDialog.Description class="text-zinc-600">
-                        This will hide {data.batch.devUrl ||
+                        This will hide {data.batch.baseUrl ||
                             "this redirect batch"} from your batches list. You can
                         no longer access it from the app after archiving.
                     </AlertDialog.Description>

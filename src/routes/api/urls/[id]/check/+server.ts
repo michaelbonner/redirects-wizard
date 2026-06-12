@@ -1,4 +1,4 @@
-import { checkUrl, getDevRedirectUrl, getDevUrl, isValidHttpUrl } from "$lib/server/redirects";
+import { checkUrl, getBaseRedirectUrl, getBaseUrl, isValidHttpUrl } from "$lib/server/redirects";
 import { db } from "$lib/server/db";
 import { batches, urls } from "$lib/server/schema";
 import { error, json } from "@sveltejs/kit";
@@ -28,11 +28,11 @@ export async function POST({ locals, params }) {
         throw error(404, "URL not found");
     }
 
-    if (!isValidHttpUrl(row[0].batch.devUrl)) {
-        throw error(422, "Batch dev URL is invalid");
+    if (!isValidHttpUrl(row[0].batch.baseUrl)) {
+        throw error(422, "Batch base URL is invalid");
     }
 
-    const response = await checkUrl(getDevUrl(row[0].batch, row[0].url));
+    const response = await checkUrl(getBaseUrl(row[0].batch, row[0].url));
     const [updated] = await db
         .update(urls)
         .set({
@@ -45,7 +45,7 @@ export async function POST({ locals, params }) {
 
     return json({
         ...updated,
-        devUrl: getDevUrl(row[0].batch, updated),
-        devRedirectUrl: getDevRedirectUrl(row[0].batch, updated),
+        baseUrl: getBaseUrl(row[0].batch, updated),
+        baseRedirectUrl: getBaseRedirectUrl(row[0].batch, updated),
     });
 }

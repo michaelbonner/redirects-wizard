@@ -40,13 +40,13 @@
         const needle = query.trim().toLowerCase();
         const matches = needle
             ? data.batches.filter((batch) =>
-                  batch.devUrl.toLowerCase().includes(needle),
+                  batch.baseUrl.toLowerCase().includes(needle),
               )
             : [...data.batches];
 
         return matches.sort((a, b) => {
             if (sort === "name")
-                return urlSortKey(a.devUrl).localeCompare(urlSortKey(b.devUrl));
+                return urlSortKey(a.baseUrl).localeCompare(urlSortKey(b.baseUrl));
             if (sort === "needs-work")
                 return b.remainingCount - a.remainingCount;
             return (
@@ -182,12 +182,12 @@
                                 <div class="relative">
                                     <a
                                         href={`/batch/${batch.id}`}
-                                        aria-label={`Manage ${batch.devUrl}`}
+                                        aria-label={`Manage ${batch.baseUrl}`}
                                     >
                                         {#if screenshotUrl(batch)}
                                             <img
                                                 src={screenshotUrl(batch)}
-                                                alt={`${batch.devUrl} screenshot`}
+                                                alt={`${batch.baseUrl} screenshot`}
                                                 class="aspect-video w-full bg-zinc-200 object-cover transition group-hover:opacity-90"
                                                 loading="lazy"
                                             />
@@ -235,7 +235,7 @@
                                             href={`/batch/${batch.id}`}
                                             class="block truncate text-base/6 font-semibold text-teal-800 hover:text-teal-900"
                                         >
-                                            {batch.devUrl}
+                                            {batch.baseUrl}
                                         </a>
                                         <div
                                             class="flex flex-wrap items-center gap-2"
@@ -307,7 +307,7 @@
                                             Manage
                                         </a>
                                         <a
-                                            href={batch.devUrl}
+                                            href={batch.baseUrl}
                                             target="_blank"
                                             rel="noreferrer"
                                             class="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-base/6 font-medium text-zinc-700 hover:bg-zinc-100 sm:py-1.5 sm:text-sm/6"
@@ -370,9 +370,9 @@
         <Sheet.Header>
             <Sheet.Title>New redirect batch</Sheet.Title>
             <Sheet.Description>
-                Enter the Dev URL — the site where you're actively working on
-                the redirects. You'll add the redirects to check after creating
-                the batch.
+                Enter the Base URL — the site you're checking the redirects
+                against, whether that's a dev, staging, or live site. You'll add
+                the redirects to check after creating the batch.
             </Sheet.Description>
         </Sheet.Header>
 
@@ -390,23 +390,23 @@
         >
             <div class="space-y-1.5">
                 <label
-                    for="new-batch-dev-url"
+                    for="new-batch-base-url"
                     class="block text-base/6 font-medium text-zinc-900 sm:text-sm/6"
                 >
-                    Dev URL
+                    Base URL
                 </label>
                 <Input
-                    id="new-batch-dev-url"
-                    name="devUrl"
+                    id="new-batch-base-url"
+                    name="baseUrl"
                     type="url"
-                    value={form?.devUrl ?? ""}
+                    value={form?.baseUrl ?? ""}
                     placeholder="https://www.example.test"
                     autocomplete="off"
                     required
                 />
                 <p class="text-sm/6 text-zinc-500">
-                    The staging or development site where you're actively
-                    working on the redirects.
+                    The site you're checking the redirects against — a dev,
+                    staging, or live site.
                 </p>
                 {#if form?.message}
                     <p class="text-sm/6 text-red-600">

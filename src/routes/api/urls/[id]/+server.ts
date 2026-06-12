@@ -1,4 +1,4 @@
-import { getDevRedirectUrl, getDevUrl } from "$lib/server/redirects";
+import { getBaseRedirectUrl, getBaseUrl } from "$lib/server/redirects";
 import { db } from "$lib/server/db";
 import { batches, urls } from "$lib/server/schema";
 import { error, json } from "@sveltejs/kit";
@@ -52,8 +52,8 @@ export async function PATCH({ locals, params, request }) {
 
     return json({
         ...updated,
-        devUrl: getDevUrl(batch, updated),
-        devRedirectUrl: getDevRedirectUrl(batch, updated),
+        baseUrl: getBaseUrl(batch, updated),
+        baseRedirectUrl: getBaseRedirectUrl(batch, updated),
     });
 }
 
