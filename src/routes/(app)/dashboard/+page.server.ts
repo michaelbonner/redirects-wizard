@@ -13,7 +13,7 @@ export async function load({ locals }) {
     const rows = await db
         .select({
             id: batches.id,
-            devUrl: batches.devUrl,
+            baseUrl: batches.baseUrl,
             createdAt: batches.createdAt,
             screenshotUpdatedAt: batches.screenshotUpdatedAt,
             urlCount: count(urls.id),
@@ -28,11 +28,11 @@ export async function load({ locals }) {
             and(
                 eq(batches.userId, locals.user.id),
                 isNull(batches.deletedAt),
-                sql`${batches.devUrl} <> ''`,
+                sql`${batches.baseUrl} <> ''`,
             ),
         )
         .groupBy(batches.id)
-        .orderBy(batches.devUrl);
+        .orderBy(batches.baseUrl);
 
     return { batches: rows };
 }
@@ -40,26 +40,26 @@ export async function load({ locals }) {
 export const actions = {
     create: async ({ locals, request }) => {
         if (!locals.user) {
-            return fail(401, { devUrl: "", message: "You must be signed in." });
+            return fail(401, { baseUrl: "", message: "You must be signed in." });
         }
 
         const formData = await request.formData();
-        const devUrl = String(formData.get("devUrl") ?? "").trim();
+        const baseUrl = String(formData.get("baseUrl") ?? "").trim();
 
-        if (!isValidHttpUrl(devUrl)) {
+        if (!isValidHttpUrl(baseUrl)) {
             return fail(400, {
-                devUrl,
-                message: "Enter a valid dev URL including http:// or https://.",
+                baseUrl,
+                message: "Enter a valid base URL including http:// or https://.",
             });
         }
 
         const [batch] = await db
             .insert(batches)
-            .values({ userId: locals.user.id, devUrl })
+            .values({ userId: locals.user.id, baseUrl })
             .returning({ id: batches.id });
 
         try {
-            await captureScreenshot(batch.id, devUrl);
+            await captureScreenshot(batch.id, baseUrl);
         } catch (error) {
             // Best effort — the batch is created regardless; the user can
             // retry capture with the refresh button.
@@ -91,12 +91,12 @@ export const actions = {
         if (!batch) {
             return fail(404, { message: "Batch not found." });
         }
-        if (!batch.devUrl) {
-            return fail(400, { message: "Set a dev URL first." });
+        if (!batch.baseUrl) {
+            return fail(400, { message: "Set a base URL first." });
         }
 
         try {
-            await captureScreenshot(batch.id, batch.devUrl);
+            await captureScreenshot(batch.id, batch.baseUrl);
         } catch (error) {
             console.error("[screenshot] capture failed on refresh", error);
             return fail(500, {

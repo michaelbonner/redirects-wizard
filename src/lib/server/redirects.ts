@@ -1,7 +1,7 @@
 import type { HttpResponse } from "./schema";
 
 type BatchLike = {
-    devUrl: string;
+    baseUrl: string;
 };
 
 type UrlLike = {
@@ -43,20 +43,20 @@ export function isValidHttpUrl(value: string) {
     }
 }
 
-export function getDevUrl(batch: BatchLike, url: UrlLike) {
+export function getBaseUrl(batch: BatchLike, url: UrlLike) {
     const current = new URL(url.url);
-    const dev = new URL(batch.devUrl);
-    const next = new URL(dev.origin);
+    const base = new URL(batch.baseUrl);
+    const next = new URL(base.origin);
     next.pathname = current.pathname;
     next.search = current.search;
     return next.toString();
 }
 
-export function getDevRedirectUrl(batch: BatchLike, url: UrlLike) {
-    const dev = new URL(batch.devUrl);
-    const next = new URL(dev.origin);
+export function getBaseRedirectUrl(batch: BatchLike, url: UrlLike) {
+    const base = new URL(batch.baseUrl);
+    const next = new URL(base.origin);
     if (url.redirectTo) {
-        const redirect = new URL(url.redirectTo, dev.origin);
+        const redirect = new URL(url.redirectTo, base.origin);
         next.pathname = redirect.pathname;
         next.search = redirect.search;
     }
@@ -76,7 +76,7 @@ function escapeNginxQuoted(value: string) {
 }
 
 function normalizeRedirectTarget(batch: BatchLike, url: UrlLike) {
-    return new URL(getDevRedirectUrl(batch, url));
+    return new URL(getBaseRedirectUrl(batch, url));
 }
 
 function getRedirectRule(batch: BatchLike, url: UrlLike): RedirectRule {

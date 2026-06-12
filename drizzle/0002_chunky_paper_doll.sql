@@ -1,0 +1,1 @@
+ALTER TABLE "batches" RENAME COLUMN "dev_url" TO "base_url";

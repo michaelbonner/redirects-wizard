@@ -77,7 +77,7 @@ it via `CHROMIUM_PATH`, so no separate screenshot service is required.
 
 Captured images are written to `SCREENSHOTS_DIR`. Mount a **persistent volume**
 at that path in Dokploy (e.g. `/data/screenshots`) so screenshots survive
-redeploys. Screenshots are (re)captured when a batch's dev URL is set and via
+redeploys. Screenshots are (re)captured when a batch's base URL is set and via
 the refresh button on each batch card.
 
 For local development, install the browser once:
@@ -89,7 +89,7 @@ bunx playwright install chromium
 ## Building redirects
 
 1. Create a batch from the dashboard.
-1. Enter the dev URL for the site being checked.
+1. Enter the base URL for the site being checked (dev, staging, or live).
 1. Add known production URLs, one per line.
 1. Set redirect targets for unresolved URLs.
 1. Open "View redirects" to get redirect rules for Apache, nginx, Caddy, Netlify, or Next.js.
