@@ -38,12 +38,14 @@ export async function load({ locals, params }) {
 
     return {
         batch,
-        urls: batchUrls.map((url) => ({
-            ...url,
-            baseUrl: batch.baseUrl && isValidHttpUrl(batch.baseUrl) ? getBaseUrl(batch, url) : "",
-            baseRedirectUrl:
-                batch.baseUrl && isValidHttpUrl(batch.baseUrl) ? getBaseRedirectUrl(batch, url) : "",
-        })),
+        urls: batchUrls.map((url) => {
+            const hasBaseUrl = !!batch.baseUrl && isValidHttpUrl(batch.baseUrl);
+            return {
+                ...url,
+                baseUrl: hasBaseUrl ? getBaseUrl(batch, url) : "",
+                baseRedirectUrl: hasBaseUrl ? getBaseRedirectUrl(batch, url) : "",
+            };
+        }),
     };
 }
 
