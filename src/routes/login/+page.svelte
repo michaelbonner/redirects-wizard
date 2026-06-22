@@ -34,7 +34,11 @@
     <section
         class="w-full max-w-xs rounded-lg bg-white p-5 ring-1 ring-zinc-200"
     >
-        <h1 class="text-xl/7 font-semibold text-zinc-950">Sign in</h1>
+        <div class="flex items-center gap-2 text-base/6 font-semibold text-zinc-950">
+            <img src="/favicon.svg" alt="" class="size-7" />
+            <span>Redirects Wizard</span>
+        </div>
+        <h1 class="mt-5 text-xl/7 font-semibold text-zinc-950">Sign in</h1>
         <form
             class="mt-5 space-y-4"
             onsubmit={(event) => {
