@@ -17,6 +17,16 @@ const LOAD_SETTLE_TIMEOUT = 3_000;
 const FONT_SETTLE_TIMEOUT = 2_000;
 const FINAL_SETTLE_MS = 1_000;
 const JPEG_QUALITY = 72;
+// Uploaded screenshots are normalized to the same dimensions/format as captured
+// ones so the serving endpoint and storage path stay identical.
+export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+export const ACCEPTED_UPLOAD_TYPES = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+    "image/avif",
+];
 const BLOCKED_VIDEO_HOSTS = [
     "youtube.com",
     "youtube-nocookie.com",
@@ -231,4 +241,60 @@ export async function captureScreenshot(batchId: number, baseUrl: string): Promi
     }
 
     throw lastError;
+}
+
+// Store a user-uploaded image as the batch's screenshot, overriding whatever was
+// generated. The upload is re-encoded to a JPEG at the standard viewport width
+// (reusing the capture browser) so it lives at the same path and is served by the
+// same endpoint as a generated screenshot. Throws on an undecodable image.
+export async function storeUploadedScreenshot(
+    batchId: number,
+    bytes: Uint8Array,
+    mimeType: string,
+): Promise<void> {
+    if (bytes.byteLength > MAX_UPLOAD_BYTES) {
+        throw new Error("Image is too large.");
+    }
+
+    const browser = await getBrowser();
+    const context = await browser.newContext({ viewport: VIEWPORT });
+
+    try {
+        const page = await context.newPage();
+        const dataUrl = `data:${mimeType};base64,${Buffer.from(bytes).toString("base64")}`;
+
+        // Decode and re-encode in the page: Chromium handles every accepted type
+        // and a canvas gives us a normalized JPEG without an image library.
+        const jpegBase64 = await page.evaluate(
+            async ({ src, quality, maxWidth }) => {
+                const img = new Image();
+                img.src = src;
+                await img.decode();
+
+                const scale = Math.min(1, maxWidth / img.naturalWidth);
+                const canvas = document.createElement("canvas");
+                canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+                canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+
+                const ctx = canvas.getContext("2d");
+                if (!ctx) throw new Error("Canvas 2D context unavailable.");
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                return canvas.toDataURL("image/jpeg", quality).split(",")[1] ?? "";
+            },
+            { src: dataUrl, quality: JPEG_QUALITY / 100, maxWidth: VIEWPORT.width },
+        );
+
+        if (!jpegBase64) throw new Error("Image could not be decoded.");
+
+        await mkdir(STORAGE_DIR, { recursive: true });
+        await writeFile(screenshotFilePath(batchId), Buffer.from(jpegBase64, "base64"));
+
+        await db
+            .update(batches)
+            .set({ screenshotUpdatedAt: new Date() })
+            .where(eq(batches.id, batchId));
+    } finally {
+        await context.close();
+    }
 }
