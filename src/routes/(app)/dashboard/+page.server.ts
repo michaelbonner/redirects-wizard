@@ -1,5 +1,10 @@
 import { db } from "$lib/server/db";
-import { captureScreenshot } from "$lib/server/screenshots";
+import {
+    ACCEPTED_UPLOAD_TYPES,
+    MAX_UPLOAD_BYTES,
+    captureScreenshot,
+    storeUploadedScreenshot,
+} from "$lib/server/screenshots";
 import { batches, urls } from "$lib/server/schema";
 import { isValidHttpUrl } from "$lib/server/redirects";
 import { fail, redirect } from "@sveltejs/kit";
@@ -105,5 +110,54 @@ export const actions = {
         }
 
         return { success: "Screenshot refreshed." };
+    },
+
+    uploadScreenshot: async ({ locals, request }) => {
+        if (!locals.user) {
+            return fail(401, { message: "You must be signed in." });
+        }
+
+        const formData = await request.formData();
+        const batchId = Number(formData.get("batchId"));
+        if (!Number.isInteger(batchId)) {
+            return fail(400, { message: "Invalid batch." });
+        }
+
+        const file = formData.get("screenshot");
+        if (!(file instanceof File) || file.size === 0) {
+            return fail(400, { message: "Choose an image to upload." });
+        }
+        if (!ACCEPTED_UPLOAD_TYPES.includes(file.type)) {
+            return fail(400, {
+                message: "Upload a PNG, JPEG, WebP, GIF, or AVIF image.",
+            });
+        }
+        if (file.size > MAX_UPLOAD_BYTES) {
+            return fail(400, { message: "Image must be 10 MB or smaller." });
+        }
+
+        const batch = await db.query.batches.findFirst({
+            where: and(
+                eq(batches.id, batchId),
+                eq(batches.userId, locals.user.id),
+                isNull(batches.deletedAt),
+            ),
+        });
+
+        if (!batch) {
+            return fail(404, { message: "Batch not found." });
+        }
+
+        try {
+            const bytes = new Uint8Array(await file.arrayBuffer());
+            await storeUploadedScreenshot(batch.id, bytes, file.type);
+        } catch (error) {
+            console.error("[screenshot] upload failed", error);
+            return fail(500, {
+                message: `Could not save screenshot: ${error instanceof Error ? error.message : String(error)}`,
+            });
+        }
+
+        return { success: "Screenshot updated." };
     },
 };

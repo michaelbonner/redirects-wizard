@@ -9,9 +9,11 @@
         Check,
         ExternalLink,
         FolderPlus,
+        Loader2,
         Plus,
         RotateCw,
         Search,
+        Upload,
     } from "lucide-svelte";
 
     let { data, form } = $props();
@@ -20,6 +22,7 @@
     let creating = $state(false);
 
     let refreshing = $state<Record<number, boolean>>({});
+    let uploading = $state<Record<number, boolean>>({});
 
     let query = $state("");
     let sort = $state<"recent" | "name" | "needs-work">("recent");
@@ -68,6 +71,19 @@
 
 <Sheet.Root bind:open={createOpen}>
     <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        {#if form?.success}
+            <div
+                class="mb-4 rounded-md bg-teal-50 px-4 py-3 text-sm/6 text-teal-800 ring-1 ring-teal-200"
+            >
+                {form.success}
+            </div>
+        {:else if form?.message}
+            <div
+                class="mb-4 rounded-md bg-red-50 px-4 py-3 text-sm/6 text-red-700 ring-1 ring-red-200"
+            >
+                {form.message}
+            </div>
+        {/if}
         <div
             class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
         >
@@ -199,35 +215,94 @@
                                             </div>
                                         {/if}
                                     </a>
-                                    <form
-                                        method="POST"
-                                        action="?/refreshScreenshot"
-                                        class="absolute top-2 right-2"
-                                        use:enhance={() => {
-                                            refreshing[batch.id] = true;
-                                            return async ({ update }) => {
-                                                await update();
-                                                refreshing[batch.id] = false;
-                                            };
-                                        }}
+                                    <div
+                                        class="absolute top-2 right-2 flex gap-1"
                                     >
-                                        <input
-                                            type="hidden"
-                                            name="batchId"
-                                            value={batch.id}
-                                        />
-                                        <button
-                                            type="submit"
-                                            disabled={refreshing[batch.id]}
-                                            title="Refresh screenshot"
-                                            aria-label="Refresh screenshot"
-                                            class="rounded-md bg-white/90 p-1.5 text-zinc-700 ring-1 ring-zinc-200 backdrop-blur hover:bg-white disabled:opacity-60"
+                                        <form
+                                            method="POST"
+                                            action="?/uploadScreenshot"
+                                            enctype="multipart/form-data"
+                                            class="contents"
+                                            use:enhance={() => {
+                                                uploading[batch.id] = true;
+                                                return async ({ update }) => {
+                                                    await update({
+                                                        reset: true,
+                                                    });
+                                                    uploading[batch.id] = false;
+                                                };
+                                            }}
                                         >
-                                            <RotateCw
-                                                class={`size-4 ${refreshing[batch.id] ? "animate-spin" : ""}`}
+                                            <input
+                                                type="hidden"
+                                                name="batchId"
+                                                value={batch.id}
                                             />
-                                        </button>
-                                    </form>
+                                            <label
+                                                title="Upload screenshot"
+                                                aria-label="Upload screenshot"
+                                                class="cursor-pointer rounded-md bg-white/90 p-1.5 text-zinc-700 ring-1 ring-zinc-200 backdrop-blur hover:bg-white {uploading[
+                                                    batch.id
+                                                ]
+                                                    ? 'pointer-events-none opacity-60'
+                                                    : ''}"
+                                            >
+                                                {#if uploading[batch.id]}
+                                                    <Loader2
+                                                        class="size-4 animate-spin"
+                                                    />
+                                                {:else}
+                                                    <Upload class="size-4" />
+                                                {/if}
+                                                <input
+                                                    type="file"
+                                                    name="screenshot"
+                                                    accept="image/png,image/jpeg,image/webp,image/gif,image/avif"
+                                                    class="sr-only"
+                                                    disabled={uploading[
+                                                        batch.id
+                                                    ]}
+                                                    onchange={(event) => {
+                                                        if (
+                                                            event.currentTarget
+                                                                .files?.length
+                                                        ) {
+                                                            event.currentTarget.form?.requestSubmit();
+                                                        }
+                                                    }}
+                                                />
+                                            </label>
+                                        </form>
+                                        <form
+                                            method="POST"
+                                            action="?/refreshScreenshot"
+                                            class="contents"
+                                            use:enhance={() => {
+                                                refreshing[batch.id] = true;
+                                                return async ({ update }) => {
+                                                    await update();
+                                                    refreshing[batch.id] = false;
+                                                };
+                                            }}
+                                        >
+                                            <input
+                                                type="hidden"
+                                                name="batchId"
+                                                value={batch.id}
+                                            />
+                                            <button
+                                                type="submit"
+                                                disabled={refreshing[batch.id]}
+                                                title="Refresh screenshot"
+                                                aria-label="Refresh screenshot"
+                                                class="rounded-md bg-white/90 p-1.5 text-zinc-700 ring-1 ring-zinc-200 backdrop-blur hover:bg-white disabled:opacity-60"
+                                            >
+                                                <RotateCw
+                                                    class={`size-4 ${refreshing[batch.id] ? "animate-spin" : ""}`}
+                                                />
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                                 <div class="space-y-4 p-4">
                                     <div class="space-y-2">
