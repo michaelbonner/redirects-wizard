@@ -180,6 +180,13 @@ function getNextJsRedirect(batch: BatchLike, url: UrlLike) {
 
 function getAstroRedirect(batch: BatchLike, url: UrlLike) {
     const rule = getRedirectRule(batch, url);
+    // Astro configured redirects are keyed by route path and cannot match on the
+    // query string. Emitting a path-only key for a query-specific source would
+    // redirect every request for that path and collapse multiple query variants
+    // into duplicate keys, so flag those as unsupported instead.
+    if (rule.sourceQuery) {
+        return `    // Query-specific redirect not supported by Astro: ${rule.sourcePathWithQuery} -> ${rule.targetPathWithQuery}`;
+    }
     return `    ${JSON.stringify(rule.sourcePath)}: ${JSON.stringify(rule.targetPathWithQuery)},`;
 }
 
