@@ -1,6 +1,6 @@
 # Redirects Wizard
 
-Redirects Wizard is a SvelteKit app for building and checking redirect rules — for Apache, nginx, Caddy, Netlify, and Next.js — during site migrations.
+Redirects Wizard is a SvelteKit app for building and checking redirect rules — for Apache, nginx, Caddy, Netlify, Next.js, and Astro — during site migrations.
 
 ## Stack
 
@@ -92,5 +92,5 @@ bunx playwright install chromium
 1. Enter the base URL for the site being checked (dev, staging, or live).
 1. Add known production URLs, one per line.
 1. Set redirect targets for unresolved URLs.
-1. Open "View redirects" to get redirect rules for Apache, nginx, Caddy, Netlify, or Next.js.
+1. Open "View redirects" to get redirect rules for Apache, nginx, Caddy, Netlify, Next.js, or Astro.
 1. Recheck unresolved URLs after adding the rules to the server.

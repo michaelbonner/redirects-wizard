@@ -35,9 +35,9 @@
         {
             icon: FileCode2,
             title: "Redirect rules for your stack",
-            body: "Once your redirects are verified, export clean rules that are ready to drop straight into your server config — whether you run Apache, nginx, Caddy, Netlify, or Next.js. No hand-editing, no typos — just copy and ship.",
+            body: "Once your redirects are verified, export clean rules that are ready to drop straight into your server config — whether you run Apache, nginx, Caddy, Netlify, Next.js, or Astro. No hand-editing, no typos — just copy and ship.",
             points: [
-                "Output for Apache (.htaccess), nginx, Caddy, Netlify, and Next.js",
+                "Output for Apache (.htaccess), nginx, Caddy, Netlify, Next.js, and Astro",
                 "Generated only from verified redirects",
                 "Copy straight into your config or redirects file",
             ],
@@ -102,7 +102,7 @@
     <title>Features — Redirects Wizard</title>
     <meta
         name="description"
-        content="Bulk redirect checks, multi-platform redirect rules for Apache, nginx, Caddy, Netlify, and Next.js, destination screenshots, and progress tracking — everything you need to land a site migration."
+        content="Bulk redirect checks, multi-platform redirect rules for Apache, nginx, Caddy, Netlify, Next.js, and Astro, destination screenshots, and progress tracking — everything you need to land a site migration."
     />
 </svelte:head>
 

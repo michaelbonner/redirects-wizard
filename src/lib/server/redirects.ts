@@ -178,6 +178,11 @@ function getNextJsRedirect(batch: BatchLike, url: UrlLike) {
     ].join("\n");
 }
 
+function getAstroRedirect(batch: BatchLike, url: UrlLike) {
+    const rule = getRedirectRule(batch, url);
+    return `    ${JSON.stringify(rule.sourcePath)}: ${JSON.stringify(rule.targetPathWithQuery)},`;
+}
+
 export function getRedirectFormats(batch: BatchLike, redirectUrls: UrlLike[]) {
     const sortedUrls = [...redirectUrls].sort((a, b) => {
         const aRule = getRedirectRule(batch, a);
@@ -193,6 +198,7 @@ export function getRedirectFormats(batch: BatchLike, redirectUrls: UrlLike[]) {
     const caddyRules = sortedUrls.map((url, index) => getCaddyRedirect(batch, url, index));
     const netlifyRules = sortedUrls.map((url) => getNetlifyRedirect(batch, url));
     const nextJsRules = sortedUrls.map((url) => getNextJsRedirect(batch, url));
+    const astroRules = sortedUrls.map((url) => getAstroRedirect(batch, url));
 
     return [
         {
@@ -243,6 +249,20 @@ export function getRedirectFormats(batch: BatchLike, redirectUrls: UrlLike[]) {
                 "",
                 "  return NextResponse.redirect(new URL(redirect.destination, request.url), 308);",
                 "}",
+            ].join("\n"),
+        },
+        {
+            id: "astro",
+            label: "Astro",
+            filename: "astro.config.mjs",
+            body: [
+                'import { defineConfig } from "astro/config";',
+                "",
+                "export default defineConfig({",
+                "  redirects: {",
+                astroRules.join("\n"),
+                "  },",
+                "});",
             ].join("\n"),
         },
     ] satisfies RedirectFormat[];

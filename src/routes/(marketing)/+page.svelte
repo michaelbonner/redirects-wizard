@@ -33,7 +33,7 @@
         {
             icon: FileCode2,
             title: "Export the redirect rules",
-            body: "Copy production-ready rules for Apache, nginx, Caddy, Netlify, or Next.js once every redirect is verified and addressed.",
+            body: "Copy production-ready rules for Apache, nginx, Caddy, Netlify, Next.js, or Astro once every redirect is verified and addressed.",
         },
     ];
 
@@ -46,7 +46,7 @@
         {
             icon: FileCode2,
             title: "Rules for your stack",
-            body: "Generate clean, copy-paste redirect rules for Apache, nginx, Caddy, Netlify, or Next.js — ready to drop straight into your config.",
+            body: "Generate clean, copy-paste redirect rules for Apache, nginx, Caddy, Netlify, Next.js, or Astro — ready to drop straight into your config.",
         },
         {
             icon: Camera,
@@ -75,7 +75,7 @@
     <title>Redirects Wizard — Ship site migrations without losing SEO</title>
     <meta
         name="description"
-        content="Verify every redirect against your staging site and generate production-ready redirect rules for Apache, nginx, Caddy, Netlify, and Next.js before your migration goes live."
+        content="Verify every redirect against your staging site and generate production-ready redirect rules for Apache, nginx, Caddy, Netlify, Next.js, and Astro before your migration goes live."
     />
 </svelte:head>
 
