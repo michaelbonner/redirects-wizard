@@ -56,13 +56,31 @@ WORKDIR /app
 # HOST/PORT are what svelte-adapter-bun's server reads to bind.
 ENV NODE_ENV=production \
     PORT=3000 \
-    HOST=0.0.0.0
+    HOST=0.0.0.0 \
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
+# This app captures screenshots: src/lib/server/screenshots.ts launches
+# Playwright's chromium. nixpacks supplied that browser as a nix package and
+# pointed CHROMIUM_PATH at it from the start command, so dropping nixpacks means
+# the image has to provide a browser itself or the first capture fails at
+# runtime — with the app otherwise healthy, so nothing would surface it.
+#
+# Installed here rather than pinned to a browser image tag so it always matches
+# the Playwright version bun.lock resolves. --with-deps pulls the shared
+# libraries headless Chromium needs. CHROMIUM_PATH is deliberately left unset:
+# with it empty, screenshots.ts passes executablePath: undefined and Playwright
+# resolves the browser it just installed.
+RUN apt-get update \
+    && bunx playwright install --with-deps chromium \
+    && rm -rf /var/lib/apt/lists/*
 
 # The base image ships an unprivileged `bun` user (uid/gid 1000) but still
-# defaults to root. Copy the tree with that ownership and drop to it, so neither
-# the drizzle-kit migration nor the server runs as root inside the container.
-# Ownership matters as well as the USER: bun writes into node_modules/.cache.
+# defaults to root. Copy the tree with that ownership and drop to it, so the
+# server does not run as root inside the container. Ownership matters as well as
+# the USER: bun writes into node_modules/.cache, and screenshots are written
+# under SCREENSHOTS_DIR.
 COPY --from=build --chown=bun:bun /app ./
+RUN chown -R bun:bun /ms-playwright
 USER bun
 
 EXPOSE 3000
@@ -71,7 +89,10 @@ EXPOSE 3000
 # injected by Dokploy as container env vars. SCREENSHOTS_DIR points at a Dokploy
 # volume mount, which is unaffected by this change.
 #
-# `start` = `bun db:migrate && bun ./build/index.js`, exactly as before. A failed
-# migration exits non-zero before the server binds, so the new container never
-# becomes healthy and Dokploy keeps the previous one serving.
-CMD ["bun", "run", "start"]
+# This runs the server ONLY, matching nixpacks.toml's start command
+# (`bun ./build/index.js`) rather than package.json's `start`. That script also
+# runs `db:migrate`, so using it would newly apply migrations on every boot —
+# this app has never done that in production, and quietly turning it on is not
+# part of moving the build. Migrations stay a manual step; see nixpacks.toml,
+# kept in the repo as the record of the previous deployment.
+CMD ["bun", "./build/index.js"]
