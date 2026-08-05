@@ -11,8 +11,14 @@
 # The build needs NO database and NO real secrets: this app reads everything
 # private through `$env/dynamic/private` (process.env at container start) and
 # has no `$env/static/public` values, so it takes no build args at all.
+#
+# Both stages resolve the same base through this one ARG so they cannot drift
+# apart, and so there is a single place to pin. Override to pin an exact image:
+#   docker build --build-arg BUN_IMAGE=oven/bun:1@sha256:<digest> .
 # =====================================================================
-FROM oven/bun:1 AS build
+ARG BUN_IMAGE=oven/bun:1
+
+FROM ${BUN_IMAGE} AS build
 WORKDIR /app
 
 # Install dependencies first so this layer caches unless the lockfile moves.
@@ -44,7 +50,7 @@ RUN DATABASE_URL=postgres://build:build@127.0.0.1:5432/build \
 # needs drizzle/, drizzle.config.ts and the schema — with drizzle-kit itself
 # being a devDependency.
 # =====================================================================
-FROM oven/bun:1 AS runtime
+FROM ${BUN_IMAGE} AS runtime
 WORKDIR /app
 
 # HOST/PORT are what svelte-adapter-bun's server reads to bind.
@@ -52,7 +58,12 @@ ENV NODE_ENV=production \
     PORT=3000 \
     HOST=0.0.0.0
 
-COPY --from=build /app ./
+# The base image ships an unprivileged `bun` user (uid/gid 1000) but still
+# defaults to root. Copy the tree with that ownership and drop to it, so neither
+# the drizzle-kit migration nor the server runs as root inside the container.
+# Ownership matters as well as the USER: bun writes into node_modules/.cache.
+COPY --from=build --chown=bun:bun /app ./
+USER bun
 
 EXPOSE 3000
 
