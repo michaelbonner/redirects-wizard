@@ -70,6 +70,30 @@ const valueFlags = new Set(["user", "db", "filter", "limit", "format", "concurre
 
 type Flags = Record<string, string | boolean | undefined>;
 
+const commonFlags = ["json", "user", "db"] as const;
+
+type CommandUsage = {
+    minArgs: number;
+    maxArgs?: number;
+    flags?: readonly string[];
+};
+
+const commandUsage = {
+    batches: { minArgs: 0, maxArgs: 0 },
+    users: { minArgs: 0, maxArgs: 0 },
+    "batch show": { minArgs: 1, maxArgs: 1, flags: ["filter", "limit"] },
+    "batch create": { minArgs: 1, maxArgs: 1, flags: ["yes"] },
+    "batch set-base-url": { minArgs: 2, maxArgs: 2, flags: ["yes"] },
+    "batch check": { minArgs: 1, maxArgs: 1, flags: ["yes", "filter", "concurrency"] },
+    "batch redirects": { minArgs: 1, maxArgs: 1, flags: ["format"] },
+    "batch archive": { minArgs: 1, maxArgs: 1, flags: ["yes"] },
+    "urls add": { minArgs: 1, flags: ["yes", "no-check", "concurrency"] },
+    "url show": { minArgs: 1, maxArgs: 1 },
+    "url set-target": { minArgs: 1, maxArgs: 2, flags: ["yes"] },
+    "url check": { minArgs: 1, maxArgs: 1, flags: ["yes"] },
+    "url delete": { minArgs: 1, maxArgs: 1, flags: ["yes"] },
+} as const satisfies Record<string, CommandUsage>;
+
 function parseArgv(argv: string[]) {
     const positional: string[] = [];
     const flags: Flags = {};
@@ -109,6 +133,44 @@ function parseArgv(argv: string[]) {
     }
 
     return { positional, flags };
+}
+
+function invocation(positional: string[]) {
+    const [command, first, ...remaining] = positional;
+
+    if (command === "batch") {
+        return Number.isInteger(Number(first))
+            ? { name: "batch show", args: positional.slice(1) }
+            : { name: `batch ${first ?? ""}`, args: remaining };
+    }
+
+    if (command === "url") {
+        return Number.isInteger(Number(first))
+            ? { name: "url show", args: positional.slice(1) }
+            : { name: `url ${first ?? ""}`, args: remaining };
+    }
+
+    if (command === "urls") return { name: `urls ${first ?? ""}`, args: remaining };
+    return { name: command ?? "", args: positional.slice(1) };
+}
+
+function validateInvocation(positional: string[], flags: Flags) {
+    const { name, args } = invocation(positional);
+    const rules = commandUsage[name as keyof typeof commandUsage];
+    if (!rules) return;
+
+    const allowedFlags = new Set<string>([...commonFlags, ...(rules.flags ?? [])]);
+    const unsupported = Object.keys(flags).find((flag) => !allowedFlags.has(flag));
+    if (unsupported) {
+        throw new CliError(`--${unsupported} does not apply to \`${name}\`.`, 2);
+    }
+
+    if (
+        args.length < rules.minArgs ||
+        (rules.maxArgs !== undefined && args.length > rules.maxArgs)
+    ) {
+        throw new CliError(`Wrong number of arguments for \`${name}\`. Run \`help\` for usage.`, 2);
+    }
 }
 
 function flagString(flags: Flags, name: string) {
@@ -151,103 +213,61 @@ async function readStdin() {
 }
 
 async function run(context: Context, positional: string[], flags: Flags) {
-    const [command, ...rest] = positional;
-    const filter = parseUrlFilter(flagString(flags, "filter") ?? "all");
-    const concurrency = flagNumber(flags, "concurrency", 6);
+    const { name, args } = invocation(positional);
 
-    switch (command) {
+    switch (name) {
         case "batches":
             return listBatches(context);
 
         case "users":
             return listUsers(context);
 
-        case "batch": {
-            // `batch 12` is shorthand for `batch show 12`.
-            const [subcommand, ...args] = Number.isInteger(Number(rest[0]))
-                ? ["show", ...rest]
-                : rest;
-
-            switch (subcommand) {
-                case "show":
-                    return showBatch(context, {
-                        batchId: requireId(args[0], "batch"),
-                        filter,
-                        limit: flagString(flags, "limit")
-                            ? flagNumber(flags, "limit", 0)
-                            : undefined,
-                    });
-                case "create":
-                    return createBatch(context, requireArgument(args[0], "base URL"));
-                case "set-base-url":
-                    return setBaseUrl(
-                        context,
-                        requireId(args[0], "batch"),
-                        requireArgument(args[1], "base URL"),
-                    );
-                case "check":
-                    return checkBatch(context, {
-                        batchId: requireId(args[0], "batch"),
-                        filter,
-                        concurrency,
-                    });
-                case "redirects":
-                    return batchRedirects(context, {
-                        batchId: requireId(args[0], "batch"),
-                        format: flagString(flags, "format") ?? "apache",
-                    });
-                case "archive":
-                    return archiveBatch(context, requireId(args[0], "batch"));
-                default:
-                    throw new CliError(
-                        `Unknown batch subcommand "${subcommand ?? ""}". Run \`help\` for usage.`,
-                        2,
-                    );
-            }
-        }
-
-        case "urls": {
-            const [subcommand, ...args] = rest;
-            if (subcommand !== "add") {
-                throw new CliError(
-                    `Unknown urls subcommand "${subcommand ?? ""}". Did you mean \`urls add\`?`,
-                    2,
-                );
-            }
-
+        case "batch show":
+            return showBatch(context, {
+                batchId: requireId(args[0], "batch"),
+                filter: parseUrlFilter(flagString(flags, "filter") ?? "all"),
+                limit: flagString(flags, "limit") ? flagNumber(flags, "limit", 0) : undefined,
+            });
+        case "batch create":
+            return createBatch(context, requireArgument(args[0], "base URL"));
+        case "batch set-base-url":
+            return setBaseUrl(
+                context,
+                requireId(args[0], "batch"),
+                requireArgument(args[1], "base URL"),
+            );
+        case "batch check":
+            return checkBatch(context, {
+                batchId: requireId(args[0], "batch"),
+                filter: parseUrlFilter(flagString(flags, "filter") ?? "all"),
+                concurrency: flagNumber(flags, "concurrency", 6),
+            });
+        case "batch redirects":
+            return batchRedirects(context, {
+                batchId: requireId(args[0], "batch"),
+                format: flagString(flags, "format") ?? "apache",
+            });
+        case "batch archive":
+            return archiveBatch(context, requireId(args[0], "batch"));
+        case "urls add": {
             const inputs = args.slice(1);
             return addUrls(context, {
                 batchId: requireId(args[0], "batch"),
                 inputs: inputs.length ? inputs : await readStdin(),
                 check: flags["no-check"] !== true,
-                concurrency,
+                concurrency: flagNumber(flags, "concurrency", 6),
             });
         }
-
-        case "url": {
-            const [subcommand, ...args] = Number.isInteger(Number(rest[0]))
-                ? ["show", ...rest]
-                : rest;
-
-            switch (subcommand) {
-                case "show":
-                    return showUrl(context, requireId(args[0], "URL"));
-                case "set-target":
-                    return setUrlTarget(context, requireId(args[0], "URL"), args[1]);
-                case "check":
-                    return checkSingleUrl(context, requireId(args[0], "URL"));
-                case "delete":
-                    return deleteUrl(context, requireId(args[0], "URL"));
-                default:
-                    throw new CliError(
-                        `Unknown url subcommand "${subcommand ?? ""}". Run \`help\` for usage.`,
-                        2,
-                    );
-            }
-        }
-
+        case "url show":
+            return showUrl(context, requireId(args[0], "URL"));
+        case "url set-target":
+            return setUrlTarget(context, requireId(args[0], "URL"), args[1]);
+        case "url check":
+            return checkSingleUrl(context, requireId(args[0], "URL"));
+        case "url delete":
+            return deleteUrl(context, requireId(args[0], "URL"));
         default:
-            throw new CliError(`Unknown command "${command}". Run \`help\` for usage.`, 2);
+            throw new CliError(`Unknown command "${name}". Run \`help\` for usage.`, 2);
     }
 }
 
@@ -258,6 +278,8 @@ async function main() {
         print(usage);
         return;
     }
+
+    validateInvocation(positional, flags);
 
     const context = createContext({
         target: parseDbTarget(flagString(flags, "db") ?? "local"),

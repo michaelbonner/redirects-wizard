@@ -135,12 +135,13 @@ export async function addUrls(context: Context, options: AddUrlsOptions) {
             skipped.push({ url: line, reason: "not a valid http(s) URL" });
             continue;
         }
-        if (seen.has(normalized)) {
+        const dedupeKey = withoutTrailingSlash(normalized);
+        if (seen.has(dedupeKey)) {
             skipped.push({ url: normalized, reason: "duplicate in input" });
             continue;
         }
 
-        seen.add(normalized);
+        seen.add(dedupeKey);
         candidates.push(normalized);
     }
 
