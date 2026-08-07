@@ -8,6 +8,7 @@
         "preview": "vite preview",
         "start": "bun db:migrate && bun ./build/index.js",
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+        "cli": "bun scripts/redirects.ts",
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit migrate",
         "db:copy-production-to-preview": "bun scripts/copy-production-db-to-preview.ts",
