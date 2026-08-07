@@ -39,6 +39,58 @@ Redirects Wizard is a SvelteKit app for building and checking redirect rules —
     bun run dev
     ```
 
+## CLI
+
+`scripts/redirects.ts` exposes the same batch and URL operations as the app, for
+scripting and for AI agents. It talks to Postgres directly — no dev server or
+sign-in needed — reading connection strings from `.env`.
+
+```sh
+./scripts/redirects.ts batches           # or: bun run cli batches
+./scripts/redirects.ts help              # full command and flag reference
+```
+
+| Command                         | Description                                              |
+| ------------------------------- | -------------------------------------------------------- |
+| `batches`                       | List batches with URL, unresolved, and untargeted counts |
+| `batch <id>`                    | Show a batch and its URLs                                |
+| `batch create <base-url>`       | Create a batch for a base URL                            |
+| `batch set-base-url <id> <url>` | Point a batch at a different base URL                    |
+| `batch check <id>`              | Re-request the batch's URLs and store their statuses     |
+| `batch redirects <id>`          | Print generated redirect rules                           |
+| `batch archive <id>`            | Archive (soft-delete) a batch                            |
+| `urls add <batch-id> [url...]`  | Add production URLs; reads stdin when none are given     |
+| `url <id>`                      | Show one URL with its redirect chain                     |
+| `url set-target <id> [target]`  | Set the redirect target; omit it to clear                |
+| `url check <id>`                | Re-request one URL and store the status                  |
+| `url delete <id>`               | Delete (soft-delete) a URL                               |
+| `users`                         | List accounts, for use with `--user`                     |
+
+Useful flags: `--json` for machine-readable output, `--filter unresolved`,
+`--format nginx`, `--limit`, `--no-check`, and `--concurrency`.
+
+Batches are scoped to one account. With a single account in the database no flag
+is needed; otherwise pass `--user <email>` or set `REDIRECTS_USER`.
+
+`--db local` (the default), `--db preview`, and `--db production` select
+`DATABASE_URL`, `PREVIEW_DATABASE_URL`, and `PRODUCTION_DATABASE_URL`
+respectively. Reads work anywhere; commands that write to production also
+require `--yes`.
+
+Unlike the app, `batch create` does not capture a screenshot — use the
+dashboard's refresh button for that.
+
+A typical migration pass:
+
+```sh
+./scripts/redirects.ts batch create https://staging.example.com
+cat old-urls.txt | ./scripts/redirects.ts urls add 12
+./scripts/redirects.ts batch 12 --filter untargeted
+./scripts/redirects.ts url set-target 480 /new-page
+./scripts/redirects.ts batch redirects 12 --format nginx
+./scripts/redirects.ts batch check 12 --filter unresolved
+```
+
 ## Deploying
 
 The app uses `svelte-adapter-bun` for SvelteKit production builds.
