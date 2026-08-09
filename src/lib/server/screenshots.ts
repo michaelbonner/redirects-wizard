@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, stat, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { env } from "$env/dynamic/private";
 import type { Browser, Page } from "playwright";
@@ -92,6 +92,20 @@ async function resetBrowser(): Promise<void> {
 
 export function screenshotFilePath(batchId: number): string {
     return join(STORAGE_DIR, `${batchId}.jpg`);
+}
+
+// batches.screenshotUpdatedAt lives in Postgres while the JPEG lives on disk, so
+// the two can drift: a database copied between environments, a redeploy without
+// the persistent volume mounted, or a wiped local .screenshots folder all leave
+// rows claiming a screenshot that no longer exists. Callers check here so the UI
+// can fall back to its placeholder instead of pointing an <img> at a 404.
+export async function screenshotExists(batchId: number): Promise<boolean> {
+    try {
+        const stats = await stat(screenshotFilePath(batchId));
+        return stats.isFile() && stats.size > 0;
+    } catch {
+        return false;
+    }
 }
 
 function isBlockedVideoRequest(url: string): boolean {

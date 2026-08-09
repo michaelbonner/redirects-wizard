@@ -3,6 +3,7 @@ import {
     ACCEPTED_UPLOAD_TYPES,
     MAX_UPLOAD_BYTES,
     captureScreenshot,
+    screenshotExists,
     storeUploadedScreenshot,
 } from "$lib/server/screenshots";
 import { batches, urls } from "$lib/server/schema";
@@ -39,7 +40,19 @@ export async function load({ locals }) {
         .groupBy(batches.id)
         .orderBy(batches.baseUrl);
 
-    return { batches: rows };
+    // Only report a screenshot the serving endpoint can actually find; a stale
+    // timestamp would otherwise render as a broken image on the card.
+    const withScreenshots = await Promise.all(
+        rows.map(async (row) => ({
+            ...row,
+            screenshotUpdatedAt:
+                row.screenshotUpdatedAt && (await screenshotExists(row.id))
+                    ? row.screenshotUpdatedAt
+                    : null,
+        })),
+    );
+
+    return { batches: withScreenshots };
 }
 
 export const actions = {
