@@ -132,6 +132,13 @@ at that path in Dokploy (e.g. `/data/screenshots`) so screenshots survive
 redeploys. Screenshots are (re)captured when a batch's base URL is set and via
 the refresh button on each batch card.
 
+Only the timestamp lives in Postgres — the image itself is a file on disk, so the
+two can drift. Copying the production database (`bun db:copy-production-to-local`)
+brings timestamps for batches whose images stay on the production volume, and a
+redeploy without the volume mounted loses images the database still points at.
+Drifted batches show the "No screenshot yet" placeholder; the refresh button
+re-captures them.
+
 For local development, install the browser once:
 
 ```sh

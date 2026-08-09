@@ -9,6 +9,7 @@
         Check,
         ExternalLink,
         FolderPlus,
+        ImageOff,
         Loader2,
         Plus,
         RotateCw,
@@ -23,6 +24,9 @@
 
     let refreshing = $state<Record<number, boolean>>({});
     let uploading = $state<Record<number, boolean>>({});
+    // Screenshots whose image request failed after the page loaded (the file was
+    // removed, or the request errored) — shown as the placeholder instead.
+    let brokenScreenshots = $state<Record<number, boolean>>({});
 
     let query = $state("");
     let sort = $state<"recent" | "name" | "needs-work">("recent");
@@ -63,7 +67,8 @@
         id: number;
         screenshotUpdatedAt: Date | null;
     }) {
-        if (!batch.screenshotUpdatedAt) return null;
+        if (!batch.screenshotUpdatedAt || brokenScreenshots[batch.id])
+            return null;
         const version = new Date(batch.screenshotUpdatedAt).getTime();
         return `/api/screenshot/${batch.id}?v=${version}`;
     }
@@ -206,12 +211,19 @@
                                                 alt={`${batch.baseUrl} screenshot`}
                                                 class="aspect-video w-full bg-zinc-200 object-cover transition group-hover:opacity-90"
                                                 loading="lazy"
+                                                onerror={() =>
+                                                    (brokenScreenshots[
+                                                        batch.id
+                                                    ] = true)}
                                             />
                                         {:else}
                                             <div
-                                                class="flex aspect-video w-full items-center justify-center bg-zinc-200 text-sm text-zinc-500"
+                                                class="flex aspect-video w-full flex-col items-center justify-center gap-1 bg-zinc-200 text-sm text-zinc-500"
                                             >
-                                                No screenshot yet
+                                                <ImageOff class="size-5" />
+                                                {brokenScreenshots[batch.id]
+                                                    ? "Screenshot unavailable"
+                                                    : "No screenshot yet"}
                                             </div>
                                         {/if}
                                     </a>
@@ -229,6 +241,11 @@
                                                     await update({
                                                         reset: true,
                                                     });
+                                                    // Give the new image a
+                                                    // chance to load.
+                                                    delete brokenScreenshots[
+                                                        batch.id
+                                                    ];
                                                     uploading[batch.id] = false;
                                                 };
                                             }}
@@ -281,6 +298,9 @@
                                                 refreshing[batch.id] = true;
                                                 return async ({ update }) => {
                                                     await update();
+                                                    delete brokenScreenshots[
+                                                        batch.id
+                                                    ];
                                                     refreshing[batch.id] = false;
                                                 };
                                             }}
