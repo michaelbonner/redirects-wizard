@@ -72,6 +72,7 @@ ENV NODE_ENV=production \
 # resolves the browser it just installed.
 RUN apt-get update \
     && bunx playwright install --with-deps chromium \
+    && apt-get install -y --no-install-recommends gosu \
     && rm -rf /var/lib/apt/lists/*
 
 # The base image ships an unprivileged `bun` user (uid/gid 1000) but still
@@ -81,7 +82,12 @@ RUN apt-get update \
 # under SCREENSHOTS_DIR.
 COPY --from=build --chown=bun:bun /app ./
 RUN chown -R bun:bun /ms-playwright
-USER bun
+
+# A mounted volume keeps its host-side ownership and hides any ownership set in
+# the image. Start as root just long enough for the entrypoint to make the
+# screenshot directory writable, then use gosu to run the server as `bun`.
+RUN chmod +x /app/docker-entrypoint.sh
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
 EXPOSE 3000
 

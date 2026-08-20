@@ -129,8 +129,10 @@ it via `CHROMIUM_PATH`, so no separate screenshot service is required.
 
 Captured images are written to `SCREENSHOTS_DIR`. Mount a **persistent volume**
 at that path in Dokploy (e.g. `/data/screenshots`) so screenshots survive
-redeploys. Screenshots are (re)captured when a batch's base URL is set and via
-the refresh button on each batch card.
+redeploys. The container repairs ownership of that mounted directory at startup
+and then runs the application as its unprivileged `bun` user. Screenshots are
+(re)captured when a batch's base URL is set and via the refresh button on each
+batch card.
 
 Only the timestamp lives in Postgres — the image itself is a file on disk, so the
 two can drift. Copying the production database (`bun db:copy-production-to-local`)
