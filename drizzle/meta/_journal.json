@@ -22,6 +22,13 @@
             "when": 1781100000000,
             "tag": "0002_chunky_paper_doll",
             "breakpoints": true
+        },
+        {
+            "idx": 3,
+            "version": "7",
+            "when": 1787461083912,
+            "tag": "0003_add_account_issuer",
+            "breakpoints": true
         }
     ]
 }
