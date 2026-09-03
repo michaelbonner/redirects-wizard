@@ -95,10 +95,8 @@ EXPOSE 3000
 # injected by Dokploy as container env vars. SCREENSHOTS_DIR points at a Dokploy
 # volume mount, which is unaffected by this change.
 #
-# This runs the server ONLY, matching nixpacks.toml's start command
-# (`bun ./build/index.js`) rather than package.json's `start`. That script also
-# runs `db:migrate`, so using it would newly apply migrations on every boot —
-# this app has never done that in production, and quietly turning it on is not
-# part of moving the build. Migrations stay a manual step; see nixpacks.toml,
-# kept in the repo as the record of the previous deployment.
-CMD ["bun", "./build/index.js"]
+# Run pending migrations before the server accepts traffic. Drizzle records
+# applied migrations in the database, so later starts only apply new files.
+# If a migration fails, the command stops and the server does not start with a
+# schema that is older than the application code.
+CMD ["bun", "run", "start"]
