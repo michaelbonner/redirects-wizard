@@ -126,6 +126,7 @@
                                 name="name"
                                 autocomplete="name"
                                 value={form?.name ?? ""}
+                                maxlength={100}
                                 required
                             />
                         </div>
@@ -141,6 +142,7 @@
                                 type="email"
                                 autocomplete="email"
                                 value={form?.email ?? ""}
+                                maxlength={254}
                                 required
                             />
                         </div>
@@ -156,6 +158,7 @@
                                 rows={5}
                                 placeholder="Tell us what you're working on…"
                                 value={form?.message ?? ""}
+                                maxlength={3500}
                                 required
                             />
                         </div>
