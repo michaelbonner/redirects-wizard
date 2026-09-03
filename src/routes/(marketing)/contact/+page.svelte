@@ -1,5 +1,10 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
+    import {
+        MAX_CONTACT_EMAIL_LENGTH,
+        MAX_CONTACT_MESSAGE_LENGTH,
+        MAX_CONTACT_NAME_LENGTH,
+    } from "$lib/contact";
     import Button from "$lib/components/ui/button/button.svelte";
     import Input from "$lib/components/ui/input/input.svelte";
     import Textarea from "$lib/components/ui/textarea/textarea.svelte";
@@ -126,6 +131,7 @@
                                 name="name"
                                 autocomplete="name"
                                 value={form?.name ?? ""}
+                                maxlength={MAX_CONTACT_NAME_LENGTH}
                                 required
                             />
                         </div>
@@ -141,6 +147,7 @@
                                 type="email"
                                 autocomplete="email"
                                 value={form?.email ?? ""}
+                                maxlength={MAX_CONTACT_EMAIL_LENGTH}
                                 required
                             />
                         </div>
@@ -156,6 +163,7 @@
                                 rows={5}
                                 placeholder="Tell us what you're working on…"
                                 value={form?.message ?? ""}
+                                maxlength={MAX_CONTACT_MESSAGE_LENGTH}
                                 required
                             />
                         </div>
