@@ -1,14 +1,17 @@
 import { fail } from "@sveltejs/kit";
+import {
+    MAX_CONTACT_EMAIL_LENGTH,
+    MAX_CONTACT_MESSAGE_LENGTH,
+    MAX_CONTACT_NAME_LENGTH,
+} from "$lib/contact";
+import { consumeContactRateLimit } from "$lib/server/contact-rate-limit";
 import { sendContactNotification } from "$lib/server/telegram";
 import type { Actions } from "./$types";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MAX_NAME_LENGTH = 100;
-const MAX_EMAIL_LENGTH = 254;
-const MAX_MESSAGE_LENGTH = 3_500;
 
 export const actions = {
-    default: async ({ request, fetch }) => {
+    default: async ({ request, fetch, getClientAddress, setHeaders }) => {
         const formData = await request.formData();
         const name = String(formData.get("name") ?? "").trim();
         const email = String(formData.get("email") ?? "").trim();
@@ -33,18 +36,31 @@ export const actions = {
         if (message.length < 10) {
             return fail(400, {
                 ...values,
-                error: "Your message is a little short. Tell us a bit more.",
+                error: "Your message is a little short — tell us a bit more.",
             });
         }
 
         if (
-            name.length > MAX_NAME_LENGTH ||
-            email.length > MAX_EMAIL_LENGTH ||
-            message.length > MAX_MESSAGE_LENGTH
+            name.length > MAX_CONTACT_NAME_LENGTH ||
+            email.length > MAX_CONTACT_EMAIL_LENGTH ||
+            message.length > MAX_CONTACT_MESSAGE_LENGTH
         ) {
             return fail(400, {
                 ...values,
                 error: "Your submission is too long. Please shorten it and try again.",
+            });
+        }
+
+        const rateLimit = consumeContactRateLimit(getClientAddress());
+
+        if (rateLimit.kind === "rate_limited") {
+            setHeaders({
+                "retry-after": String(rateLimit.retryAfterSeconds),
+            });
+
+            return fail(429, {
+                ...values,
+                error: "You've sent too many messages. Please try again later.",
             });
         }
 

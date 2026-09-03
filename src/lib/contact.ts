@@ -1,0 +1,3 @@
+export const MAX_CONTACT_NAME_LENGTH = 100;
+export const MAX_CONTACT_EMAIL_LENGTH = 254;
+export const MAX_CONTACT_MESSAGE_LENGTH = 3_500;

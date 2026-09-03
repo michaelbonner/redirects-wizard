@@ -1,5 +1,7 @@
 import { env } from "$env/dynamic/private";
 
+const TELEGRAM_REQUEST_TIMEOUT_MS = 10_000;
+
 type ContactSubmission = {
     name: string;
     email: string;
@@ -50,6 +52,7 @@ export async function sendContactNotification({
             headers: {
                 "content-type": "application/json",
             },
+            signal: AbortSignal.timeout(TELEGRAM_REQUEST_TIMEOUT_MS),
             body: JSON.stringify({
                 chat_id: chatId,
                 text: [
