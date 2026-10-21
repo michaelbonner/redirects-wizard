@@ -16,14 +16,14 @@ jobs:
         run: |
           set -euo pipefail
           api() {
-            curl --fail --show-error --silent --max-time 60 -X POST "${DOKPLOY_URL}/api/$1" \
-              -H "x-api-key: ${DOKPLOY_API_KEY}" -H "Content-Type: application/json" \
-              -d "$2" || echo "<<call $1 failed>>"
+            local path="$1" params="$2"
+            echo "=== GET $path?$params ==="
+            curl --silent --show-error --max-time 60 \
+              -H "x-api-key: ${DOKPLOY_API_KEY}" -H "accept: application/json" \
+              "${DOKPLOY_URL}/api/${path}?${params}" | head -c 4000
             echo
           }
-          echo "=== domains.byApplicationId ==="
-          api "domain.byApplicationId" "{\"applicationId\":\"${DOKPLOY_APPLICATION_ID}\"}"
-          echo "=== application.readApp ==="
-          api "application.readApp" "{\"applicationId\":\"${DOKPLOY_APPLICATION_ID}\"}"
-          echo "=== deployment.getList (appId) ==="
-          api "deployment.getList" "{\"applicationId\":\"${DOKPLOY_APPLICATION_ID}\"}"
+          api "domain.byApplicationId" "applicationId=${DOKPLOY_APPLICATION_ID}"
+          api "application.one" "applicationId=${DOKPLOY_APPLICATION_ID}&includeType=false" \
+            | sed -E 's/("env":")[^"]*/\1<REDACTED>/g'
+          api "deployment.getList" "applicationId=${DOKPLOY_APPLICATION_ID}"
