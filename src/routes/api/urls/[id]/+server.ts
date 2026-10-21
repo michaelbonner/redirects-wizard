@@ -1,7 +1,7 @@
-import { getBaseRedirectUrl, getBaseUrl } from "$lib/server/redirects";
-import { db } from "$lib/server/db";
-import { batches, urls } from "$lib/server/schema";
-import { error, json } from "@sveltejs/kit";
+import { getBaseRedirectUrl, getBaseUrl } from "#lib/server/redirects.js";
+import { db } from "#lib/server/db.js";
+import { batches, urls } from "#lib/server/schema.js";
+import { error } from "@sveltejs/kit";
 import { and, eq, isNull } from "drizzle-orm";
 
 async function getOwnedUrl(id: number, userId: string) {
@@ -50,7 +50,7 @@ export async function PATCH({ locals, params, request }) {
         .where(eq(urls.id, id))
         .returning();
 
-    return json({
+    return Response.json({
         ...updated,
         baseUrl: getBaseUrl(batch, updated),
         baseRedirectUrl: getBaseRedirectUrl(batch, updated),
@@ -69,5 +69,5 @@ export async function DELETE({ locals, params }) {
         .set({ deletedAt: new Date(), updatedAt: new Date() })
         .where(eq(urls.id, id));
 
-    return json({ success: true });
+    return Response.json({ success: true });
 }

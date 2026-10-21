@@ -5,10 +5,10 @@ import {
     isValidHttpUrl,
     normalizeUrlInput,
     withoutTrailingSlash,
-} from "$lib/server/redirects";
-import { db } from "$lib/server/db";
-import { captureScreenshot } from "$lib/server/screenshots";
-import { batches, urls } from "$lib/server/schema";
+} from "#lib/server/redirects.js";
+import { db } from "#lib/server/db.js";
+import { captureScreenshot } from "#lib/server/screenshots.js";
+import { batches, urls } from "#lib/server/schema.js";
 import { error, fail, redirect } from "@sveltejs/kit";
 import { and, asc, eq, isNull, or } from "drizzle-orm";
 

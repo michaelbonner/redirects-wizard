@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from "$app/state";
-    import Button from "$lib/components/ui/button/button.svelte";
+    import Button from "#lib/components/ui/button/button.svelte";
     import { Menu, X } from "lucide-svelte";
 
     let { data, children } = $props();

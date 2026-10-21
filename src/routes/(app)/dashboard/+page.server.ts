@@ -1,13 +1,13 @@
-import { db } from "$lib/server/db";
+import { db } from "#lib/server/db.js";
 import {
     ACCEPTED_UPLOAD_TYPES,
     MAX_UPLOAD_BYTES,
     captureScreenshot,
     screenshotExists,
     storeUploadedScreenshot,
-} from "$lib/server/screenshots";
-import { batches, urls } from "$lib/server/schema";
-import { isValidHttpUrl } from "$lib/server/redirects";
+} from "#lib/server/screenshots.js";
+import { batches, urls } from "#lib/server/schema.js";
+import { isValidHttpUrl } from "#lib/server/redirects.js";
 import { fail, redirect } from "@sveltejs/kit";
 import { and, count, eq, isNull, sql } from "drizzle-orm";
 

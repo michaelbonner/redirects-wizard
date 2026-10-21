@@ -3,9 +3,9 @@ import {
     MAX_CONTACT_EMAIL_LENGTH,
     MAX_CONTACT_MESSAGE_LENGTH,
     MAX_CONTACT_NAME_LENGTH,
-} from "$lib/contact";
-import { consumeContactRateLimit } from "$lib/server/contact-rate-limit";
-import { sendContactNotification } from "$lib/server/telegram";
+} from "#lib/contact.js";
+import { consumeContactRateLimit } from "#lib/server/contact-rate-limit.js";
+import { sendContactNotification } from "#lib/server/telegram.js";
 import type { Actions } from "./$types";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

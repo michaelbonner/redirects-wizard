@@ -1,4 +1,4 @@
-import { env } from "$env/dynamic/private";
+import { TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID } from "$app/env/private";
 
 const TELEGRAM_REQUEST_TIMEOUT_MS = 10_000;
 
@@ -37,8 +37,8 @@ export async function sendContactNotification({
     message,
     fetch,
 }: SendContactNotificationOptions): Promise<TelegramResult> {
-    const botToken = env.TELEGRAM_BOT_TOKEN?.trim();
-    const chatId = env.TELEGRAM_CHAT_ID?.trim();
+    const botToken = TELEGRAM_BOT_TOKEN?.trim();
+    const chatId = TELEGRAM_CHAT_ID?.trim();
 
     if (!botToken || !chatId) {
         return { kind: "missing_configuration" };
