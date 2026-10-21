@@ -93,39 +93,50 @@ cat old-urls.txt | ./scripts/redirects.ts urls add 12
 
 ## Deploying
 
-The app uses `svelte-adapter-bun` for SvelteKit production builds.
-The included `nixpacks.toml` forces Nixpacks to start the Bun server instead of detecting the built assets as a Caddy static site.
+The app uses `@sveltejs/adapter-bun` for SvelteKit production builds. The
+image is built in GitHub Actions and pushed to GHCR; Dokploy only pulls and
+runs it. (The adapter was previously the archived `svelte-adapter-bun`.)
 
-Build command:
+Build command (this is what the Dockerfile runs):
 
 ```sh
-bun run build
+bun run build:bun
 ```
 
-Start command (set in `nixpacks.toml`):
+The official adapter calls Bun's own APIs while adapting the build, so the build
+has to run under Bun. `build:bun` is `bun --bun vite build`, which re-invokes
+Vite under Bun without recursing into the package's own `build` script.
+
+Start command:
 
 ```sh
-CHROMIUM_PATH=$(command -v chromium) bun ./build/index.js
+bun run start
 ```
 
 Dokploy settings:
 
 - Application port: `3000`
-- Builder: Nixpacks
 - Domain: `redirects.bootpack.work`
 - `HOST=0.0.0.0`
 - `PORT=3000`
-- `ORIGIN=https://redirects.bootpack.work`
 - `BETTER_AUTH_URL=https://redirects.bootpack.work`
 - `BETTER_AUTH_SECRET=<random 32+ byte secret>`
 - `DATABASE_URL=<postgres connection string>`
 - `SCREENSHOTS_DIR=/data/screenshots`
 
+There is deliberately no `ORIGIN` variable. The official adapter derives the
+public HTTP origin from the incoming request's `Host` header, so the same image
+serves production and every per-PR preview without a rebuild. SvelteKit's CSRF
+check compares the request's `Origin` header against that same request-derived
+origin, so form posts validate against the host the browser actually called.
+`BETTER_AUTH_URL` is still required: Better Auth's base URL is fixed when the
+auth object is initialised, so it cannot be inferred from the request later.
+
 ### Screenshots
 
 Batch thumbnails are captured locally with Playwright driving headless
-Chromium. `nixpacks.toml` adds `chromium` to the build and points Playwright at
-it via `CHROMIUM_PATH`, so no separate screenshot service is required.
+Chromium. The image installs a matching Chromium at build time, so no separate
+screenshot service is required.
 
 Captured images are written to `SCREENSHOTS_DIR`. Mount a **persistent volume**
 at that path in Dokploy (e.g. `/data/screenshots`) so screenshots survive

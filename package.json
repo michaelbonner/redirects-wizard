@@ -8,6 +8,7 @@
         "prepare": "lefthook install",
         "dev": "vite",
         "build": "vite build",
+        "build:bun": "bun --bun vite build",
         "preview": "vite preview",
         "start": "bun db:migrate && bun ./build/index.js",
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --tsgo",
