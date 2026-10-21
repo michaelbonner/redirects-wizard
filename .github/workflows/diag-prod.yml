@@ -1,0 +1,28 @@
+name: Diagnose production env
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inspect production runtime env keys
+        env:
+          DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+          DOKPLOY_APPLICATION_ID: ${{ secrets.DOKPLOY_APPLICATION_ID }}
+        run: |
+          set -euo pipefail
+          curl --silent --show-error --max-time 60 \
+            -H "x-api-key: ${DOKPLOY_API_KEY}" -H "accept: application/json" \
+            "${DOKPLOY_URL}/api/application.one?applicationId=${DOKPLOY_APPLICATION_ID}" > app.json
+          echo "=== env keys (names only) ==="
+          jq -r '.data.env // .env // ""' app.json | tr '\\n' '\n' | grep -oE '^[A-Z_][A-Z0-9_]*=' | sort
+          echo "=== env values for the variables that matter (non-secret) ==="
+          jq -r '.data.env // .env // ""' app.json | tr '\\n' '\n' \
+            | grep -E '^(BETTER_AUTH_URL|ORIGIN|PORT|HOST|SCREENSHOTS_DIR|NODE_ENV)=' \
+            || echo "(none of those keys found)"
+          echo "=== previewEnv keys (names only) ==="
+          jq -r '.data.previewEnv // .previewEnv // ""' app.json | tr '\\n' '\n' | grep -oE '^[A-Z_][A-Z0-9_]*=' | sort

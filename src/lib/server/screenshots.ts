@@ -68,8 +68,9 @@ async function getBrowser(): Promise<Browser> {
     // loads the browser library.
     const { chromium } = await import("playwright");
     browserPromise = chromium.launch({
-        // In production CHROMIUM_PATH points at the Nix-provided chromium. When
-        // unset (local dev) Playwright uses its bundled download.
+        // CHROMIUM_PATH is optional: when unset (local dev and the production
+        // image, which installs its own matching browser) Playwright uses the
+        // browser it has available.
         executablePath: CHROMIUM_PATH || undefined,
         args: ["--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
     });
