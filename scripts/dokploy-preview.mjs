@@ -74,7 +74,7 @@ async function call(path, { method = "POST", query, body } = {}) {
             "Content-Type": "application/json",
             accept: "application/json",
         },
-        body: method === "POST" ? JSON.stringify(body ?? {}) : undefined,
+        ...(method === "POST" && { body: JSON.stringify(body ?? {}) }),
     });
     const text = await res.text();
     let json;
