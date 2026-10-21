@@ -116,10 +116,11 @@ bun run start
 Dokploy settings:
 
 - Application port: `3000`
-- Domain: `redirects.bootpack.work`
+- Domain: `redirectswizard.com` (also served on `redirects.bootpack.dev`, which
+  redirects to the canonical host)
 - `HOST=0.0.0.0`
 - `PORT=3000`
-- `BETTER_AUTH_URL=https://redirects.bootpack.work`
+- `BETTER_AUTH_URL=https://redirectswizard.com`
 - `BETTER_AUTH_SECRET=<random 32+ byte secret>`
 - `DATABASE_URL=<postgres connection string>`
 - `SCREENSHOTS_DIR=/data/screenshots`
