@@ -1,0 +1,29 @@
+name: Diagnose production routing
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query Dokploy for production app state
+        env:
+          DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+          DOKPLOY_APPLICATION_ID: ${{ secrets.DOKPLOY_APPLICATION_ID }}
+        run: |
+          set -euo pipefail
+          api() {
+            curl --fail --show-error --silent --max-time 60 -X POST "${DOKPLOY_URL}/api/$1" \
+              -H "x-api-key: ${DOKPLOY_API_KEY}" -H "Content-Type: application/json" \
+              -d "$2" || echo "<<call $1 failed>>"
+            echo
+          }
+          echo "=== domains.byApplicationId ==="
+          api "domain.byApplicationId" "{\"applicationId\":\"${DOKPLOY_APPLICATION_ID}\"}"
+          echo "=== application.readApp ==="
+          api "application.readApp" "{\"applicationId\":\"${DOKPLOY_APPLICATION_ID}\"}"
+          echo "=== deployment.getList (appId) ==="
+          api "deployment.getList" "{\"applicationId\":\"${DOKPLOY_APPLICATION_ID}\"}"
