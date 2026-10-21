@@ -1,0 +1,24 @@
+diff --git a/src/core/sync/ts.js b/src/core/sync/ts.js
+index 7f161e63d101ad0bc9004468babaf953e912d6e9..32bc8b459785bdd773944a19b5293c3e01218733 100644
+--- a/src/core/sync/ts.js
++++ b/src/core/sync/ts.js
+@@ -2,5 +2,5 @@
+ // @ts-ignore
+ export let ts = undefined;
+ try {
+-	ts = (await import('typescript')).default;
++	ts = (await import('typescript-classic')).default;
+ } catch {}
+diff --git a/src/core/sync/write_tsconfig/index.js b/src/core/sync/write_tsconfig/index.js
+index a5437628e53124c9c6459e98dcd7860284ef0f55..d866df0f42bbd1f18dc30ba6f637d4d266c5fd2f 100644
+--- a/src/core/sync/write_tsconfig/index.js
++++ b/src/core/sync/write_tsconfig/index.js
+@@ -18,7 +18,7 @@ import { bullet_list } from '../../../utils/format.js';
+ /** @type {typeof import('typescript')} */
+ let ts;
+ try {
+-	ts = await import('typescript');
++	ts = await import('typescript-classic');
+ } catch {
+ 	// The user has not installed TypeScript.
+ }

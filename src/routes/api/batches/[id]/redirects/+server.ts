@@ -1,7 +1,7 @@
-import { getRedirectFormats } from "$lib/server/redirects";
-import { db } from "$lib/server/db";
-import { batches, urls } from "$lib/server/schema";
-import { error, json, redirect } from "@sveltejs/kit";
+import { getRedirectFormats } from "#lib/server/redirects.js";
+import { db } from "#lib/server/db.js";
+import { batches, urls } from "#lib/server/schema.js";
+import { error, redirect } from "@sveltejs/kit";
 import { and, eq, isNull, isNotNull } from "drizzle-orm";
 
 export async function GET({ locals, params }) {
@@ -30,7 +30,7 @@ export async function GET({ locals, params }) {
         ),
     });
 
-    return json({
+    return Response.json({
         formats: getRedirectFormats(batch, pendingUrls),
         count: pendingUrls.length,
     });

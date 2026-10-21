@@ -1,5 +1,5 @@
-import { building } from "$app/environment";
-import { env } from "$env/dynamic/private";
+import { building } from "$app/env";
+import { DATABASE_URL } from "$app/env/private";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
@@ -8,7 +8,7 @@ import * as schema from "./schema";
 let dbInstance: PostgresJsDatabase<typeof schema> | undefined;
 
 function getDb() {
-    if (!env.DATABASE_URL) {
+    if (!DATABASE_URL) {
         if (building) {
             return (dbInstance ??= drizzle(
                 postgres("postgres://build:build@localhost:5432/build"),
@@ -19,7 +19,7 @@ function getDb() {
         throw new Error("DATABASE_URL is required.");
     }
 
-    dbInstance ??= drizzle(postgres(env.DATABASE_URL), { schema });
+    dbInstance ??= drizzle(postgres(DATABASE_URL), { schema });
     return dbInstance;
 }
 

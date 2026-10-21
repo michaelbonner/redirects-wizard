@@ -8,15 +8,21 @@
 # production box with nixpacks, which pinned the CPU for the length of every
 # `vite build` and made deploys compete with the live site for RAM.
 #
-# The build needs NO database and NO real secrets: this app reads everything
-# private through `$env/dynamic/private` (process.env at container start) and
-# has no `$env/static/public` values, so it takes no build args at all.
+# The build needs NO database and NO real secrets: this app reads every private
+# value through SvelteKit's explicit environment config (`src/env.ts`), which
+# resolves `$app/env/private` at runtime from the process environment, and it
+# has no public env values, so it takes no build args at all.
 #
 # Both stages resolve the same base through this one ARG so they cannot drift
 # apart, and so there is a single place to pin. Override to pin an exact image:
-#   docker build --build-arg BUN_IMAGE=oven/bun:1@sha256:<digest> .
+#   docker build --build-arg BUN_IMAGE=oven/bun:1.4@sha256:<digest> .
+#
+# The tag is 1.4, not 1: the official Bun adapter calls Bun.semver.order to
+# enforce Bun >= 1.4 at build time and refuses to start on anything older.
+# `oven/bun:1` still resolves to a 1.3.x image on some registries, and that
+# fails the build with an unhelpful version error.
 # =====================================================================
-ARG BUN_IMAGE=oven/bun:1
+ARG BUN_IMAGE=oven/bun:1.4
 
 FROM ${BUN_IMAGE} AS build
 WORKDIR /app
@@ -28,7 +34,13 @@ WORKDIR /app
 #
 # --ignore-scripts: nothing here needs a postinstall, and it also skips the root
 # `prepare` (`lefthook install`, which has no git repo to install into here).
+#
+# patches/ has to be copied in before the install, not after: the lockfile
+# declares two patchedDependencies (svelte-check and @sveltejs/kit, both
+# redirected at their classic-TypeScript imports), and bun install fails
+# outright if a declared patch file is missing.
 COPY package.json bun.lock ./
+COPY patches/ ./patches/
 RUN bun install --frozen-lockfile --ignore-scripts
 
 COPY . .
@@ -37,9 +49,14 @@ COPY . .
 # any module doing work at import time has to be satisfiable. These placeholders
 # are scoped to this RUN, so they never reach the image's ENV; the running
 # container sees the real Dokploy values.
+#
+# The official Bun adapter calls Bun's own APIs (Bun.file, Bun.CryptoHasher)
+# while adapting the build, so the build has to run under Bun rather than a
+# Node-backed `vite build`. `build:bun` is `bun --bun vite build`, which
+# re-invokes Vite under Bun without recursing into this script.
 RUN DATABASE_URL=postgres://build:build@127.0.0.1:5432/build \
     BETTER_AUTH_SECRET=build_time_placeholder_not_used_at_runtime \
-    bun run build
+    bun run build:bun
 
 # =====================================================================
 # Runtime — stays on the same Bun base as the build stage so the native
@@ -53,7 +70,7 @@ RUN DATABASE_URL=postgres://build:build@127.0.0.1:5432/build \
 FROM ${BUN_IMAGE} AS runtime
 WORKDIR /app
 
-# HOST/PORT are what svelte-adapter-bun's server reads to bind.
+# HOST/PORT are what the official Bun adapter's server reads to bind.
 ENV NODE_ENV=production \
     PORT=3000 \
     HOST=0.0.0.0 \
@@ -91,9 +108,15 @@ ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
 EXPOSE 3000
 
-# Runtime config (DATABASE_URL, ORIGIN, BETTER_AUTH_*, SCREENSHOTS_DIR, ...) is
+# Runtime config (DATABASE_URL, BETTER_AUTH_*, SCREENSHOTS_DIR, ...) is
 # injected by Dokploy as container env vars. SCREENSHOTS_DIR points at a Dokploy
 # volume mount, which is unaffected by this change.
+#
+# The public origin is NOT set here. The official adapter derives it from the
+# incoming request's Host header (assuming https, since TLS terminates at the
+# Dokploy proxy), so the same image serves production and every per-PR preview
+# without a rebuild. SvelteKit's CSRF check uses that same origin, so form
+# posts validate against the host the browser actually called.
 #
 # Run pending migrations before the server accepts traffic. Drizzle records
 # applied migrations in the database, so later starts only apply new files.

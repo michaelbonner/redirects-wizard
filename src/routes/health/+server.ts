@@ -1,5 +1,4 @@
-import { db } from "$lib/server/db";
-import { json } from "@sveltejs/kit";
+import { db } from "#lib/server/db.js";
 import { sql } from "drizzle-orm";
 
 const headers = {
@@ -14,7 +13,7 @@ export async function GET() {
     try {
         await checkDatabase();
     } catch {
-        return json(
+        return Response.json(
             {
                 status: "error",
                 checks: {
@@ -28,7 +27,7 @@ export async function GET() {
         );
     }
 
-    return json(
+    return Response.json(
         {
             status: "ok",
             checks: {

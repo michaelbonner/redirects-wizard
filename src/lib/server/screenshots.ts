@@ -1,15 +1,15 @@
 import { mkdir, stat, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
-import { env } from "$env/dynamic/private";
+import { CHROMIUM_PATH, SCREENSHOTS_DIR } from "$app/env/private";
 import type { Browser, Page } from "playwright";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
 import { batches } from "./schema";
 
 // Where captured screenshots live on disk. In production this should point at a
-// persistent volume (see nixpacks.toml / Dokploy). Defaults to a repo-local
+// persistent volume (see the Dokploy volume mount). Defaults to a repo-local
 // folder for development.
-const STORAGE_DIR = resolve(env.SCREENSHOTS_DIR || ".screenshots");
+const STORAGE_DIR = resolve(SCREENSHOTS_DIR || ".screenshots");
 
 const VIEWPORT = { width: 1280, height: 720 };
 const NAV_TIMEOUT = 20_000;
@@ -70,7 +70,7 @@ async function getBrowser(): Promise<Browser> {
     browserPromise = chromium.launch({
         // In production CHROMIUM_PATH points at the Nix-provided chromium. When
         // unset (local dev) Playwright uses its bundled download.
-        executablePath: env.CHROMIUM_PATH || undefined,
+        executablePath: CHROMIUM_PATH || undefined,
         args: ["--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
     });
 
@@ -231,7 +231,7 @@ async function captureOnce(batchId: number, baseUrl: string, mode: CaptureMode):
 // so the fallback retries as a static document with JavaScript disabled.
 export async function captureScreenshot(batchId: number, baseUrl: string): Promise<void> {
     console.log(
-        `[screenshot] capturing batch ${batchId} (${baseUrl}) → ${screenshotFilePath(batchId)}; chromium=${env.CHROMIUM_PATH || "(bundled)"}`,
+        `[screenshot] capturing batch ${batchId} (${baseUrl}) → ${screenshotFilePath(batchId)}; chromium=${CHROMIUM_PATH || "(bundled)"}`,
     );
 
     let lastError: unknown;

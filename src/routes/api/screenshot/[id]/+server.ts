@@ -1,6 +1,6 @@
-import { db } from "$lib/server/db";
-import { batches } from "$lib/server/schema";
-import { screenshotFilePath } from "$lib/server/screenshots";
+import { db } from "#lib/server/db.js";
+import { batches } from "#lib/server/schema.js";
+import { screenshotFilePath } from "#lib/server/screenshots.js";
 import { error } from "@sveltejs/kit";
 import { and, eq, isNull } from "drizzle-orm";
 import { readFile } from "node:fs/promises";

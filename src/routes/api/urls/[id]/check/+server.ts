@@ -1,7 +1,7 @@
-import { checkUrl, getBaseRedirectUrl, getBaseUrl, isValidHttpUrl } from "$lib/server/redirects";
-import { db } from "$lib/server/db";
-import { batches, urls } from "$lib/server/schema";
-import { error, json } from "@sveltejs/kit";
+import { checkUrl, getBaseRedirectUrl, getBaseUrl, isValidHttpUrl } from "#lib/server/redirects.js";
+import { db } from "#lib/server/db.js";
+import { batches, urls } from "#lib/server/schema.js";
+import { error } from "@sveltejs/kit";
 import { and, eq, isNull } from "drizzle-orm";
 
 export async function POST({ locals, params }) {
@@ -43,7 +43,7 @@ export async function POST({ locals, params }) {
         .where(eq(urls.id, id))
         .returning();
 
-    return json({
+    return Response.json({
         ...updated,
         baseUrl: getBaseUrl(row[0].batch, updated),
         baseRedirectUrl: getBaseRedirectUrl(row[0].batch, updated),

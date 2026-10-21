@@ -1,12 +1,12 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
-    import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js";
-    import Badge from "$lib/components/ui/badge/badge.svelte";
-    import Button from "$lib/components/ui/button/button.svelte";
-    import { buttonVariants } from "$lib/components/ui/button/index.js";
-    import * as Dialog from "$lib/components/ui/dialog/index.js";
-    import Input from "$lib/components/ui/input/input.svelte";
-    import Textarea from "$lib/components/ui/textarea/textarea.svelte";
+    import * as AlertDialog from "#lib/components/ui/alert-dialog/index.js";
+    import Badge from "#lib/components/ui/badge/badge.svelte";
+    import Button from "#lib/components/ui/button/button.svelte";
+    import { buttonVariants } from "#lib/components/ui/button/index.js";
+    import * as Dialog from "#lib/components/ui/dialog/index.js";
+    import Input from "#lib/components/ui/input/input.svelte";
+    import Textarea from "#lib/components/ui/textarea/textarea.svelte";
     import {
         Check,
         Clipboard,

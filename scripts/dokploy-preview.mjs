@@ -44,7 +44,13 @@ const APP_PORT = 3000;
 
 // Values in previewEnv that must resolve to this PR's own host. Anything left
 // pointing at production would send preview auth callbacks to the live site.
-const HOST_DEPENDENT_KEYS = ["ORIGIN", "BETTER_AUTH_URL"];
+//
+// Only BETTER_AUTH_URL qualifies. The public HTTP origin is not one of these:
+// the official Bun adapter derives it from the incoming request's Host header,
+// so the same image serves production and every preview without a rebuild, and
+// SvelteKit's CSRF check compares the Origin header against that same
+// request-derived origin. A stale ORIGIN in the env is ignored by both.
+const HOST_DEPENDENT_KEYS = ["BETTER_AUTH_URL"];
 
 function required(name, value) {
     if (!value) {
@@ -157,7 +163,11 @@ function materializePreviewEnv(env) {
         }
     }
 
-    return materialized;
+    // Drop a stale ORIGIN. The official Bun adapter ignores it (it derives the
+    // public origin from the request's Host header) and SvelteKit 3 no longer
+    // reads it either, so leaving one in the preview env only misleads
+    // whoever reads the container's environment.
+    return materialized.replace(/^[ \t]*(?:export[ \t]+)?ORIGIN=.*(?:\r?\n|$)/gm, "");
 }
 
 // The host:port/dbname a connection URL actually points at, or null if it will

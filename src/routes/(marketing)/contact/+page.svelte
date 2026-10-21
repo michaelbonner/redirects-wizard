@@ -4,10 +4,10 @@
         MAX_CONTACT_EMAIL_LENGTH,
         MAX_CONTACT_MESSAGE_LENGTH,
         MAX_CONTACT_NAME_LENGTH,
-    } from "$lib/contact";
-    import Button from "$lib/components/ui/button/button.svelte";
-    import Input from "$lib/components/ui/input/input.svelte";
-    import Textarea from "$lib/components/ui/textarea/textarea.svelte";
+    } from "#lib/contact.js";
+    import Button from "#lib/components/ui/button/button.svelte";
+    import Input from "#lib/components/ui/input/input.svelte";
+    import Textarea from "#lib/components/ui/textarea/textarea.svelte";
     import { Mail, MessageSquare, CheckCircle2 } from "lucide-svelte";
 
     let { form } = $props();

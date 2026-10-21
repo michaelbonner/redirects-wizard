@@ -1,10 +1,10 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
-    import Badge from "$lib/components/ui/badge/badge.svelte";
-    import Button from "$lib/components/ui/button/button.svelte";
-    import Input from "$lib/components/ui/input/input.svelte";
-    import * as Sheet from "$lib/components/ui/sheet/index.js";
-    import { urlSortKey } from "$lib/utils";
+    import Badge from "#lib/components/ui/badge/badge.svelte";
+    import Button from "#lib/components/ui/button/button.svelte";
+    import Input from "#lib/components/ui/input/input.svelte";
+    import * as Sheet from "#lib/components/ui/sheet/index.js";
+    import { urlSortKey } from "#lib/utils.js";
     import {
         Check,
         ExternalLink,
