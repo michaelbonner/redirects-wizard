@@ -10,7 +10,7 @@ index 7f161e63d101ad0bc9004468babaf953e912d6e9..32bc8b459785bdd773944a19b5293c3e
 +	ts = (await import('typescript-classic')).default;
  } catch {}
 diff --git a/src/core/sync/write_tsconfig/index.js b/src/core/sync/write_tsconfig/index.js
-index a5437628e53124c9c6459e98dcd7860284ef0f55..d866df0f42bbd1f18dc30ba6f637d4d266c5fd2f 100644
+index 993de7c87c6cc108a8f2490dd32fc8c13567e3a2..b2057f4913a0a9d7941c5557c1fe7291d33000dd 100644
 --- a/src/core/sync/write_tsconfig/index.js
 +++ b/src/core/sync/write_tsconfig/index.js
 @@ -18,7 +18,7 @@ import { bullet_list } from '../../../utils/format.js';

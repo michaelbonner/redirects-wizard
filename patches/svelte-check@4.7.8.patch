@@ -12,7 +12,7 @@ index bf0dd7c4648b7e37e1cce3e43e6b3df503d9988c..db9894203c39644b5200730b859d771c
  } catch {}
  checkTypeScriptVersion(version);
 diff --git a/dist/src/index.js b/dist/src/index.js
-index e9b5a33a750127e8e3c454d3a21ca82e55ea6001..d70b573bfb64117e4ca2247ca7a1400de687de3a 100644
+index fb0ec67f08f61f8dec08b7ad14f103d68b49236f..a07d72c4d6bf9928b3c538483018140364c371d2 100644
 --- a/dist/src/index.js
 +++ b/dist/src/index.js
 @@ -11,7 +11,7 @@ var require$$4 = require('net');
